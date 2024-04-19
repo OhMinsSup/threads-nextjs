@@ -16,8 +16,9 @@ export interface NavItem {
     | 'follow'
     | 'replies'
     | 'mentions'
-    | 'reposts';
-  type: 'link' | 'myPage' | 'home' | 'thread';
+    | 'reposts'
+    | 'historyBack';
+  type: 'link' | 'myPage' | 'home' | 'thread' | 'historyBack';
   title: string;
   href?: string;
   relationHrefs?: string[];
@@ -32,6 +33,12 @@ export type ScrollNavItem = Pick<NavItem, 'id' | 'type' | 'title'> & {
 
 export const NAV_CONFIG = {
   mainNav: [
+    {
+      id: 'historyBack',
+      type: 'historyBack',
+      title: 'Back',
+      icon: Icons.chevronLeft,
+    },
     {
       id: 'home',
       type: 'home',

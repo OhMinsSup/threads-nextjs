@@ -1,9 +1,11 @@
 import React from 'react';
-import { api } from '~/services/trpc/server';
+
+import type { Metadata } from 'next';
+
 import ThreadLikeList from '~/components/shared/thread-likes-list';
 import SkeletonCardList from '~/components/skeleton/card-thread-list';
-import type { Metadata } from 'next';
 import { SITE_CONFIG } from '~/constants/constants';
+import { api } from '~/services/trpc/server';
 
 export const metadata: Metadata = {
   title: `내 좋아요 • ${SITE_CONFIG.title}`,
@@ -19,7 +21,7 @@ export default async function Pages() {
 
   return (
     <React.Suspense fallback={<SkeletonCardList />}>
-      <ThreadLikeList initialData={initialData} />;
+      <ThreadLikeList initialData={initialData} />
     </React.Suspense>
   );
 }

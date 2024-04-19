@@ -24,7 +24,7 @@ export default function ProfileTabsList({
   const { createQueryString } = useCustomSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const value = searchParams.get('tab') || 'threads';
+  const value = searchParams.get('tab') ?? 'threads';
 
   const onValueChange = useCallback(
     (value: string) => {

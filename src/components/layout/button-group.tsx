@@ -1,5 +1,6 @@
 import React from 'react';
 
+import ButtonHistoryBack from '~/components/layout/button-historyback';
 import ButtonHome from '~/components/layout/button-home';
 import ButtonLink from '~/components/layout/button-link';
 import ButtonMyPage from '~/components/layout/button-mypage';
@@ -13,6 +14,9 @@ interface ButtonGroupProps {
 
 export default function ButtonGroup({ item, type }: ButtonGroupProps) {
   switch (item.type) {
+    case 'historyBack': {
+      return <ButtonHistoryBack item={item} type={type} />;
+    }
     case 'home': {
       return <ButtonHome item={item} type={type} />;
     }
