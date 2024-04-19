@@ -1,7 +1,9 @@
 'use client';
+
+import React from 'react';
 import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
-import React from 'react';
+
 import { PAGE_ENDPOINTS } from '~/constants/constants';
 import { type NavItem } from '~/constants/nav';
 import { api } from '~/services/trpc/react';
@@ -18,17 +20,17 @@ export default function ButtonMyPage({ item, type }: ButtonMyPageProps) {
 
   const href = data ? PAGE_ENDPOINTS.USER.ID(data.user.id) : '#';
 
-  const isActive = segment && href.startsWith(`/${segment}`) ? true : false;
+  const isActive = Boolean(segment && href.startsWith(`/${segment}`));
 
   return (
     <Link
       href={item.disabled ? '#' : href}
       className={cn(
         type === 'header'
-          ? 'px-6 py-3 lg:px-8 lg:py-5 mx-[2px] my-1 flex items-center text-lg font-medium transition-colors hover:bg-foreground/5 hover:rounded-md sm:text-sm'
+          ? 'mx-[2px] my-1 flex items-center px-6 py-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm lg:px-8 lg:py-5'
           : undefined,
         type === 'footer'
-          ? 'h-10 p-4 flex items-center text-lg font-medium transition-colors hover:bg-foreground/5 hover:rounded-md sm:text-sm'
+          ? 'flex h-10 items-center p-4 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm'
           : undefined,
         isActive ? 'text-foreground' : 'text-foreground/60',
         item.disabled && 'cursor-not-allowed opacity-80',

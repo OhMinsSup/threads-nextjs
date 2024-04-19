@@ -1,3 +1,4 @@
+import React, { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
   LexicalTypeaheadMenuPlugin,
@@ -6,18 +7,18 @@ import {
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
 import { TextNode } from 'lexical';
-import React, { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
+
+import { $createHashTagNode } from '~/components/editor/nodes/hashtag-node';
 import { Icons } from '~/components/icons';
+import { buttonVariants } from '~/components/ui/button';
 import { getTargetElement } from '~/libs/browser/dom';
 import { api } from '~/services/trpc/react';
 import { cn } from '~/utils/utils';
-import { $createHashTagNode } from '~/components/editor/nodes/hashtag-node';
-import { buttonVariants } from '~/components/ui/button';
 
 const PUNCTUATION =
   '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
-const NAME = '\\b[A-Z][^\\s' + PUNCTUATION + ']';
+const NAME = `\\b[A-Z][^\\s${PUNCTUATION}]`;
 
 const DocumentMentionsRegex = {
   NAME,
@@ -29,33 +30,24 @@ const PUNC = DocumentMentionsRegex.PUNCTUATION;
 const TRIGGERS = ['#'].join('');
 
 // Chars we expect to see in a mention (non-space, non-punctuation).
-const VALID_CHARS = '[^' + TRIGGERS + PUNC + '\\s]';
+const VALID_CHARS = `[^${TRIGGERS}${PUNC}\\s]`;
 
 // Non-standard series of chars. Each series must be preceded and followed by
 // a valid char.
 const VALID_JOINS =
-  '(?:' +
-  '\\.[ |$]|' + // E.g. "r. " in "Mr. Smith"
-  ' |' + // E.g. " " in "Josh Duck"
-  '[' +
-  PUNC +
-  ']|' + // E.g. "-' in "Salier-Hellendag"
-  ')';
+  `(?:` +
+  `\\.[ |$]|` + // E.g. "r. " in "Mr. Smith"
+  ` |` + // E.g. " " in "Josh Duck"
+  `[${PUNC}]|` + // E.g. "-' in "Salier-Hellendag"
+  `)`;
 
 const LENGTH_LIMIT = 75;
 
 const AtSignHashTagsRegex = new RegExp(
-  '(^|\\s|\\()(' +
-    '[' +
-    TRIGGERS +
-    ']' +
-    '((?:' +
-    VALID_CHARS +
-    VALID_JOINS +
-    '){0,' +
-    LENGTH_LIMIT +
-    '})' +
-    ')$',
+  `(^|\\s|\\()(` +
+    `[${TRIGGERS}]` +
+    `((?:${VALID_CHARS}${VALID_JOINS}){0,${LENGTH_LIMIT}})` +
+    `)$`,
 );
 
 // 50 is the longest alias length limit.
@@ -63,16 +55,10 @@ const ALIAS_LENGTH_LIMIT = 50;
 
 // Regex used to match alias.
 const AtSignHashTagsRegexAliasRegex = new RegExp(
-  '(^|\\s|\\()(' +
-    '[' +
-    TRIGGERS +
-    ']' +
-    '((?:' +
-    VALID_CHARS +
-    '){0,' +
-    ALIAS_LENGTH_LIMIT +
-    '})' +
-    ')$',
+  `(^|\\s|\\()(` +
+    `[${TRIGGERS}]` +
+    `((?:${VALID_CHARS}){0,${ALIAS_LENGTH_LIMIT}})` +
+    `)$`,
 );
 
 function useHashTagsLookupService(mentionString: string | null) {
@@ -178,14 +164,14 @@ function HashTagsTypeaheadMenuItem({
       className={cn(
         'relative flex cursor-default select-none items-center space-x-3 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-slate-100 focus:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-800 dark:focus:text-slate-50',
         {
-          'dark:bg-slate-800 dark:text-slate-50 bg-slate-100 text-slate-900':
+          'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50':
             isSelected,
         },
       )}
       ref={option.setRefElement}
       role="option"
       aria-selected={isSelected}
-      id={'typeahead-item-' + index}
+      id={`typeahead-item-${index}`}
       onMouseEnter={onMouseEnter}
       onClick={onClick}
     >
@@ -212,14 +198,14 @@ function HashTagsTypeaheadRegisterMenuItem({
       className={cn(
         'relative flex cursor-default select-none items-center space-x-3 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-slate-100 focus:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-800 dark:focus:text-slate-50',
         {
-          'dark:bg-slate-800 dark:text-slate-50 bg-slate-100 text-slate-900':
+          'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50':
             isSelected,
         },
       )}
       ref={option.setRefElement}
       role="option"
       aria-selected={isSelected}
-      id={'typeahead-item-' + index}
+      id={`typeahead-item-${index}`}
       onMouseEnter={onMouseEnter}
       onClick={onClick}
     >

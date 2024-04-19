@@ -1,10 +1,12 @@
 'use client';
+
 import React from 'react';
 import Link from 'next/link';
+
 import { Icons } from '~/components/icons';
-import { NAV_CONFIG } from '~/constants/nav';
-import { PAGE_ENDPOINTS } from '~/constants/constants';
 import ButtonGroup from '~/components/layout/button-group';
+import { PAGE_ENDPOINTS } from '~/constants/constants';
+import { NAV_CONFIG } from '~/constants/nav';
 import ButtonHeaderMenu from './button-header-menu';
 
 export default function MainNav() {

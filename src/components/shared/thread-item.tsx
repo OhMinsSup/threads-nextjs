@@ -1,6 +1,19 @@
 'use client';
-import { Card } from '~/components/ui/card';
+
+import React, { useCallback } from 'react';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import type { ThreadSelectSchema } from '~/services/db/selectors/threads';
+
+import LexicalEditor from '~/components/editor/lexical-editor';
+import { Icons } from '~/components/icons';
+import Modal from '~/components/modal';
 import Avatars from '~/components/shared/avatars';
+import ClientOnly from '~/components/shared/client-only';
+import { Button } from '~/components/ui/button';
+import { Card } from '~/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,25 +21,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import LexicalEditor from '~/components/editor/lexical-editor';
-import { cn, getDateFormatted } from '~/utils/utils';
-import type { ThreadSelectSchema } from '~/services/db/selectors/threads';
-import { Icons } from '~/components/icons';
-import { Button } from '~/components/ui/button';
-import React, { useCallback } from 'react';
-import { api } from '~/services/trpc/react';
-import { useToast } from '~/components/ui/use-toast';
-import { ToastAction } from '~/components/ui/toast';
-import { useRouter } from 'next/navigation';
-import { EMBED_CODE, PAGE_ENDPOINTS } from '~/constants/constants';
-import ClientOnly from '~/components/shared/client-only';
-import { Skeleton } from '../ui/skeleton';
-import dynamic from 'next/dynamic';
-import { useLayoutStore } from '~/services/store/useLayoutStore';
-import Modal from '~/components/modal';
-import { useCopyToClipboard } from '~/libs/hooks/useCopyToClipboard';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '~/components/ui/hover-card';
+import { Skeleton } from '~/components/ui/skeleton';
 import { Textarea } from '~/components/ui/textarea';
+import { ToastAction } from '~/components/ui/toast';
+import { useToast } from '~/components/ui/use-toast';
+import { EMBED_CODE, PAGE_ENDPOINTS } from '~/constants/constants';
+import { useCopyToClipboard } from '~/libs/hooks/useCopyToClipboard';
 import useNavigateThreanForm from '~/libs/hooks/useNavigateThreanForm';
+import { UserSelectSchema } from '~/services/db/selectors/users';
+import { useLayoutStore } from '~/services/store/useLayoutStore';
+import { api } from '~/services/trpc/react';
+import { cn, getDateFormatted } from '~/utils/utils';
 
 const WhoCanLeaveReplyDialog = dynamic(
   () => import('~/components/dialog/who-can-leave-reply-dialog'),
@@ -73,17 +83,12 @@ export default function ThreadItem({ item }: ThreadItemProps) {
             <div className="flex w-full items-center">
               <Avatars
                 src={undefined}
-                alt={`${item?.user?.username} profile picture`}
+                alt={`${item.user.username} profile picture`}
                 fallback="T"
               />
               <div className="ml-4 flex w-full flex-row">
                 <div className="space-y-1">
-                  <div className="text-base font-semibold tracking-wide text-black dark:text-white">
-                    {item?.user?.username}
-                  </div>
-                  <div className="text-xs text-gray-400 dark:text-gray-300">
-                    @{item?.user?.name}
-                  </div>
+                  <HoverUserCard itemId={item.id} user={item.user} />
                 </div>
                 <div className="flex flex-1 items-center justify-end space-x-3">
                   <div
@@ -99,9 +104,9 @@ export default function ThreadItem({ item }: ThreadItemProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <ThreadItem.SaveButton
+                      <SaveButton
                         itemId={item.id}
-                        isSaved={(item?.bookmarks?.length ?? 0) > 0}
+                        isSaved={(item.bookmarks.length ?? 0) > 0}
                       />
                       <DropdownMenuSeparator />
                       <React.Suspense
@@ -121,7 +126,7 @@ export default function ThreadItem({ item }: ThreadItemProps) {
                           </>
                         }
                       >
-                        <ThreadItem.ConditionUserInfo
+                        <ConditionUserInfo
                           itemId={item.id}
                           userId={item.user.id}
                           whoCanLeaveComments={item.whoCanLeaveComments}
@@ -170,15 +175,15 @@ export default function ThreadItem({ item }: ThreadItemProps) {
               <Button size="sm" variant="link">
                 <Icons.messageSquare className="size-4" />
               </Button>
-              <ThreadItem.RepostsButton
+              <RepostsButton
                 itemId={item.id}
-                isReposted={(item?.reposts?.length ?? 0) > 0}
+                isReposted={(item.reposts.length ?? 0) > 0}
               />
-              <ThreadItem.LikeButton
+              <LikeButton
                 itemId={item.id}
-                isLiked={(item?.likes?.length ?? 0) > 0}
+                isLiked={(item.likes.length ?? 0) > 0}
               />
-              <ThreadItem.ShareButton
+              <ShareButton
                 itemId={item.id}
                 userId={item.user.id}
                 username={item.user.username}
@@ -196,14 +201,87 @@ interface ItemProps {
   itemId: string;
 }
 
+interface HoverUserCardProps extends ItemProps {
+  user: UserSelectSchema;
+  bio?: string | null;
+}
+
+function HoverUserCard({ user }: HoverUserCardProps) {
+  const utils = api.useUtils();
+
+  const isFollowing = (user.followers?.length ?? 0) > 0;
+  const followerCount = user._count.followers ?? 0;
+
+  const followMutation = api.users.follow.useMutation({
+    async onSuccess() {
+      await utils.users.byId.invalidate();
+    },
+  });
+
+  const unfollowMutation = api.users.unfollow.useMutation({
+    async onSuccess() {
+      await utils.users.byId.invalidate();
+    },
+  });
+
+  const isPending = followMutation.isPending || unfollowMutation.isPending;
+
+  const onClickFollow = useCallback(() => {
+    if (isFollowing) {
+      unfollowMutation.mutate({ targetId: user.id });
+    } else {
+      followMutation.mutate({ targetId: user.id });
+    }
+  }, [followMutation, isFollowing, unfollowMutation, user.id]);
+
+  return (
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <Button variant="link" className="p-0">
+          {user.username}
+        </Button>
+      </HoverCardTrigger>
+      <HoverCardContent className="w-80 space-y-4">
+        <Link
+          href={PAGE_ENDPOINTS.USER.ID(user.id)}
+          className="flex justify-between space-x-4"
+        >
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold">{user.username}</h3>
+            <p className="text-xs text-gray-400 dark:text-gray-300">
+              @{user.name}
+            </p>
+          </div>
+          <Avatars
+            src={undefined}
+            alt={`${user.username} profile picture`}
+            fallback="T"
+          />
+        </Link>
+        <p className="text-sm">{user.profile?.bio}</p>
+        <div className="flex items-center pt-2">
+          <span className="text-xs text-muted-foreground">
+            팔로워 {followerCount}명
+          </span>
+        </div>
+        <div className="flex items-center">
+          <Button className="w-full" onClick={onClickFollow}>
+            {isPending ? (
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
+            ) : null}
+            {isFollowing ? '팔로우 취소' : '팔로우'}
+          </Button>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  );
+}
+
 interface RepostItemProps extends ItemProps {
   isReposted: boolean;
 }
 
-ThreadItem.RepostsButton = function Item({
-  itemId,
-  isReposted,
-}: RepostItemProps) {
+function RepostsButton({ itemId, isReposted }: RepostItemProps) {
   const { toast } = useToast();
 
   const { handleHref } = useNavigateThreanForm();
@@ -255,18 +333,14 @@ ThreadItem.RepostsButton = function Item({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}
 
 interface ShareItemProps extends ItemProps {
   userId: string;
   username: string | null;
 }
 
-ThreadItem.ShareButton = function Item({
-  itemId,
-  userId,
-  username,
-}: ShareItemProps) {
+function ShareButton({ itemId, userId, username }: ShareItemProps) {
   const { toast } = useToast();
 
   const { copy } = useCopyToClipboard({
@@ -323,13 +397,13 @@ ThreadItem.ShareButton = function Item({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}
 
 interface SaveItemProps extends ItemProps {
   isSaved: boolean;
 }
 
-ThreadItem.SaveButton = function Item({ itemId, isSaved }: SaveItemProps) {
+function SaveButton({ itemId, isSaved }: SaveItemProps) {
   const router = useRouter();
 
   const { toast } = useToast();
@@ -341,7 +415,7 @@ ThreadItem.SaveButton = function Item({ itemId, isSaved }: SaveItemProps) {
         description: saved === 'SAVE' ? '저장됨' : '저장 취소됨',
         action: (
           <ToastAction
-            altText={`${saved === 'SAVE' ? '모두보기' : '되돌리기'}`}
+            altText={saved === 'SAVE' ? '모두보기' : '되돌리기'}
             onClick={() => {
               if (saved === 'SAVE') {
                 router.push(PAGE_ENDPOINTS.SAVED);
@@ -367,13 +441,13 @@ ThreadItem.SaveButton = function Item({ itemId, isSaved }: SaveItemProps) {
 
   return (
     <DropdownMenuItem onClick={onClick} disabled={mutation.isPending}>
-      {mutation.isPending && (
+      {mutation.isPending ? (
         <Icons.spinner className="mr-2 size-4 animate-spin" />
-      )}
+      ) : null}
       {isSaved ? '저장 취소' : '저장'}
     </DropdownMenuItem>
   );
-};
+}
 
 interface ConditionUserInfoItemProps extends ItemProps {
   userId: string;
@@ -381,7 +455,7 @@ interface ConditionUserInfoItemProps extends ItemProps {
   isHidden: boolean | null;
 }
 
-ThreadItem.ConditionUserInfo = function Item({
+function ConditionUserInfo({
   userId,
   itemId,
   whoCanLeaveComments,
@@ -396,17 +470,17 @@ ThreadItem.ConditionUserInfo = function Item({
   if (isMe) {
     return (
       <>
-        <ThreadItem.WhoCanLeaveReplyButton
+        <WhoCanLeaveReplyButton
           itemId={itemId}
           initialWhoCanLeaveReply={whoCanLeaveComments ?? 'everyone'}
         />
         <DropdownMenuSeparator />
-        <ThreadItem.HideNumberOfLikesAndSharesButton
+        <HideNumberOfLikesAndSharesButton
           itemId={itemId}
           isHidden={isHidden ?? false}
         />
         <DropdownMenuSeparator />
-        <ThreadItem.DeleteButton itemId={itemId} />
+        <DeleteButton itemId={itemId} />
       </>
     );
   }
@@ -422,13 +496,13 @@ ThreadItem.ConditionUserInfo = function Item({
       <DropdownMenuItem className="text-red-500">신고하기</DropdownMenuItem>
     </>
   );
-};
+}
 
 interface LikeItemProps extends ItemProps {
   isLiked: boolean;
 }
 
-ThreadItem.LikeButton = function Item({ itemId, isLiked }: LikeItemProps) {
+function LikeButton({ itemId, isLiked }: LikeItemProps) {
   const mutation = api.threads.like.useMutation();
 
   const onClick = useCallback(() => {
@@ -452,9 +526,9 @@ ThreadItem.LikeButton = function Item({ itemId, isLiked }: LikeItemProps) {
       />
     </Button>
   );
-};
+}
 
-ThreadItem.DeleteButton = function Item({ itemId }: ItemProps) {
+function DeleteButton({ itemId }: ItemProps) {
   const mutation = api.threads.delete.useMutation();
 
   const onClick = useCallback(() => {
@@ -481,20 +555,20 @@ ThreadItem.DeleteButton = function Item({ itemId }: ItemProps) {
       삭제
     </DropdownMenuItem>
   );
-};
+}
 
 interface HideNumberOfLikesAndSharesItemProps extends ItemProps {
   isHidden: boolean;
 }
 
-ThreadItem.HideNumberOfLikesAndSharesButton = function Item({
+function HideNumberOfLikesAndSharesButton({
   itemId,
   isHidden,
 }: HideNumberOfLikesAndSharesItemProps) {
   const { toast } = useToast();
 
   const mutation = api.threads.update.useMutation({
-    async onSuccess(data) {
+    onSuccess(data) {
       const saved = data.data?.hiddenNumberOfLikesAndComments
         ? 'SAVE'
         : 'UNSAVE';
@@ -519,13 +593,13 @@ ThreadItem.HideNumberOfLikesAndSharesButton = function Item({
       좋아요 수 및 공유 수 숨기기 {isHidden ? '취소' : ''}
     </DropdownMenuItem>
   );
-};
+}
 
 interface WhoCanLeaveReplyItemProps extends ItemProps {
   initialWhoCanLeaveReply: string;
 }
 
-ThreadItem.WhoCanLeaveReplyButton = function Item({
+function WhoCanLeaveReplyButton({
   itemId,
   initialWhoCanLeaveReply,
 }: WhoCanLeaveReplyItemProps) {
@@ -543,4 +617,4 @@ ThreadItem.WhoCanLeaveReplyButton = function Item({
       답글을 남길 수 있는 사람
     </DropdownMenuItem>
   );
-};
+}

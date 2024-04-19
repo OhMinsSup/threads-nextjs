@@ -1,4 +1,5 @@
 import React from 'react';
+
 import SkeletonCard from '~/components/skeleton/card-user';
 
 interface SkeletonCardUserListProps {

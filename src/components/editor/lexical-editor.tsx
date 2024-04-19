@@ -1,39 +1,38 @@
+import React, { useCallback, useState } from 'react';
+import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
-import {
-  type InitialConfigType,
-  LexicalComposer,
-  type InitialEditorStateType,
-} from '@lexical/react/LexicalComposer';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import {
-  type EditorState,
-  type Klass,
-  type LexicalEditor as ReactLexicalEditor,
-  type LexicalNode,
-  type HTMLConfig,
-  $getRoot,
-  $createParagraphNode,
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { $createParagraphNode, $getRoot } from 'lexical';
+
+import type {
+  InitialConfigType,
+  InitialEditorStateType,
+} from '@lexical/react/LexicalComposer';
+import type {
+  EditorState,
+  HTMLConfig,
+  Klass,
+  LexicalNode,
+  LexicalEditor as ReactLexicalEditor,
 } from 'lexical';
-import React, { useCallback, useState } from 'react';
-import { Skeleton } from '~/components/ui/skeleton';
-import MentionsPlugin from '~/components/editor/plugins/mentions-plugin';
-import HashTagsPlugin from '~/components/editor/plugins/hashtags-plugin';
-import LexicalAutoLinkPlugin from '~/components/editor/plugins/auto-link-plugin';
-import LinkPlugin from '~/components/editor/plugins/hashtags-plugin';
-import AutoLinkPlugin from '~/components/editor/plugins/auto-link-plugin';
+
+import HashTagNode from '~/components/editor/nodes/hashtag-node';
 import MentionNode, {
   $createMentionNode,
 } from '~/components/editor/nodes/mention-node';
-import HashTagNode from '~/components/editor/nodes/hashtag-node';
+import AutoLinkPlugin from '~/components/editor/plugins/auto-link-plugin';
 import LexicalOnBlurPlugin from '~/components/editor/plugins/blur-plugin';
 import LexicalDefaultValuePlugin from '~/components/editor/plugins/defaultValue-plugin';
-import { AutoLinkNode, LinkNode } from '@lexical/link';
-import HashtagsEventsPlugin from './plugins/hashtags-events-plugin';
+import HashTagsPlugin from '~/components/editor/plugins/hashtags-plugin';
+import MentionsPlugin from '~/components/editor/plugins/mentions-plugin';
+import { Skeleton } from '~/components/ui/skeleton';
 import { useMemoizedFn } from '~/libs/hooks/useMemoizedFn';
+import HashtagsEventsPlugin from './plugins/hashtags-events-plugin';
 
 function Placeholder() {
   return (
@@ -66,7 +65,7 @@ export function prepopulatedRichText(mention?: string) {
   };
 }
 
-const EditorNodes: Array<Klass<LexicalNode>> = [
+const EditorNodes: Klass<LexicalNode>[] = [
   MentionNode,
   HashTagNode,
   AutoLinkNode,
@@ -191,18 +190,16 @@ LexicalEditor.Editor = function LexicalEditorEditor({
       <AutoLinkPlugin />
       <MentionsPlugin />
       <HashTagsPlugin />
-      <LexicalAutoLinkPlugin />
-      <LinkPlugin />
       <OnChangePlugin onChange={onEditorChange} />
       <LexicalOnBlurPlugin onBlur={onEditorBlur} />
-      {initialHTMLValue && (
+      {initialHTMLValue ? (
         <LexicalDefaultValuePlugin initialValue={initialHTMLValue} />
-      )}
+      ) : null}
       {!editable &&
-        hashtagsEventListener &&
-        typeof hashtagsEventListener === 'function' && (
-          <HashtagsEventsPlugin eventListener={hashtagsEventListener} />
-        )}
+      hashtagsEventListener &&
+      typeof hashtagsEventListener === 'function' ? (
+        <HashtagsEventsPlugin eventListener={hashtagsEventListener} />
+      ) : null}
     </div>
   );
 };

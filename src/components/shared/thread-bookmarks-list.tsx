@@ -1,10 +1,12 @@
 'use client';
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
+
 import ThreadItem from '~/components/shared/thread-item';
 import { getTargetElement } from '~/libs/browser/dom';
 import { api } from '~/services/trpc/react';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import SkeletonCard from '../skeleton/card-thread';
 import ThreadEndCard from './item-end-card';
 
@@ -44,8 +46,8 @@ export default function ThreadBookmarkList({
           }
         },
         getNextPageParam: (lastPage) => {
-          return lastPage?.hasNextPage && lastPage?.endCursor
-            ? lastPage?.endCursor
+          return lastPage.hasNextPage && lastPage.endCursor
+            ? lastPage.endCursor
             : null;
         },
       },
@@ -58,8 +60,8 @@ export default function ThreadBookmarkList({
     };
   }, [initialLength]);
 
-  const totalCount = data?.pages?.at(0)?.totalCount ?? 0;
-  const flatList = data?.pages?.map((page) => page?.list).flat() ?? [];
+  const totalCount = data.pages.at(0)?.totalCount ?? 0;
+  const flatList = data.pages.map((page) => page.list).flat() ?? [];
 
   const { start, cursor, limit } = getCursorLimit(seachParams);
   const [initialStart] = useState(() => start);
@@ -145,11 +147,11 @@ export default function ThreadBookmarkList({
               }}
             >
               <ThreadItem item={item} />
-              {isEnd && (
+              {isEnd ? (
                 <ThreadEndCard>
                   저장한 게시물을 모두 읽었습니다! 👋
                 </ThreadEndCard>
-              )}
+              ) : null}
             </div>
           );
         })}

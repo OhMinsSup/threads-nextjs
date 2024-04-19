@@ -1,7 +1,13 @@
 'use client';
+
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+
+import type { UpdateProfileInputSchema } from '~/services/users/users.input';
+
+import { Icons } from '~/components/icons';
+import { Button } from '~/components/ui/button';
 import {
   Form,
   FormControl,
@@ -10,16 +16,11 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/form';
-import { Button } from '~/components/ui/button';
-import { Icons } from '~/components/icons';
-import { api } from '~/services/trpc/react';
 import { Input } from '~/components/ui/input';
-import { Textarea } from '~/components/ui/textarea';
-import {
-  updateProfileSchema,
-  type UpdateProfileInputSchema,
-} from '~/services/users/users.input';
 import { InputLock } from '~/components/ui/input-lock';
+import { Textarea } from '~/components/ui/textarea';
+import { api } from '~/services/trpc/react';
+import { updateProfileSchema } from '~/services/users/users.input';
 
 interface ProfileEditFormProps {
   username: string;
@@ -103,9 +104,9 @@ export default function ProfileEditForm({
           disabled={mutation.isPending}
           aria-disabled={mutation.isPending}
         >
-          {mutation.isPending && (
+          {mutation.isPending ? (
             <Icons.spinner className="mr-2 size-4 animate-spin" />
-          )}
+          ) : null}
           완료
         </Button>
       </div>

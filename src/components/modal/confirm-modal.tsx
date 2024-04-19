@@ -1,5 +1,9 @@
 'use client';
+
 import React, { useCallback, useMemo } from 'react';
+
+import type { ModalFuncProps } from './types';
+
 import {
   Dialog,
   DialogContent,
@@ -8,9 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog';
-import type { ModalFuncProps } from './types';
-import ActionButton from './action-button';
 import { cn } from '~/utils/utils';
+import ActionButton from './action-button';
 import { ModalContextProvider, useModalContext } from './context';
 
 function ConfirmOkButton() {
@@ -135,14 +138,14 @@ export default function ConfirmModal({
 
   const headerOriginNode = (
     <DialogHeader>
-      {title && (
+      {title ? (
         <DialogTitle className={cn(titleClassName)}>{title}</DialogTitle>
-      )}
-      {description && (
+      ) : null}
+      {description ? (
         <DialogDescription className={cn(descriptionClassName)}>
           {description}
         </DialogDescription>
-      )}
+      ) : null}
     </DialogHeader>
   );
 

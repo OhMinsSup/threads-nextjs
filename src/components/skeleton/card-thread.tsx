@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button } from '../ui/button';
-import { Icons } from '../icons';
-import { cn } from '~/utils/utils';
+
 import { Card } from '~/components/ui/card';
+import { cn } from '~/utils/utils';
+import { Icons } from '../icons';
+import { Button } from '../ui/button';
 
 export default function SkeletonCardThread() {
   return (
@@ -40,10 +41,10 @@ export default function SkeletonCardThread() {
           </div>
           <div className="py-4">
             <div className="flex max-h-[50px] animate-pulse flex-col space-y-4">
-              <div className="h-4 w-3/4 rounded bg-gray-200"></div>
+              <div className="h-4 w-3/4 rounded bg-gray-200" />
               <div className="space-y-2">
-                <div className="h-4 rounded bg-gray-200"></div>
-                <div className="h-4 w-5/6 rounded bg-gray-200"></div>
+                <div className="h-4 rounded bg-gray-200" />
+                <div className="h-4 w-5/6 rounded bg-gray-200" />
               </div>
             </div>
           </div>

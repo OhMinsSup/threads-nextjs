@@ -1,11 +1,13 @@
 'use client';
-import { usePathname, useRouter } from 'next/navigation';
+
 import React, { useCallback } from 'react';
-import { Button } from '~/components/ui/button';
+import { usePathname, useRouter } from 'next/navigation';
+
 import { Icons } from '~/components/icons';
-import { api } from '~/services/trpc/react';
-import useNavigateThreanForm from '~/libs/hooks/useNavigateThreanForm';
+import { Button } from '~/components/ui/button';
 import { PAGE_ENDPOINTS } from '~/constants/constants';
+import useNavigateThreanForm from '~/libs/hooks/useNavigateThreanForm';
+import { api } from '~/services/trpc/react';
 
 interface ProfileHeaderProps {
   userId: string;
@@ -119,7 +121,9 @@ ProfileHeader.MentionButton = function Item(props: MentionButtonProps) {
 
   return (
     <Button variant="outline" className="flex-1" onClick={onClickMentions}>
-      {isPending && <Icons.rotateCcw className="mr-2 size-4 animate-spin" />}
+      {isPending ? (
+        <Icons.rotateCcw className="mr-2 size-4 animate-spin" />
+      ) : null}
       언급
     </Button>
   );
@@ -160,7 +164,9 @@ ProfileHeader.FollowButton = function Item({
 
   return (
     <Button className="flex-1" onClick={onClickFollow} disabled={isPending}>
-      {isPending && <Icons.spinner className="mr-2 size-4 animate-spin" />}
+      {isPending ? (
+        <Icons.spinner className="mr-2 size-4 animate-spin" />
+      ) : null}
       {isFollowing ? '팔로우 취소' : '팔로우'}
     </Button>
   );

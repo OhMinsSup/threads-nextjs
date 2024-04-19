@@ -1,9 +1,11 @@
 'use client';
+
 import React, { useCallback, useTransition } from 'react';
-import { Tabs, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import { TabsContent } from '@radix-ui/react-tabs';
-import { PAGE_ENDPOINTS } from '~/constants/constants';
 import { usePathname, useRouter } from 'next/navigation';
+import { TabsContent } from '@radix-ui/react-tabs';
+
+import { Tabs, TabsList, TabsTrigger } from '~/components/ui/tabs';
+import { PAGE_ENDPOINTS } from '~/constants/constants';
 import { useMediaQuery } from '~/libs/hooks/useMediaQuery';
 import { cn } from '~/utils/utils';
 

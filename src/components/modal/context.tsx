@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, { useReducer, useMemo } from 'react';
-import { createContext } from '~/libs/react/context';
+import React, { useMemo, useReducer } from 'react';
+
 import type { ConfirmModalProps } from './confirm-modal';
+
+import { createContext } from '~/libs/react/context';
 
 enum Action {
   INITIALIZE = 'INITIALIZE',

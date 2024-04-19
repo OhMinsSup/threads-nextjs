@@ -1,6 +1,8 @@
 'use client';
-import Link from 'next/link';
+
 import React from 'react';
+import Link from 'next/link';
+
 import { type NavItem } from '~/constants/nav';
 import { useMainLinkActive } from '~/libs/hooks/useMainLinkActive';
 import { cn } from '~/utils/utils';
@@ -16,14 +18,14 @@ export default function ButtonHome({ item, type }: ButtonHomeProps) {
   return (
     <Link
       href={item.disabled ? '#' : href}
-      scroll={true}
+      scroll
       replace={false}
       className={cn(
         type === 'header'
-          ? 'px-6 py-3 lg:px-8 lg:py-5 mx-[2px] my-1 flex items-center text-lg font-medium transition-colors hover:bg-foreground/5 hover:rounded-md sm:text-sm'
+          ? 'mx-[2px] my-1 flex items-center px-6 py-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm lg:px-8 lg:py-5'
           : undefined,
         type === 'footer'
-          ? 'h-10 p-4 flex items-center text-lg font-medium transition-colors hover:bg-foreground/5 hover:rounded-md sm:text-sm'
+          ? 'flex h-10 items-center p-4 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm'
           : undefined,
         isActive ? 'text-foreground' : 'text-foreground/60',
         item.disabled && 'cursor-not-allowed opacity-80',

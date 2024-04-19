@@ -1,4 +1,6 @@
 import React from 'react';
+
+import { LexicalEditorProps } from '~/components/editor/lexical-editor';
 import {
   Dialog,
   DialogContent,
@@ -6,7 +8,6 @@ import {
   DialogTitle,
 } from '~/components/ui/dialog';
 import ThreadsForm from '~/components/write/threads-form';
-import { LexicalEditorProps } from '~/components/editor/lexical-editor';
 
 interface ThreadsDialogProps {
   open: boolean;

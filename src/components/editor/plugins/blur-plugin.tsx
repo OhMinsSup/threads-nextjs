@@ -1,11 +1,9 @@
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import {
-  BLUR_COMMAND,
-  COMMAND_PRIORITY_EDITOR,
-  type EditorState,
-  type LexicalEditor,
-} from 'lexical';
 import { useEffect, useLayoutEffect } from 'react';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { BLUR_COMMAND, COMMAND_PRIORITY_EDITOR } from 'lexical';
+
+import type { EditorState, LexicalEditor } from 'lexical';
+
 import { isBrowser } from '~/libs/browser/dom';
 
 const useIsomorphicLayoutEffect = isBrowser ? useLayoutEffect : useEffect;

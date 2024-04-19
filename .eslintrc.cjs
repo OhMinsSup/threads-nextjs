@@ -18,6 +18,7 @@ module.exports = {
     project,
   },
   rules: {
+    'eslint-comments/require-description': 'off',
     'unicorn/filename-case': 'off',
     'no-console': 'off',
     'import/order': 'off',

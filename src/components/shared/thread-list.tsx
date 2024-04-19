@@ -1,12 +1,14 @@
 'use client';
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import ThreadItem from '~/components/shared/thread-item';
-import { getTargetElement } from '~/libs/browser/dom';
-import { api } from '~/services/trpc/react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+
+import ThreadItem from '~/components/shared/thread-item';
 import SkeletonCard from '~/components/skeleton/card-thread';
+import { getTargetElement } from '~/libs/browser/dom';
 import { ThreadListQuerySchema } from '~/services/threads/threads.query';
+import { api } from '~/services/trpc/react';
 import ThreadEndCard from './item-end-card';
 
 interface ThreadListProps {

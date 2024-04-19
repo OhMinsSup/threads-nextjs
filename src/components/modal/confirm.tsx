@@ -1,16 +1,18 @@
 'use client';
+
 import React from 'react';
+
+import type { ConfirmModalProps } from './confirm-modal';
+import type { ConfigUpdate, ModalFuncProps } from './types';
+
 import {
-  unmount as reactUnmount,
   render as reactRender,
+  unmount as reactUnmount,
 } from '~/libs/react/render';
-import type { ModalFuncProps, ConfigUpdate } from './types';
+import ConfirmModal from './confirm-modal';
 import destroyFns from './destoryFns';
-import ConfirmModal, { type ConfirmModalProps } from './confirm-modal';
 
 function ConfirmDialogWrapper(props: ConfirmModalProps) {
-  const { getContainer } = props;
-  console.log(getContainer);
   return <ConfirmModal {...props} />;
 }
 
@@ -20,13 +22,13 @@ export default function confirm(config: ModalFuncProps) {
   let timeoutId: ReturnType<typeof setTimeout>;
 
   function destroy(...args: any[]) {
-    const triggerCancel = args.some((param) => param && param.triggerCancel);
+    const triggerCancel = args.some((param) => param?.triggerCancel);
     if (config.onCancel && triggerCancel) {
       config.onCancel(() => {}, ...args.slice(1));
     }
     for (let i = 0; i < destroyFns.length; i++) {
       const fn = destroyFns.at(i);
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
       if (fn === close) {
         destroyFns.splice(i, 1);
         break;

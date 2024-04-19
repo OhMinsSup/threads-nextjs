@@ -1,8 +1,9 @@
 import React from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
-import { signOutAction } from '~/services/users/users.action';
-import { Button } from '~/components/ui/button';
+
 import { Icons } from '~/components/icons';
+import { Button } from '~/components/ui/button';
+import { signOutAction } from '~/services/users/users.action';
 
 export default function ButtonSignout() {
   const [_, formAction] = useFormState(signOutAction, undefined);

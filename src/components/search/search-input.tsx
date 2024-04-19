@@ -1,29 +1,30 @@
 'use client';
+
 import React, {
   useCallback,
   useDeferredValue,
   useState,
   useTransition,
 } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { Icons } from '~/components/icons';
+import SearchUserItem from '~/components/shared/search-user-item';
+import SkeletonCardUser from '~/components/skeleton/card-user';
+import { Button } from '~/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog';
-import { Button } from '~/components/ui/button';
-import { cn } from '~/utils/utils';
-import { Icons } from '~/components/icons';
+import { Input } from '~/components/ui/input';
+import { ScrollArea } from '~/components/ui/scroll-area';
+import { Separator } from '~/components/ui/separator';
 import { useLayoutStore } from '~/services/store/useLayoutStore';
 import { api } from '~/services/trpc/react';
-import SearchUserItem from '~/components/shared/search-user-item';
-import { Input } from '~/components/ui/input';
-import { Separator } from '~/components/ui/separator';
-import { ScrollArea } from '~/components/ui/scroll-area';
-import SkeletonCardUserList from '~/components/skeleton/card-user-list';
 import { isEmpty } from '~/utils/assertion';
-import { useRouter } from 'next/navigation';
-import SkeletonCardUser from '../skeleton/card-user';
+import { cn } from '~/utils/utils';
 
 interface SearchInputProps {
   initialKeyword?: string;
@@ -68,7 +69,6 @@ export default function SearchInput({ initialKeyword }: SearchInputProps) {
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
         onSearch();
-        return;
       }
     },
     [onSearch],
@@ -80,9 +80,11 @@ export default function SearchInput({ initialKeyword }: SearchInputProps) {
         variant="outline"
         type="button"
         className={cn(
-          'relative h-16 w-full justify-start rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 space-x-3',
+          'relative h-16 w-full justify-start space-x-3 rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12',
         )}
-        onClick={() => onOpenChange(true)}
+        onClick={() => {
+          onOpenChange(true);
+        }}
       >
         <Icons.search className="size-5" />
         <span className="inline-flex text-lg">{deferredQuery || '검색'}</span>
@@ -102,20 +104,22 @@ export default function SearchInput({ initialKeyword }: SearchInputProps) {
               onChange={onChange}
               onKeyDown={onKeyDown}
             />
-            {isSearch && (
+            {isSearch ? (
               <Icons.close
                 className="absolute right-2 top-2.5 size-4 text-muted-foreground"
-                onClick={() => setQuery('')}
+                onClick={() => {
+                  setQuery('');
+                }}
               />
-            )}
+            ) : null}
           </div>
           <Separator />
-          {isSearch && (
+          {isSearch ? (
             <SearchInput.SearchKeyword
               keyword={deferredQuery}
               onSearch={onSearch}
             />
-          )}
+          ) : null}
           <ScrollArea className="h-72">
             <React.Suspense
               fallback={
@@ -186,7 +190,7 @@ SearchInput.SearchKeyword = function Item({
           <div className="flex items-center justify-center">
             <span
               className={cn(
-                `before:content-['"'] mr-2 inline-flex text-lg after:content-['"']`,
+                `mr-2 inline-flex text-lg before:content-['"'] after:content-['"']`,
               )}
             >
               {keyword}
@@ -211,7 +215,7 @@ SearchInput.Card = function Item({ children }: SearchInputCardProps) {
   return (
     <div
       className={cn(
-        'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-slate-100 aria-selected:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:aria-selected:bg-slate-800 dark:aria-selected:text-slate-50  justify-between',
+        'relative flex cursor-default select-none items-center justify-between rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-slate-100 aria-selected:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:aria-selected:bg-slate-800  dark:aria-selected:text-slate-50',
       )}
     >
       {children}

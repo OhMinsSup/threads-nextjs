@@ -1,7 +1,10 @@
+import { useEffect, useLayoutEffect } from 'react';
 import { $generateNodesFromDOM } from '@lexical/html';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $getRoot, type LexicalEditor } from 'lexical';
-import { useEffect, useLayoutEffect } from 'react';
+import { $getRoot } from 'lexical';
+
+import type { LexicalEditor } from 'lexical';
+
 import { isBrowser } from '~/libs/browser/dom';
 
 const useIsomorphicLayoutEffect = isBrowser ? useLayoutEffect : useEffect;

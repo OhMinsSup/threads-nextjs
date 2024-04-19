@@ -1,5 +1,7 @@
 import { NodeEventPlugin } from '@lexical/react/LexicalNodeEventPlugin';
+
 import type { LexicalEditor } from 'lexical';
+
 import HashTagNode from '~/components/editor/nodes/hashtag-node';
 
 interface HashtagsEventsPluginProps {
@@ -12,7 +14,7 @@ export default function HashtagsEventsPlugin({
   return (
     <NodeEventPlugin
       nodeType={HashTagNode}
-      eventType={'click'}
+      eventType="click"
       eventListener={eventListener}
     />
   );

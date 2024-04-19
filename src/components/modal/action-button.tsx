@@ -1,5 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { Button, type ButtonProps } from '~/components/ui/button';
+
+import type { ButtonProps } from '~/components/ui/button';
+
+import { Button } from '~/components/ui/button';
 
 export interface ActionButtonProps extends Omit<ButtonProps, 'onClick'> {
   actionFn?: (...args: any[]) => any | PromiseLike<any>;
@@ -10,7 +13,7 @@ export interface ActionButtonProps extends Omit<ButtonProps, 'onClick'> {
 }
 
 function isThenable<T extends any>(thing?: PromiseLike<T>): boolean {
-  return !!(thing && thing.then);
+  return Boolean(thing?.then);
 }
 
 export default function ActionButton({

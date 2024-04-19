@@ -1,6 +1,8 @@
 'use client';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
 import React, { useCallback, useTransition } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { useCustomSearchParams } from '~/libs/hooks/useCustomSearchParams';
 import { cn } from '~/utils/utils';
@@ -22,7 +24,7 @@ export default function ProfileTabsList({
   const { createQueryString } = useCustomSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const value = searchParams.get('tab') || 'threads';
+  const value = searchParams.get('tab') ?? 'threads';
 
   const onValueChange = useCallback(
     (value: string) => {

@@ -1,10 +1,12 @@
 'use client';
+
 import React, { useCallback } from 'react';
+
+import { Icons } from '~/components/icons';
 import { type NavItem } from '~/constants/nav';
 import { useMainLinkActive } from '~/libs/hooks/useMainLinkActive';
 import useNavigateThreanForm from '~/libs/hooks/useNavigateThreanForm';
 import { cn } from '~/utils/utils';
-import { Icons } from '~/components/icons';
 
 interface ButtonThreadProps {
   item: NavItem;
@@ -28,10 +30,10 @@ export default function ButtonThread({ item, type }: ButtonThreadProps) {
       tabIndex={isActive ? 0 : -1}
       className={cn(
         type === 'header'
-          ? 'px-6 py-3 lg:px-8 lg:py-5 mx-[2px] my-1 flex items-center text-lg font-medium transition-colors hover:bg-foreground/5 hover:rounded-md sm:text-sm'
+          ? 'mx-[2px] my-1 flex items-center px-6 py-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm lg:px-8 lg:py-5'
           : undefined,
         type === 'footer'
-          ? 'h-10 p-4 flex items-center text-lg font-medium transition-colors hover:bg-foreground/5 hover:rounded-md sm:text-sm'
+          ? 'flex h-10 items-center p-4 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm'
           : undefined,
         isActive ? 'text-foreground' : 'text-foreground/60',
         item.disabled && 'cursor-not-allowed opacity-80',

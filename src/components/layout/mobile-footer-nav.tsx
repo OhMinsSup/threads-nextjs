@@ -1,7 +1,9 @@
 'use client';
+
 import React from 'react';
-import { NAV_CONFIG } from '~/constants/nav';
+
 import ButtonGroup from '~/components/layout/button-group';
+import { NAV_CONFIG } from '~/constants/nav';
 
 export default function MobileFooterNav() {
   return (

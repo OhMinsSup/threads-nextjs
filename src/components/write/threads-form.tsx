@@ -1,31 +1,33 @@
 'use client';
+
 import React, { Suspense, useCallback, useTransition } from 'react';
-import Avatars from '~/components/shared/avatars';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { $generateHtmlFromNodes } from '@lexical/html';
+import {
+  type EditorState,
+  type LexicalEditor as ReactLexicalEditor,
+  type SerializedEditorState,
+  type SerializedLexicalNode,
+} from 'lexical';
 import { FieldErrors, FieldPath, get, useForm } from 'react-hook-form';
-import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
+
 import LexicalEditor, {
   LexicalEditorProps,
 } from '~/components/editor/lexical-editor';
-import { Button } from '~/components/ui/button';
+import Quotation from '~/components/editor/quotation';
 import { Icons } from '~/components/icons';
-import { cn, getFindByLexicalNodeTypes } from '~/utils/utils';
-import { api } from '~/services/trpc/react';
+import Avatars from '~/components/shared/avatars';
+import ClientOnly from '~/components/shared/client-only';
+import { Button } from '~/components/ui/button';
+import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
+import { useBeforeUnload } from '~/libs/hooks/useBeforeUnload';
 import {
   CreateInputSchema,
   createInputSchema,
 } from '~/services/threads/threads.input';
-import ClientOnly from '~/components/shared/client-only';
-import { useBeforeUnload } from '~/libs/hooks/useBeforeUnload';
-import { $generateHtmlFromNodes } from '@lexical/html';
-import {
-  type SerializedEditorState,
-  type SerializedLexicalNode,
-  type EditorState,
-  type LexicalEditor as ReactLexicalEditor,
-} from 'lexical';
+import { api } from '~/services/trpc/react';
 import { isEmpty } from '~/utils/assertion';
-import Quotation from '~/components/editor/quotation';
+import { cn, getFindByLexicalNodeTypes } from '~/utils/utils';
 import CardQuotation from '../skeleton/card-quotation';
 
 interface ThreadsFormProps {
@@ -60,11 +62,12 @@ export default function ThreadsForm({
   });
 
   const onSubmit = (values: CreateInputSchema) => {
-    const htmlJSON: SerializedEditorState<SerializedLexicalNode> | null =
-      values.htmlJSON ? JSON.parse(values.htmlJSON) : null;
+    const htmlJSON: SerializedEditorState | null = values.htmlJSON
+      ? JSON.parse(values.htmlJSON)
+      : null;
 
-    let mentions: string[] | undefined = undefined;
-    let hashTags: string[] | undefined = undefined;
+    let mentions: string[] | undefined;
+    let hashTags: string[] | undefined;
     if (htmlJSON) {
       const findNodes = getFindByLexicalNodeTypes(
         ['mention', 'hashtag'],
@@ -123,10 +126,10 @@ export default function ThreadsForm({
   return (
     <>
       <div className="flex items-center space-x-4">
-        <Avatars src={undefined} fallback={'T'} alt="thumbnail" />
+        <Avatars src={undefined} fallback="T" alt="thumbnail" />
         <div>
           <p className="text-sm font-medium leading-none">
-            {session?.user?.username}
+            {session?.user.username}
           </p>
         </div>
         <div className="flex w-full justify-end">
@@ -136,9 +139,9 @@ export default function ThreadsForm({
             disabled={mutation.isPending}
             aria-disabled={mutation.isPending}
           >
-            {mutation.isPending && (
+            {mutation.isPending ? (
               <Icons.spinner className="mr-2 size-4 animate-spin" />
-            )}
+            ) : null}
             게시
           </Button>
         </div>
@@ -160,18 +163,18 @@ export default function ThreadsForm({
                           <LexicalEditor
                             editorState={editorState}
                             editable={!field.disabled}
-                            onChange={(editorState, editor) =>
+                            onChange={(editorState, editor) => {
                               onEditorUpdate(
                                 editorState,
                                 editor,
                                 field.onChange,
-                              )
-                            }
-                            onBlur={(editorState, editor) =>
-                              onEditorUpdate(editorState, editor, field.onBlur)
-                            }
+                              );
+                            }}
+                            onBlur={(editorState, editor) => {
+                              onEditorUpdate(editorState, editor, field.onBlur);
+                            }}
                           />
-                          {quotation && quotation.threadId ? (
+                          {quotation?.threadId ? (
                             <Suspense fallback={<CardQuotation />}>
                               <Quotation id={quotation.threadId} />
                             </Suspense>
