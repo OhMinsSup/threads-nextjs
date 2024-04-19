@@ -1,5 +1,7 @@
 'use client';
-import React, { useDeferredValue, useState, useCallback } from 'react';
+
+import React from 'react';
+
 import SearchInput from '~/components/search/search-input';
 import SearchWapper from '~/components/search/search-wrapper';
 import SearchList from '~/components/shared/search-list';

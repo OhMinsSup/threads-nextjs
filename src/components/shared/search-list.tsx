@@ -1,14 +1,16 @@
 'use client';
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import useIsHydrating from '~/libs/hooks/useIsHydrating';
-import { getTargetElement } from '~/libs/browser/dom';
-import { api } from '~/services/trpc/react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+
 import UserItem from '~/components/shared/search-user-item';
-import SkeletonCardUser from '~/components/skeleton/card-user';
-import SkeletonCard from '~/components/skeleton/card-thread';
 import ThreadItem from '~/components/shared/thread-item';
+import SkeletonCard from '~/components/skeleton/card-thread';
+import SkeletonCardUser from '~/components/skeleton/card-user';
+import { getTargetElement } from '~/libs/browser/dom';
+import useIsHydrating from '~/libs/hooks/useIsHydrating';
+import { api } from '~/services/trpc/react';
 import ThreadEndCard from './item-end-card';
 
 interface SearchUserListProps {
@@ -60,15 +62,15 @@ export default function SearchList({
           }
         },
         getNextPageParam: (lastPage) => {
-          return lastPage?.hasNextPage && lastPage?.endCursor
-            ? lastPage?.endCursor
+          return lastPage.hasNextPage && lastPage.endCursor
+            ? lastPage.endCursor
             : null;
         },
       },
     );
 
-  const totalCount = data?.pages?.at(0)?.totalCount ?? 0;
-  const flatList = data?.pages?.map((page) => page?.list).flat() ?? [];
+  const totalCount = data.pages.at(0)?.totalCount ?? 0;
+  const flatList = data.pages.map((page) => page.list).flat() ?? [];
 
   const initialRect = useMemo(() => {
     return {
@@ -169,9 +171,9 @@ export default function SearchList({
               ) : (
                 <UserItem item={item as unknown as any} />
               )}
-              {isEnd && (
+              {isEnd ? (
                 <ThreadEndCard>검색 결과를 모두 읽었습니다! 👋</ThreadEndCard>
-              )}
+              ) : null}
             </div>
           );
         })}

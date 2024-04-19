@@ -1,6 +1,7 @@
-import OriginModal from './confirm-modal';
-import confirm, { withModal } from './confirm';
 import type { ModalFuncProps, ModalStaticFunctions } from './types';
+
+import confirm, { withModal } from './confirm';
+import OriginModal from './confirm-modal';
 
 type ModalType = typeof OriginModal &
   ModalStaticFunctions & {

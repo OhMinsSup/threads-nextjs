@@ -1,7 +1,9 @@
-import { useTheme } from 'next-themes';
-import { useRouter } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
-import { PAGE_ENDPOINTS } from '~/constants/constants';
+import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+
+import { Icons } from '~/components/icons';
+import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { Icons } from '~/components/icons';
+import { PAGE_ENDPOINTS } from '~/constants/constants';
 import { cn } from '~/utils/utils';
 import ButtonSignout from './button-signout';
-import { Button } from '~/components/ui/button';
 
 export default function ButtonHeaderMenu() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function ButtonHeaderMenu() {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         className={cn(
-          'hover:text-foreground leading-tight',
+          'leading-tight hover:text-foreground',
           open ? 'text-foreground' : 'text-foreground/60',
         )}
       >

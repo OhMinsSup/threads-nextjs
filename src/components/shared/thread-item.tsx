@@ -1,6 +1,18 @@
 'use client';
-import { Card } from '~/components/ui/card';
+
+import React, { useCallback } from 'react';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+
+import type { ThreadSelectSchema } from '~/services/db/selectors/threads';
+
+import LexicalEditor from '~/components/editor/lexical-editor';
+import { Icons } from '~/components/icons';
+import Modal from '~/components/modal';
 import Avatars from '~/components/shared/avatars';
+import ClientOnly from '~/components/shared/client-only';
+import { Button } from '~/components/ui/button';
+import { Card } from '~/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,25 +20,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import LexicalEditor from '~/components/editor/lexical-editor';
-import { cn, getDateFormatted } from '~/utils/utils';
-import type { ThreadSelectSchema } from '~/services/db/selectors/threads';
-import { Icons } from '~/components/icons';
-import { Button } from '~/components/ui/button';
-import React, { useCallback } from 'react';
-import { api } from '~/services/trpc/react';
-import { useToast } from '~/components/ui/use-toast';
-import { ToastAction } from '~/components/ui/toast';
-import { useRouter } from 'next/navigation';
-import { EMBED_CODE, PAGE_ENDPOINTS } from '~/constants/constants';
-import ClientOnly from '~/components/shared/client-only';
-import { Skeleton } from '../ui/skeleton';
-import dynamic from 'next/dynamic';
-import { useLayoutStore } from '~/services/store/useLayoutStore';
-import Modal from '~/components/modal';
-import { useCopyToClipboard } from '~/libs/hooks/useCopyToClipboard';
 import { Textarea } from '~/components/ui/textarea';
+import { ToastAction } from '~/components/ui/toast';
+import { useToast } from '~/components/ui/use-toast';
+import { EMBED_CODE, PAGE_ENDPOINTS } from '~/constants/constants';
+import { useCopyToClipboard } from '~/libs/hooks/useCopyToClipboard';
 import useNavigateThreanForm from '~/libs/hooks/useNavigateThreanForm';
+import { useLayoutStore } from '~/services/store/useLayoutStore';
+import { api } from '~/services/trpc/react';
+import { cn, getDateFormatted } from '~/utils/utils';
+import { Skeleton } from '../ui/skeleton';
 
 const WhoCanLeaveReplyDialog = dynamic(
   () => import('~/components/dialog/who-can-leave-reply-dialog'),
@@ -73,16 +76,16 @@ export default function ThreadItem({ item }: ThreadItemProps) {
             <div className="flex w-full items-center">
               <Avatars
                 src={undefined}
-                alt={`${item?.user?.username} profile picture`}
+                alt={`${item.user.username} profile picture`}
                 fallback="T"
               />
               <div className="ml-4 flex w-full flex-row">
                 <div className="space-y-1">
                   <div className="text-base font-semibold tracking-wide text-black dark:text-white">
-                    {item?.user?.username}
+                    {item.user.username}
                   </div>
                   <div className="text-xs text-gray-400 dark:text-gray-300">
-                    @{item?.user?.name}
+                    @{item.user.name}
                   </div>
                 </div>
                 <div className="flex flex-1 items-center justify-end space-x-3">
@@ -101,7 +104,7 @@ export default function ThreadItem({ item }: ThreadItemProps) {
                     <DropdownMenuContent>
                       <ThreadItem.SaveButton
                         itemId={item.id}
-                        isSaved={(item?.bookmarks?.length ?? 0) > 0}
+                        isSaved={(item.bookmarks.length ?? 0) > 0}
                       />
                       <DropdownMenuSeparator />
                       <React.Suspense
@@ -172,11 +175,11 @@ export default function ThreadItem({ item }: ThreadItemProps) {
               </Button>
               <ThreadItem.RepostsButton
                 itemId={item.id}
-                isReposted={(item?.reposts?.length ?? 0) > 0}
+                isReposted={(item.reposts.length ?? 0) > 0}
               />
               <ThreadItem.LikeButton
                 itemId={item.id}
-                isLiked={(item?.likes?.length ?? 0) > 0}
+                isLiked={(item.likes.length ?? 0) > 0}
               />
               <ThreadItem.ShareButton
                 itemId={item.id}
@@ -341,7 +344,7 @@ ThreadItem.SaveButton = function Item({ itemId, isSaved }: SaveItemProps) {
         description: saved === 'SAVE' ? '저장됨' : '저장 취소됨',
         action: (
           <ToastAction
-            altText={`${saved === 'SAVE' ? '모두보기' : '되돌리기'}`}
+            altText={saved === 'SAVE' ? '모두보기' : '되돌리기'}
             onClick={() => {
               if (saved === 'SAVE') {
                 router.push(PAGE_ENDPOINTS.SAVED);
@@ -367,9 +370,9 @@ ThreadItem.SaveButton = function Item({ itemId, isSaved }: SaveItemProps) {
 
   return (
     <DropdownMenuItem onClick={onClick} disabled={mutation.isPending}>
-      {mutation.isPending && (
+      {mutation.isPending ? (
         <Icons.spinner className="mr-2 size-4 animate-spin" />
-      )}
+      ) : null}
       {isSaved ? '저장 취소' : '저장'}
     </DropdownMenuItem>
   );

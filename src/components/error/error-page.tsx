@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { cn } from '~/utils/utils';
 import { Button } from '~/components/ui/button';
+import { cn } from '~/utils/utils';
 
 interface ErrorPageProps {
   className?: string;

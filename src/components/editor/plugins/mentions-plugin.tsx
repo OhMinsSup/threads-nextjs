@@ -1,3 +1,4 @@
+import React, { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
   LexicalTypeaheadMenuPlugin,
@@ -6,8 +7,8 @@ import {
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
 import { TextNode } from 'lexical';
-import React, { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
+
 import { $createMentionNode } from '~/components/editor/nodes/mention-node';
 import { Icons } from '~/components/icons';
 import Avatars from '~/components/shared/avatars';
@@ -17,7 +18,7 @@ import { cn } from '~/utils/utils';
 
 const PUNCTUATION =
   '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
-const NAME = '\\b[A-Z][^\\s' + PUNCTUATION + ']';
+const NAME = `\\b[A-Z][^\\s${PUNCTUATION}]`;
 
 const DocumentMentionsRegex = {
   NAME,
@@ -29,33 +30,24 @@ const PUNC = DocumentMentionsRegex.PUNCTUATION;
 const TRIGGERS = ['@'].join('');
 
 // Chars we expect to see in a mention (non-space, non-punctuation).
-const VALID_CHARS = '[^' + TRIGGERS + PUNC + '\\s]';
+const VALID_CHARS = `[^${TRIGGERS}${PUNC}\\s]`;
 
 // Non-standard series of chars. Each series must be preceded and followed by
 // a valid char.
 const VALID_JOINS =
-  '(?:' +
-  '\\.[ |$]|' + // E.g. "r. " in "Mr. Smith"
-  ' |' + // E.g. " " in "Josh Duck"
-  '[' +
-  PUNC +
-  ']|' + // E.g. "-' in "Salier-Hellendag"
-  ')';
+  `(?:` +
+  `\\.[ |$]|` + // E.g. "r. " in "Mr. Smith"
+  ` |` + // E.g. " " in "Josh Duck"
+  `[${PUNC}]|` + // E.g. "-' in "Salier-Hellendag"
+  `)`;
 
 const LENGTH_LIMIT = 75;
 
 const AtSignMentionsRegex = new RegExp(
-  '(^|\\s|\\()(' +
-    '[' +
-    TRIGGERS +
-    ']' +
-    '((?:' +
-    VALID_CHARS +
-    VALID_JOINS +
-    '){0,' +
-    LENGTH_LIMIT +
-    '})' +
-    ')$',
+  `(^|\\s|\\()(` +
+    `[${TRIGGERS}]` +
+    `((?:${VALID_CHARS}${VALID_JOINS}){0,${LENGTH_LIMIT}})` +
+    `)$`,
 );
 
 // 50 is the longest alias length limit.
@@ -63,16 +55,10 @@ const ALIAS_LENGTH_LIMIT = 50;
 
 // Regex used to match alias.
 const AtSignMentionsRegexAliasRegex = new RegExp(
-  '(^|\\s|\\()(' +
-    '[' +
-    TRIGGERS +
-    ']' +
-    '((?:' +
-    VALID_CHARS +
-    '){0,' +
-    ALIAS_LENGTH_LIMIT +
-    '})' +
-    ')$',
+  `(^|\\s|\\()(` +
+    `[${TRIGGERS}]` +
+    `((?:${VALID_CHARS}){0,${ALIAS_LENGTH_LIMIT}})` +
+    `)$`,
 );
 
 function useMentionLookupService(mentionString: string | null) {
@@ -168,14 +154,14 @@ function MentionsTypeaheadMenuItem({
       className={cn(
         'relative flex cursor-default select-none items-center space-x-3 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-slate-100 focus:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-800 dark:focus:text-slate-50',
         {
-          'dark:bg-slate-800 dark:text-slate-50 bg-slate-100 text-slate-900':
+          'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50':
             isSelected,
         },
       )}
       ref={option.setRefElement}
       role="option"
       aria-selected={isSelected}
-      id={'typeahead-item-' + index}
+      id={`typeahead-item-${index}`}
       onMouseEnter={onMouseEnter}
       onClick={onClick}
     >
@@ -184,11 +170,11 @@ function MentionsTypeaheadMenuItem({
         <p className="m-0 block max-w-full truncate font-semibold">
           {option.name}
         </p>
-        {option.otherName && (
+        {option.otherName ? (
           <p className="m-0 block max-w-full truncate text-xs text-muted-foreground">
             {option.otherName}
           </p>
-        )}
+        ) : null}
       </div>
     </li>
   );

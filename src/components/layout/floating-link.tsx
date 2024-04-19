@@ -1,11 +1,13 @@
 'use client';
+
 import React from 'react';
-import { cn } from '~/utils/utils';
-import { buttonVariants } from '~/components/ui/button';
-import { Icons } from '~/components/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+import { Icons } from '~/components/icons';
+import { buttonVariants } from '~/components/ui/button';
 import { PAGE_ENDPOINTS } from '~/constants/constants';
+import { cn } from '~/utils/utils';
 
 export default function FloatingLink() {
   const pathname = usePathname();

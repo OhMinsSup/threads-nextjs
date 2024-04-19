@@ -7,9 +7,8 @@ const useIsFirstRender = (): boolean => {
     isFirst.current = false;
 
     return true;
-  } else {
-    return false;
   }
+  return false;
 };
 
 /**
@@ -57,7 +56,7 @@ export default function SkipRenderOnClient({
   const isClient = typeof window !== 'undefined';
   const isFirstRender = useIsFirstRender();
 
-  if (isClient && isFirstRender && shouldRenderOnClient() === false) {
+  if (isClient && isFirstRender && !shouldRenderOnClient()) {
     const el = document.getElementById(id);
     if (el !== null) {
       el.innerHTML = '';
@@ -68,7 +67,7 @@ export default function SkipRenderOnClient({
 
   return (
     <div id={id} className={className} style={style}>
-      {shouldRender && children}
+      {shouldRender ? children : null}
     </div>
   );
 }

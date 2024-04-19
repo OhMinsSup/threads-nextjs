@@ -1,29 +1,31 @@
 'use client';
+
 import React from 'react';
+
 import { isFunction } from '~/utils/assertion';
 
 export type FallbackRender = (errorData: {
   error: Error;
   componentStack: string | undefined | null;
-  resetError(): void;
+  resetError: () => void;
 }) => React.ReactElement;
 
 interface ErrorBoundaryProps {
   fallback?: React.ReactElement | FallbackRender;
   // componentDidMount
-  onMount?(): void;
+  onMount?: () => void;
   // componentWillUnmount
-  onUnmount?(
+  onUnmount?: (
     error: Error | null,
     componentStack: string | null | undefined,
-  ): void;
+  ) => void;
   // 에러를 초기화하는 함수
-  onReset?(
+  onReset?: (
     error: Error | null,
     componentStack: string | null | undefined,
-  ): void;
+  ) => void;
   // 에러가 발생할 때 호출
-  onError?(error: Error, componentStack: string | null | undefined): void;
+  onError?: (error: Error, componentStack: string | null | undefined) => void;
   // children이 함수일 때 호출
   children?: React.ReactNode | (() => React.ReactNode);
 }
@@ -102,7 +104,7 @@ export class ErrorBoundary extends React.Component<
     const { error, componentStack } = this.state;
 
     if (error) {
-      let element: React.ReactElement | undefined = undefined;
+      let element: React.ReactElement | undefined;
       if (isFunction(fallback)) {
         element = fallback({
           error,

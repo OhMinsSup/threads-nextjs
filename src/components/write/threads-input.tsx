@@ -1,11 +1,13 @@
 'use client';
+
 import React, { useCallback } from 'react';
+import Link from 'next/link';
+import { type Session } from 'next-auth';
+
+import { Icons } from '~/components/icons';
 import Avatars from '~/components/shared/avatars';
 import { Button } from '~/components/ui/button';
 import { PAGE_ENDPOINTS } from '~/constants/constants';
-import Link from 'next/link';
-import { type Session } from 'next-auth';
-import { Icons } from '~/components/icons';
 import useNavigateThreanForm from '~/libs/hooks/useNavigateThreanForm';
 
 interface ThreadsInputProps {
@@ -48,9 +50,9 @@ export default function ThreadsInput({ session }: ThreadsInputProps) {
           disabled={isPending}
           onClick={onClick}
         >
-          {isPending && (
+          {isPending ? (
             <Icons.rotateCcw className="mr-2 size-4 animate-spin" />
-          )}
+          ) : null}
           게시
         </Button>
       </div>

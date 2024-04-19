@@ -1,4 +1,6 @@
 import React from 'react';
+
+import { LexicalEditorProps } from '~/components/editor/lexical-editor';
 import {
   Sheet,
   SheetContent,
@@ -6,7 +8,6 @@ import {
   SheetTitle,
 } from '~/components/ui/sheet';
 import ThreadsForm from '~/components/write/threads-form';
-import { LexicalEditorProps } from '~/components/editor/lexical-editor';
 
 interface ThreadsSheetProps {
   open: boolean;
