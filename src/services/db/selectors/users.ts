@@ -76,7 +76,7 @@ export type UserSelectSchema = Pick<
   'id' | 'name' | 'username' | 'email' | 'image' | 'emailVerified'
 > & {
   profile: Pick<UserProfile, 'bio'> | null;
-  followers: UserFollow[];
+  followers?: UserFollow[];
   _count: {
     followers: number;
     following: number;

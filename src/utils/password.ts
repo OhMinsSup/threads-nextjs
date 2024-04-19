@@ -1,6 +1,7 @@
 'server-only';
 
-import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+// eslint-disable-next-line unicorn/prefer-node-protocol
+import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 
 export function generateSalt(): string {
   return randomBytes(16).toString('hex');
