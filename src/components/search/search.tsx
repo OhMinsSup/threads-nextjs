@@ -7,14 +7,14 @@ import SearchWapper from '~/components/search/search-wrapper';
 import SearchList from '~/components/shared/search-list';
 import SkeletonCardUserList from '~/components/skeleton/card-user-list';
 
-interface Props {
+interface SearchProps {
   keyword?: string;
   searchType: 'tags' | 'mentions' | 'default' | undefined;
   tagId?: string | undefined;
   userId?: string | undefined;
 }
 
-export default function Search(props: Props) {
+export default function Search(props: SearchProps) {
   return (
     <>
       <SearchInput initialKeyword={props.keyword} />

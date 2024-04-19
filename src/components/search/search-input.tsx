@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 
 import { Icons } from '~/components/icons';
 import SearchUserItem from '~/components/shared/search-user-item';
+import SkeletonCardUser from '~/components/skeleton/card-user';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -24,7 +25,6 @@ import { useLayoutStore } from '~/services/store/useLayoutStore';
 import { api } from '~/services/trpc/react';
 import { isEmpty } from '~/utils/assertion';
 import { cn } from '~/utils/utils';
-import SkeletonCardUser from '../skeleton/card-user';
 
 interface SearchInputProps {
   initialKeyword?: string;

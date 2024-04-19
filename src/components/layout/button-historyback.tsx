@@ -24,7 +24,7 @@ export default function ButtonHistoryBack({
 
   // regex 예시) /${영어 숫자 조합}/profile Or /${영어 숫자 조합}/profile
   const regex = new RegExp(`^/\\w+/profile$`);
-  if (!regex.test(pathname)) {
+  if (!regex.test(pathname) || type === 'footer') {
     return null;
   }
 
@@ -33,12 +33,7 @@ export default function ButtonHistoryBack({
       type="button"
       onClick={onHistoryBack}
       className={cn(
-        type === 'header'
-          ? 'mx-[2px] my-1 flex items-center px-6 py-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm lg:px-8 lg:py-5'
-          : undefined,
-        type === 'footer'
-          ? 'flex h-10 items-center p-4 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm'
-          : undefined,
+        'mx-[2px] my-1 flex items-center px-6 py-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm lg:px-8 lg:py-5',
         'text-foreground',
       )}
     >
