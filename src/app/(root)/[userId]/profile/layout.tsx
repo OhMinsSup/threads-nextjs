@@ -1,12 +1,13 @@
+import React from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import React from 'react';
+
 import ProfileHeader from '~/components/profile/profile-header';
 import ProfileTabsList from '~/components/profile/profile-tabs-list';
 import { SITE_CONFIG } from '~/constants/constants';
 import { api } from '~/services/trpc/server';
 
-interface Props {
+interface LayoutProps {
   children: React.ReactNode;
   params: {
     userId: string;
@@ -17,9 +18,12 @@ interface Props {
 
 export async function generateMetadata({
   params,
-}: Pick<Props, 'params'>): Promise<Metadata> {
+}: Pick<LayoutProps, 'params'>): Promise<Metadata> {
   const initialData = await api.users.byId({ userId: params.userId });
-  const title = `${SITE_CONFIG.title}의 @${initialData?.username}님`;
+  const username = initialData?.username;
+  const title = username
+    ? `${SITE_CONFIG.title}의 @${initialData.username}님`
+    : SITE_CONFIG.title;
   return {
     title,
     openGraph: {
@@ -33,7 +37,7 @@ export default async function Layout({
   params,
   comments,
   reposts,
-}: Props) {
+}: LayoutProps) {
   const initialData = await api.users.byId({ userId: params.userId });
   if (!initialData) {
     notFound();

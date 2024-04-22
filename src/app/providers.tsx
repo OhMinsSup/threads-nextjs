@@ -1,13 +1,15 @@
 'use client';
+
 import { ThemeProvider } from 'next-themes';
+
 import { Toaster } from '~/components/ui/toaster';
 import { TRPCReactProvider } from '~/services/trpc/react';
 
-interface Props {
+interface ProvidersProps {
   children: React.ReactNode;
 }
 
-export function Providers({ children }: Props) {
+export function Providers({ children }: ProvidersProps) {
   return (
     <TRPCReactProvider>
       <ThemeProvider

@@ -52,7 +52,7 @@ export const env = createEnv({
       process.env.AWS_CLOUD_FRONT_DISTRIBUTION_ID,
   },
   skipValidation:
-    !!process.env.CI ||
-    !!process.env.SKIP_ENV_VALIDATION ||
+    Boolean(process.env.CI) ||
+    Boolean(process.env.SKIP_ENV_VALIDATION) ||
     process.env.npm_lifecycle_event === 'lint',
 });

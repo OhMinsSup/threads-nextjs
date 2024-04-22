@@ -18,11 +18,15 @@ export default function LexicalDefaultValuePlugin({
 }: LexicalDefaultValuePluginProps) {
   const [editor] = useLexicalComposerContext();
 
-  const updateHTML = (editor: LexicalEditor, value: string, clear: boolean) => {
+  const updateHTML = (
+    editorValue: LexicalEditor,
+    value: string,
+    clear: boolean,
+  ) => {
     const root = $getRoot();
     const parser = new DOMParser();
     const dom = parser.parseFromString(value, 'text/html');
-    const nodes = $generateNodesFromDOM(editor, dom);
+    const nodes = $generateNodesFromDOM(editorValue, dom);
     if (clear) {
       root.clear();
     }

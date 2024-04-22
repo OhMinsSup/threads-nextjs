@@ -24,8 +24,8 @@ export default function LexicalOnBlurPlugin({
   useIsomorphicLayoutEffect(() => {
     return editor.registerCommand(
       BLUR_COMMAND,
-      (payload, editor) => {
-        onBlur?.(editor.getEditorState(), editor, payload);
+      (payload, editorValue) => {
+        onBlur?.(editorValue.getEditorState(), editorValue, payload);
         return true;
       },
       COMMAND_PRIORITY_EDITOR,

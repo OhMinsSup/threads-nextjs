@@ -38,6 +38,7 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/no-unsafe-argument': 'off',
   },
   globals: {
     React: true,

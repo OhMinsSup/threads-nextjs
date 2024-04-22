@@ -1,8 +1,9 @@
-import { Metadata } from 'next';
 import React from 'react';
+import { Metadata } from 'next';
+
 import { SITE_CONFIG } from '~/constants/constants';
 
-interface Props {
+interface LayoutProps {
   children: React.ReactNode;
   params: {
     userId: string;
@@ -18,6 +19,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: LayoutProps) {
   return <>{children}</>;
 }

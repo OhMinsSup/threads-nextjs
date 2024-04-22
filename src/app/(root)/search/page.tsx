@@ -1,9 +1,10 @@
 'use client';
+
 import PageLoading from '~/components/layout/page-loading';
 import Search from '~/components/search/search';
 import ClientOnly from '~/components/shared/client-only';
 
-interface Props {
+interface PagesProps {
   searchParams: {
     keyword: string | undefined;
     searchType: 'tags' | 'mentions' | 'default' | undefined;
@@ -12,7 +13,7 @@ interface Props {
   };
 }
 
-export default function Pages({ searchParams }: Props) {
+export default function Pages({ searchParams }: PagesProps) {
   return (
     <ClientOnly fallback={<PageLoading />}>
       <Search

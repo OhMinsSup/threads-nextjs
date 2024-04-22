@@ -1,8 +1,9 @@
-import { Metadata } from 'next';
 import React from 'react';
+import { Metadata } from 'next';
+
 import { SITE_CONFIG } from '~/constants/constants';
 
-interface Props {
+interface LayoutProps {
   children: React.ReactNode;
 }
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className="relative flex grow flex-col self-center py-4">
       {children}
