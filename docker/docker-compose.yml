@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres
+    image: postgres:13.1
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgrespw
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  redis:
+    container_name: redis
+    image: redis
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - './redis-data:/data'
+      - './redis.conf:/usr/local/etc/redis/redis.conf'
