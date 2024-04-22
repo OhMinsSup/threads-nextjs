@@ -63,7 +63,7 @@ export class UserService {
     }
 
     const salt = generateSalt();
-    const hash = generateHash(input.password, salt);
+    const hash = await generateHash(input.password, salt);
 
     const searchParams = new URLSearchParams();
     searchParams.append('seed', input.username);
@@ -280,7 +280,7 @@ export class UserService {
       if (
         !secureCompare(
           user.password,
-          generateHash(credentials.password, user.salt),
+          await generateHash(credentials.password, user.salt),
         )
       ) {
         throw new TRPCError({
