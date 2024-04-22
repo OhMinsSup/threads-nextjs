@@ -29,7 +29,7 @@ export const getStatsSelector = () =>
 
 export const getRecommendationsWithThreadSelector = (
   userId?: string,
-  input?: ThreadListQuerySchema,
+  _?: ThreadListQuerySchema,
 ) =>
   Prisma.validator<Prisma.ThreadSelect>()({
     id: true,
@@ -95,7 +95,7 @@ export const getSimpleThreadsSelector = () =>
 
 export const getThreadsSelector = (
   userId?: string,
-  input?: ThreadListQuerySchema,
+  _?: ThreadListQuerySchema,
 ) =>
   Prisma.validator<Prisma.ThreadSelect>()({
     id: true,

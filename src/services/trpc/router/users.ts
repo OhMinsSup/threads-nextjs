@@ -74,7 +74,8 @@ export const usersRouter = createTRPCRouter({
 
         const endCursor = list.at(-1)?.id ?? null;
         const hasNextPage = endCursor
-          ? (await userService.hasFollowserPage(userId, endCursor, input)) > 0
+          ? (await userService.hasNextFollowserPage(userId, endCursor, input)) >
+            0
           : false;
 
         return {
@@ -105,7 +106,8 @@ export const usersRouter = createTRPCRouter({
 
         const endCursor = list.at(-1)?.id ?? null;
         const hasNextPage = endCursor
-          ? (await userService.hasFollowingPage(userId, endCursor, input)) > 0
+          ? (await userService.hasNextFollowingPage(userId, endCursor, input)) >
+            0
           : false;
 
         return {

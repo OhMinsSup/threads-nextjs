@@ -28,6 +28,7 @@ module.exports = {
     'react/no-unknown-property': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-pascal-case': 'off',
+    'tsdoc/syntax': 'off',
     '@next/next/no-img-element': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
@@ -35,6 +36,8 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/consistent-type-imports': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-floating-promises': 'off',
   },
   globals: {
     React: true,

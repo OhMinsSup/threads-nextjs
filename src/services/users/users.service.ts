@@ -348,6 +348,9 @@ export class UserService {
           some: {
             userId: input.userId,
           },
+          none: {
+            userId,
+          },
         },
       },
       select: getFollowWithUserSelector(),
@@ -359,9 +362,13 @@ export class UserService {
    * @param {string} userId - 유저 ID
    */
   followersCount(userId: string, input: UserFollowListQuerySchema) {
-    return db.userFollow.count({
+    return db.user.count({
       where: {
-        userId: input.userId,
+        followers: {
+          some: {
+            userId: input.userId,
+          },
+        },
       },
     });
   }
@@ -371,9 +378,16 @@ export class UserService {
    * @param {string} userId - 유저 ID
    */
   followingCount(userId: string, input: UserFollowListQuerySchema) {
-    return db.userFollow.count({
+    return db.user.count({
       where: {
-        followerId: input.userId,
+        following: {
+          some: {
+            userId: input.userId,
+          },
+          none: {
+            userId,
+          },
+        },
       },
     });
   }
@@ -383,7 +397,7 @@ export class UserService {
    * @param {string} userId - 유저 ID
    * @param {string} endCursor - 마지막 커서
    */
-  hasFollowserPage(
+  hasNextFollowserPage(
     userId: string,
     endCursor: string,
     input: UserFollowListQuerySchema,
@@ -407,7 +421,7 @@ export class UserService {
    * @param {string} userId - 유저 ID
    * @param {string} endCursor - 마지막 커서
    */
-  hasFollowingPage(
+  hasNextFollowingPage(
     userId: string,
     endCursor: string,
     input: UserFollowListQuerySchema,
@@ -417,6 +431,9 @@ export class UserService {
         following: {
           some: {
             userId: input.userId,
+          },
+          none: {
+            userId,
           },
         },
         id: {

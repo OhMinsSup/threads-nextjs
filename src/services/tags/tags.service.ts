@@ -9,8 +9,6 @@ import { db } from '~/services/db/prisma';
 import { getTagsSelector } from '~/services/db/selectors/tags';
 
 export class TagService {
-  private readonly DEFAULT_LIMIT = 30;
-
   /**
    * @description 태그 상세 조회
    * @param {string} id - 태그 ID

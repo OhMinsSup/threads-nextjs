@@ -49,7 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       profile(profile) {
         return {
           id: profile.id.toString(),
-          name: profile.name || profile.login,
+          name: profile.name ?? profile.login,
           email: profile.email,
           image: profile.avatar_url,
         };
@@ -81,9 +81,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: { strategy: 'jwt' },
   callbacks: {
-    async jwt({ token, user }) {
+    jwt: ({ token, user }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (user) {
-        token.user = user as any;
+        token.user = user as unknown as typeof token.user;
       }
       return token;
     },
@@ -96,10 +97,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       };
       return session;
     },
-    authorized({ auth, request }) {
+    authorized: ({ auth: value, request }) => {
       const url = request.nextUrl;
 
-      const isLoggedIn = Boolean(auth?.user);
+      const isLoggedIn = Boolean(value?.user);
 
       const authPath: string[] = [
         PAGE_ENDPOINTS.AUTH.SIGNIN,

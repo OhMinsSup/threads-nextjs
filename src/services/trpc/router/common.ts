@@ -22,7 +22,7 @@ export const commonRouter = createTRPCRouter({
         now: Date.now(),
       };
     }),
-  getReasons: protectedProcedure.query(async ({ input }) => {
+  getReasons: protectedProcedure.query(async () => {
     return await commonService.getReportReasons();
   }),
 });

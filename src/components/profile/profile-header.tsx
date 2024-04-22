@@ -124,17 +124,17 @@ function DialogFollowersViewButton({
         <DialogHeader>
           <DialogTitle>팔로워</DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue="account" className="w-full">
+        <Tabs defaultValue="follower" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="account">팔로워</TabsTrigger>
-            <TabsTrigger value="password">팔로잉</TabsTrigger>
+            <TabsTrigger value="follower">팔로워</TabsTrigger>
+            <TabsTrigger value="following">팔로잉</TabsTrigger>
           </TabsList>
-          <TabsContent value="account">
+          <TabsContent value="follower">
             <React.Suspense fallback={<SkeletonCardUserList />}>
               <UserFollowerList userId={userId} />
             </React.Suspense>
           </TabsContent>
-          <TabsContent value="password">
+          <TabsContent value="following">
             <React.Suspense fallback={<SkeletonCardUserList />}>
               <UserFollowingList userId={userId} />
             </React.Suspense>
