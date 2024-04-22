@@ -4,7 +4,19 @@ import React, { useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { Icons } from '~/components/icons';
+import UserFollowerList from '~/components/shared/user-follower-list';
+import UserFollowingList from '~/components/shared/user-following-list';
+import SkeletonCardUserList from '~/components/skeleton/card-user-list';
 import { Button } from '~/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { PAGE_ENDPOINTS } from '~/constants/constants';
 import useNavigateThreanForm from '~/libs/hooks/useNavigateThreanForm';
 import { api } from '~/services/trpc/react';
@@ -69,20 +81,11 @@ export default function ProfileHeader({
           </div>
         </div>
       </div>
-      <div className="mt-[18px] flex min-h-[22px] items-center">
-        <div className="flex shrink-0">
-          <p className="text-sm text-muted-foreground hover:cursor-pointer hover:underline">
-            팔로우 {followCount}명
-          </p>
-        </div>
-      </div>
+      <DialogFollowersViewButton userId={userId} followCount={followCount} />
       {!isMe ? (
         <div className="mt-4 flex w-full space-x-2">
-          <ProfileHeader.FollowButton
-            userId={userId}
-            isFollowing={isFollowing}
-          />
-          <ProfileHeader.MentionButton
+          <FollowButton userId={userId} isFollowing={isFollowing} />
+          <MentionButton
             userId={userId}
             username={data?.username}
             name={data?.name}
@@ -101,13 +104,54 @@ export default function ProfileHeader({
   );
 }
 
+interface DialogFollowersViewButtonProps {
+  userId: string;
+  followCount: number;
+}
+
+function DialogFollowersViewButton({
+  userId,
+  followCount,
+}: DialogFollowersViewButtonProps) {
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <Button variant="link" className="p-0">
+          팔로우 {followCount}명
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>팔로워</DialogTitle>
+        </DialogHeader>
+        <Tabs defaultValue="account" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="account">팔로워</TabsTrigger>
+            <TabsTrigger value="password">팔로잉</TabsTrigger>
+          </TabsList>
+          <TabsContent value="account">
+            <React.Suspense fallback={<SkeletonCardUserList />}>
+              <UserFollowerList userId={userId} />
+            </React.Suspense>
+          </TabsContent>
+          <TabsContent value="password">
+            <React.Suspense fallback={<SkeletonCardUserList />}>
+              <UserFollowingList userId={userId} />
+            </React.Suspense>
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 interface MentionButtonProps {
   userId: string;
   username: string | null | undefined;
   name: string | null | undefined;
 }
 
-ProfileHeader.MentionButton = function Item(props: MentionButtonProps) {
+function MentionButton(props: MentionButtonProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -127,17 +171,14 @@ ProfileHeader.MentionButton = function Item(props: MentionButtonProps) {
       언급
     </Button>
   );
-};
+}
 
 interface FollowButtonProps {
   userId: string;
   isFollowing: boolean;
 }
 
-ProfileHeader.FollowButton = function Item({
-  userId,
-  isFollowing,
-}: FollowButtonProps) {
+function FollowButton({ userId, isFollowing }: FollowButtonProps) {
   const utils = api.useUtils();
 
   const followMutation = api.users.follow.useMutation({
@@ -170,4 +211,4 @@ ProfileHeader.FollowButton = function Item({
       {isFollowing ? '팔로우 취소' : '팔로우'}
     </Button>
   );
-};
+}

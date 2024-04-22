@@ -7,7 +7,10 @@ import {
   updateProfileSchema,
   userIdSchema,
 } from '~/services/users/users.input';
-import { searchQuerySchema } from '~/services/users/users.query';
+import {
+  searchQuerySchema,
+  userFollowListQuerySchema,
+} from '~/services/users/users.query';
 import { userService } from '~/services/users/users.service';
 
 export const usersRouter = createTRPCRouter({
@@ -57,6 +60,68 @@ export const usersRouter = createTRPCRouter({
       } catch (error) {
         console.log('error', error);
         return [];
+      }
+    }),
+  getFollowers: protectedProcedure
+    .input(userFollowListQuerySchema)
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      try {
+        const [totalCount, list] = await Promise.all([
+          userService.followersCount(userId, input),
+          userService.getFollowers(userId, input),
+        ]);
+
+        const endCursor = list.at(-1)?.id ?? null;
+        const hasNextPage = endCursor
+          ? (await userService.hasFollowserPage(userId, endCursor, input)) > 0
+          : false;
+
+        return {
+          totalCount,
+          list,
+          endCursor,
+          hasNextPage,
+        };
+      } catch (error) {
+        console.log('error', error);
+        return {
+          totalCount: 0,
+          list: [],
+          endCursor: null,
+          hasNextPage: false,
+        };
+      }
+    }),
+  getFollowing: protectedProcedure
+    .input(userFollowListQuerySchema)
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      try {
+        const [totalCount, list] = await Promise.all([
+          userService.followingCount(userId, input),
+          userService.getFollowing(userId, input),
+        ]);
+
+        const endCursor = list.at(-1)?.id ?? null;
+        const hasNextPage = endCursor
+          ? (await userService.hasFollowingPage(userId, endCursor, input)) > 0
+          : false;
+
+        return {
+          totalCount,
+          list,
+          endCursor,
+          hasNextPage,
+        };
+      } catch (error) {
+        console.log('error', error);
+        return {
+          totalCount: 0,
+          list: [],
+          endCursor: null,
+          hasNextPage: false,
+        };
       }
     }),
 });

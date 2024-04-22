@@ -25,30 +25,12 @@ interface SearchUserItemProps {
 }
 
 SearchUserItem.Content = function Item({ item }: SearchUserItemProps) {
-  const utils = api.useUtils();
+  const followMutation = api.users.follow.useMutation();
 
-  const followMutation = api.users.follow.useMutation({
-    async onSuccess() {
-      await Promise.all([
-        utils.threads.getFollows.invalidate(),
-        utils.threads.getRecommendations.invalidate(),
-        utils.threads.getBookmarks.invalidate(),
-      ]);
-    },
-  });
-
-  const unfollowMutation = api.users.unfollow.useMutation({
-    async onSuccess() {
-      await Promise.all([
-        utils.threads.getFollows.invalidate(),
-        utils.threads.getRecommendations.invalidate(),
-        utils.threads.getBookmarks.invalidate(),
-      ]);
-    },
-  });
+  const unfollowMutation = api.users.unfollow.useMutation();
 
   const isPending = followMutation.isPending || unfollowMutation.isPending;
-  const isFollowing = item.followers.length ?? 0 > 0;
+  const isFollowing = (item.followers?.length ?? 0) > 0;
 
   const onClickFollow = useCallback(() => {
     if (isFollowing) {

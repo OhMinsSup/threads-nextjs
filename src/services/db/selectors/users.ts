@@ -57,10 +57,18 @@ export const getFollowWithUserSelector = () => {
       select: getUserProfileSelector(),
     },
     followers: {
-      select: getUserSelector(),
+      select: {
+        user: {
+          select: getUserSelector(),
+        },
+      },
     },
     following: {
-      select: getUserSelector(),
+      select: {
+        user: {
+          select: getUserSelector(),
+        },
+      },
     },
     _count: {
       select: {
