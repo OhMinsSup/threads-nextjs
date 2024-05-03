@@ -66,7 +66,7 @@ export class UserService {
       });
     }
 
-    const salt = generateSalt();
+    const salt = await generateSalt();
     const hash = await generateHash(input.password, salt);
 
     const searchParams = new URLSearchParams();
@@ -281,12 +281,9 @@ export class UserService {
     }
 
     if (user.password && user.salt) {
-      if (
-        !secureCompare(
-          user.password,
-          await generateHash(credentials.password, user.salt),
-        )
-      ) {
+      const isMatch = await secureCompare(credentials.password, user.password);
+
+      if (!isMatch) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: '비밀번호가 일치하지 않습니다.',

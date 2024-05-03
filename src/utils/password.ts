@@ -3,26 +3,16 @@
 import bcrypt from 'bcryptjs';
 
 export function generateSalt() {
-  return bcrypt.genSaltSync(16);
+  return bcrypt.genSalt(6);
 }
 
 export async function generateHash(password: string, salt: string) {
   return await bcrypt.hash(password, salt);
 }
 
-export function secureCompare(a: string, b: string): boolean {
-  if (
-    typeof a !== 'string' ||
-    typeof b !== 'string' ||
-    !a ||
-    !b ||
-    a.length !== b.length
-  ) {
-    return false;
-  }
-
+export async function secureCompare(a: string, b: string) {
   try {
-    return bcrypt.compareSync(a, b);
+    return await bcrypt.compare(a, b);
   } catch (exception) {
     return false;
   }

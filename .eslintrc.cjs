@@ -25,6 +25,7 @@ module.exports = {
     'import/no-anonymous-default-export': 'off',
     'import/named': 'off',
     'import/no-default-export': 'off',
+    'import/no-named-as-default-member': 'off',
     'react/no-unknown-property': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-pascal-case': 'off',
