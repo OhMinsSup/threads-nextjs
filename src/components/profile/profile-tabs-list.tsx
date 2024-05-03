@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { useCustomSearchParams } from '~/libs/hooks/useCustomSearchParams';
-import { cn } from '~/utils/utils';
 
 interface ProfileTabsListProps {
   threads: React.ReactNode;
@@ -22,14 +21,14 @@ export default function ProfileTabsList({
   const pathname = usePathname();
   const router = useRouter();
   const { createQueryString } = useCustomSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const value = searchParams.get('tab') ?? 'threads';
 
   const onValueChange = useCallback(
-    (value: string) => {
+    (type: string) => {
+      const path = `${pathname}?${createQueryString(searchParams, 'tab', type, 'set')}`;
       startTransition(() => {
-        const path = `${pathname}?${createQueryString(searchParams, 'tab', value, 'set')}`;
         router.replace(path);
       });
     },
@@ -49,30 +48,9 @@ export default function ProfileTabsList({
           리포스트
         </TabsTrigger>
       </TabsList>
-      <TabsContent
-        value="threads"
-        className={cn({
-          'opacity-50': isPending && value === 'threads',
-        })}
-      >
-        {threads}
-      </TabsContent>
-      <TabsContent
-        value="comments"
-        className={cn({
-          'opacity-50': isPending && value === 'comments',
-        })}
-      >
-        {comments}
-      </TabsContent>
-      <TabsContent
-        value="reposts"
-        className={cn({
-          'opacity-50': isPending && value === 'reposts',
-        })}
-      >
-        {reposts}
-      </TabsContent>
+      <TabsContent value="threads">{threads}</TabsContent>
+      <TabsContent value="comments">{comments}</TabsContent>
+      <TabsContent value="reposts">{reposts}</TabsContent>
     </Tabs>
   );
 }

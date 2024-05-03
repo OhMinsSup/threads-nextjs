@@ -1,7 +1,6 @@
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from '~/services/trpc/core/trpc';
+import { TRPCRouterRecord } from '@trpc/server';
+
+import { protectedProcedure } from '~/services/trpc/core/trpc';
 import {
   followUserSchema,
   updateProfileSchema,
@@ -13,7 +12,7 @@ import {
 } from '~/services/users/users.query';
 import { userService } from '~/services/users/users.service';
 
-export const usersRouter = createTRPCRouter({
+export const usersRouter = {
   follow: protectedProcedure
     .input(followUserSchema)
     .mutation(async ({ input, ctx }) => {
@@ -126,4 +125,4 @@ export const usersRouter = createTRPCRouter({
         };
       }
     }),
-});
+} satisfies TRPCRouterRecord;

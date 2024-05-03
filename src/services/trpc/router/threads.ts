@@ -1,3 +1,5 @@
+import type { TRPCRouterRecord } from '@trpc/server';
+
 import {
   createInputSchema,
   detailInputSchema,
@@ -13,12 +15,9 @@ import {
   repostListQuerySchema,
 } from '~/services/threads/threads.query';
 import { threadService } from '~/services/threads/threads.service';
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from '~/services/trpc/core/trpc';
+import { protectedProcedure } from '~/services/trpc/core/trpc';
 
-export const threadsRouter = createTRPCRouter({
+export const threadsRouter = {
   simpleById: protectedProcedure
     .input(idInputSchema)
     .query(async ({ input }) => {
@@ -354,4 +353,4 @@ export const threadsRouter = createTRPCRouter({
         };
       }
     }),
-});
+} satisfies TRPCRouterRecord;

@@ -1,12 +1,11 @@
+import type { TRPCRouterRecord } from '@trpc/server';
+
 import { createInputSchema } from '~/services/tags/tags.input';
 import { tagService } from '~/services/tags/tags.service';
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from '~/services/trpc/core/trpc';
+import { protectedProcedure } from '~/services/trpc/core/trpc';
 import { searchQuerySchema } from '~/services/users/users.query';
 
-export const tagsRouter = createTRPCRouter({
+export const tagsRouter = {
   create: protectedProcedure
     .input(createInputSchema)
     .mutation(async ({ input, ctx }) => {
@@ -37,4 +36,4 @@ export const tagsRouter = createTRPCRouter({
         return [];
       }
     }),
-});
+} satisfies TRPCRouterRecord;

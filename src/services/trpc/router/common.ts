@@ -1,13 +1,12 @@
 import { revalidatePath } from 'next/cache';
-import z from 'zod';
+import { z } from 'zod';
+
+import type { TRPCRouterRecord } from '@trpc/server';
 
 import { commonService } from '~/services/common/common.service';
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from '~/services/trpc/core/trpc';
+import { protectedProcedure } from '~/services/trpc/core/trpc';
 
-export const commonRouter = createTRPCRouter({
+export const commonRouter = {
   revalidatePath: protectedProcedure
     .input(
       z.object({
@@ -25,4 +24,4 @@ export const commonRouter = createTRPCRouter({
   getReasons: protectedProcedure.query(async () => {
     return await commonService.getReportReasons();
   }),
-});
+} satisfies TRPCRouterRecord;
