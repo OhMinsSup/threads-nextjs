@@ -17,11 +17,15 @@ export class SearchService {
 
   /**
    * @description 대화 검색시 나오는 목록 조회
+   * @param {string} userId - 유저 아이디
    * @param {SearchUsersQuerySchema} input - 조회 조건
    */
-  async getSearchDialogUsers(input: SearchUsersQuerySchema) {
+  async getSearchDialogUsers(userId: string, input: SearchUsersQuerySchema) {
     return db.user.findMany({
       where: {
+        id: {
+          not: userId,
+        },
         username: {
           contains: input?.keyword,
         },
@@ -42,6 +46,9 @@ export class SearchService {
     const [totalCount, list] = await Promise.all([
       db.user.count({
         where: {
+          id: {
+            not: userId,
+          },
           username: {
             contains: input?.keyword,
           },
@@ -60,8 +67,11 @@ export class SearchService {
           id: input?.cursor
             ? {
                 lt: input.cursor,
+                not: userId,
               }
-            : undefined,
+            : {
+                not: userId,
+              },
           username: {
             contains: input?.keyword,
           },
@@ -88,6 +98,7 @@ export class SearchService {
           where: {
             id: {
               lt: endCursor,
+              not: userId,
             },
             username: {
               contains: input?.keyword,

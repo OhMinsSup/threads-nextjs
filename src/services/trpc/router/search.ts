@@ -31,7 +31,8 @@ export const searchRouter = createTRPCRouter({
     }),
   getSearchDialogUsers: protectedProcedure
     .input(searchUsersQuerySchema)
-    .query(async ({ input }) => {
-      return await searchService.getSearchDialogUsers(input);
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      return await searchService.getSearchDialogUsers(userId, input);
     }),
 });
