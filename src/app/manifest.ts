@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+
 import { PAGE_ENDPOINTS } from '~/constants/constants';
 
 export default function manifest(): MetadataRoute.Manifest {

@@ -1,32 +1,18 @@
 'server-only';
 
-// eslint-disable-next-line unicorn/prefer-node-protocol
-import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
+import bcrypt from 'bcryptjs';
 
-export function generateSalt(): string {
-  return randomBytes(16).toString('hex');
+export function generateSalt() {
+  return bcrypt.genSalt(6);
 }
 
-export function generateHash(password: string, salt: string): string {
-  const hash = createHmac('sha512', salt);
-  hash.update(password);
-  return hash.digest('hex');
+export async function generateHash(password: string, salt: string) {
+  return await bcrypt.hash(password, salt);
 }
 
-export function secureCompare(a: string, b: string): boolean {
-  if (
-    typeof a !== 'string' ||
-    typeof b !== 'string' ||
-    !a ||
-    !b ||
-    a.length !== b.length
-  )
-    return false;
-
-  const buffer1 = Buffer.from(a);
-  const buffer2 = Buffer.from(b);
+export async function secureCompare(a: string, b: string) {
   try {
-    return timingSafeEqual(buffer1, buffer2);
+    return await bcrypt.compare(a, b);
   } catch (exception) {
     return false;
   }

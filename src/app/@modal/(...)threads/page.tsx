@@ -1,16 +1,18 @@
 'use client';
-import { useRouter } from 'next/navigation';
+
 import React, { useCallback, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { prepopulatedRichText } from '~/components/editor/lexical-editor';
+import ThreadsDialog from '~/components/write/threads-dialog';
+import ThreadsSheet from '~/components/write/threads-sheet';
+import { PAGE_ENDPOINTS } from '~/constants/constants';
+import { useBeforeUnload } from '~/libs/hooks/useBeforeUnload';
+import { useMediaQuery } from '~/libs/hooks/useMediaQuery';
 import {
   useLayoutMetaDataSessionStore,
   useLayoutStore,
 } from '~/services/store/useLayoutStore';
-import ThreadsDialog from '~/components/write/threads-dialog';
-import ThreadsSheet from '~/components/write/threads-sheet';
-import { PAGE_ENDPOINTS } from '~/constants/constants';
-import { useMediaQuery } from '~/libs/hooks/useMediaQuery';
-import { prepopulatedRichText } from '~/components/editor/lexical-editor';
-import { useBeforeUnload } from '~/libs/hooks/useBeforeUnload';
 
 export default function Modal() {
   const router = useRouter();
@@ -22,7 +24,7 @@ export default function Modal() {
 
   const onClose = useCallback(() => {
     const cloneMeta = { ...popup.meta };
-    const nextUrl = cloneMeta.redirectUrl || PAGE_ENDPOINTS.ROOT;
+    const nextUrl = cloneMeta.redirectUrl ?? PAGE_ENDPOINTS.ROOT;
 
     popupClose();
     startTransition(() => {

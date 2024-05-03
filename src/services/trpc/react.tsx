@@ -8,10 +8,19 @@ import SuperJSON from 'superjson';
 
 import type { AppRouter } from '~/services/trpc/router/root';
 
-const createQueryClient = () => new QueryClient();
+const createQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        // With SSR, we usually want to set some default staleTime
+        // above 0 to avoid refetching immediately on the client
+        staleTime: 30 * 1000,
+      },
+    },
+  });
 
 let clientQueryClientSingleton: QueryClient | undefined;
-export const getQueryClient = () => {
+const getQueryClient = () => {
   if (typeof window === 'undefined') {
     // Server: always make a new query client
     return createQueryClient();
@@ -36,7 +45,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         unstable_httpBatchStreamLink({
           transformer: SuperJSON,
           url: `${getBaseUrl()}/api/trpc`,
-          async headers() {
+          headers() {
             const headers = new Headers();
             headers.set('x-trpc-source', 'nextjs-react');
             return headers;

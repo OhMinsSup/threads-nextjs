@@ -17,3 +17,13 @@ export const listQuerySchema = z
   .optional();
 
 export type UserListQuerySchema = z.infer<typeof listQuerySchema>;
+
+export const userFollowListQuerySchema = z
+  .object({
+    userId: z.string(),
+  })
+  .merge(cursorPaginationQuerySchema);
+
+export type UserFollowListQuerySchema = z.infer<
+  typeof userFollowListQuerySchema
+>;

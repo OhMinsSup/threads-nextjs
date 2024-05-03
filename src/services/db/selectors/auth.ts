@@ -2,6 +2,8 @@
 
 import { Prisma } from '@prisma/client';
 
+import { getUserProfileSelector } from '~/services/db/selectors/users';
+
 export const getAuthCredentialsSelector = () =>
   Prisma.validator<Prisma.UserSelect>()({
     id: true,
@@ -13,8 +15,6 @@ export const getAuthCredentialsSelector = () =>
     image: true,
     emailVerified: true,
     profile: {
-      select: {
-        bio: true,
-      },
+      select: getUserProfileSelector(),
     },
   });

@@ -15,10 +15,14 @@ import { env } from '~/app/env';
 import { API_ENDPOINTS } from '~/constants/constants';
 import { db } from '~/services/db/prisma';
 import { getAuthCredentialsSelector } from '~/services/db/selectors/auth';
-import { getUserSelector } from '~/services/db/selectors/users';
+import {
+  getFollowWithUserSelector,
+  getUserSelector,
+} from '~/services/db/selectors/users';
 import { signInSchema } from '~/services/users/users.input';
 import { generateHash, generateSalt, secureCompare } from '~/utils/password';
 import { generatorName } from '~/utils/utils';
+import { UserFollowListQuerySchema } from './users.query';
 
 export class UserService {
   /**
@@ -62,8 +66,8 @@ export class UserService {
       });
     }
 
-    const salt = generateSalt();
-    const hash = generateHash(input.password, salt);
+    const salt = await generateSalt();
+    const hash = await generateHash(input.password, salt);
 
     const searchParams = new URLSearchParams();
     searchParams.append('seed', input.username);
@@ -277,12 +281,9 @@ export class UserService {
     }
 
     if (user.password && user.salt) {
-      if (
-        !secureCompare(
-          user.password,
-          generateHash(credentials.password, user.salt),
-        )
-      ) {
+      const isMatch = await secureCompare(credentials.password, user.password);
+
+      if (!isMatch) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: '비밀번호가 일치하지 않습니다.',
@@ -312,6 +313,129 @@ export class UserService {
       select: getUserSelector(),
       orderBy: {
         createdAt: 'asc',
+      },
+    });
+  }
+
+  /**
+   * @description 팔로워 리스트 조회
+   * @param {string} userId - 유저 ID
+   */
+  getFollowers(userId: string, input: UserFollowListQuerySchema) {
+    return db.user.findMany({
+      where: {
+        followers: {
+          some: {
+            userId: input.userId,
+          },
+        },
+      },
+      select: getFollowWithUserSelector(),
+    });
+  }
+
+  /**
+   * @description 팔로잉 리스트 조회
+   * @param {string} userId - 유저 ID
+   */
+  getFollowing(userId: string, input: UserFollowListQuerySchema) {
+    return db.user.findMany({
+      where: {
+        following: {
+          some: {
+            userId: input.userId,
+          },
+          none: {
+            userId,
+          },
+        },
+      },
+      select: getFollowWithUserSelector(),
+    });
+  }
+
+  /**
+   * @description 팔로워 수 조회
+   * @param {string} userId - 유저 ID
+   */
+  followersCount(userId: string, input: UserFollowListQuerySchema) {
+    return db.user.count({
+      where: {
+        followers: {
+          some: {
+            userId: input.userId,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * @description 팔로잉 수 조회
+   * @param {string} userId - 유저 ID
+   */
+  followingCount(userId: string, input: UserFollowListQuerySchema) {
+    return db.user.count({
+      where: {
+        following: {
+          some: {
+            userId: input.userId,
+          },
+          none: {
+            userId,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * @description 팔로워 페이지 여부
+   * @param {string} userId - 유저 ID
+   * @param {string} endCursor - 마지막 커서
+   */
+  hasNextFollowserPage(
+    userId: string,
+    endCursor: string,
+    input: UserFollowListQuerySchema,
+  ) {
+    return db.user.count({
+      where: {
+        followers: {
+          some: {
+            userId: input.userId,
+          },
+        },
+        id: {
+          lt: endCursor,
+        },
+      },
+    });
+  }
+
+  /**
+   * @description 팔로잉 페이지 여부
+   * @param {string} userId - 유저 ID
+   * @param {string} endCursor - 마지막 커서
+   */
+  hasNextFollowingPage(
+    userId: string,
+    endCursor: string,
+    input: UserFollowListQuerySchema,
+  ) {
+    return db.user.count({
+      where: {
+        following: {
+          some: {
+            userId: input.userId,
+          },
+          none: {
+            userId,
+          },
+        },
+        id: {
+          lt: endCursor,
+        },
       },
     });
   }

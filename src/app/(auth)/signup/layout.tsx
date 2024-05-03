@@ -1,15 +1,16 @@
-import Link from 'next/link';
 import React from 'react';
+import Link from 'next/link';
+
 import { Icons } from '~/components/icons';
 import { buttonVariants } from '~/components/ui/button';
 import { PAGE_ENDPOINTS } from '~/constants/constants';
 import { cn } from '~/utils/utils';
 
-interface Props {
+interface LayoutProps {
   children: React.ReactNode;
 }
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className="container grid h-screen w-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
       <Link
@@ -30,7 +31,7 @@ export default function Layout({ children }: Props) {
           {children}
           <p
             className={cn(
-              'px-8 text-center text-sm text-muted-foreground space-x-3',
+              'space-x-3 px-8 text-center text-sm text-muted-foreground',
             )}
           >
             <Link

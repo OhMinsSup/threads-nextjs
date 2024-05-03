@@ -1,14 +1,13 @@
+import type { TRPCRouterRecord } from '@trpc/server';
+
 import {
   searchQuerySchema,
   searchUsersQuerySchema,
 } from '~/services/search/search.query';
 import { searchService } from '~/services/search/search.service';
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from '~/services/trpc/core/trpc';
+import { protectedProcedure } from '~/services/trpc/core/trpc';
 
-export const searchRouter = createTRPCRouter({
+export const searchRouter = {
   getSearch: protectedProcedure
     .input(searchQuerySchema)
     .query(async ({ input, ctx }) => {
@@ -31,7 +30,8 @@ export const searchRouter = createTRPCRouter({
     }),
   getSearchDialogUsers: protectedProcedure
     .input(searchUsersQuerySchema)
-    .query(async ({ input }) => {
-      return await searchService.getSearchDialogUsers(input);
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      return await searchService.getSearchDialogUsers(userId, input);
     }),
-});
+} satisfies TRPCRouterRecord;

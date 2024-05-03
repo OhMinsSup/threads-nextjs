@@ -1,28 +1,21 @@
 import React from 'react';
+
+import ClientOnly from '~/components/shared/client-only';
 import ThreadList from '~/components/shared/thread-list';
 import SkeletonCardList from '~/components/skeleton/card-thread-list';
-import { api } from '~/services/trpc/server';
 
-interface Props {
+interface PagesProps {
   params: {
     userId: string;
   };
 }
 
-export default async function Pages({ params }: Props) {
-  const initialData = await api.threads.getItems({
-    userId: params.userId,
-    type: 'user',
-    limit: 10,
-  });
-
+export default function Pages({ params }: PagesProps) {
   return (
-    <React.Suspense fallback={<SkeletonCardList />}>
-      <ThreadList
-        userId={params.userId}
-        initialData={initialData}
-        type="user"
-      />
-    </React.Suspense>
+    <ClientOnly fallback={<SkeletonCardList />}>
+      <React.Suspense fallback={<SkeletonCardList />}>
+        <ThreadList userId={params.userId} type="user" />
+      </React.Suspense>
+    </ClientOnly>
   );
 }

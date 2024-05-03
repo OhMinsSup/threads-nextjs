@@ -4,14 +4,8 @@ import {
   type SerializedLexicalNode,
 } from 'lexical';
 import { twMerge } from 'tailwind-merge';
-import {
-  adjectives,
-  nouns,
-  uniqueUsernameGenerator,
-} from 'unique-username-generator';
 
 import type { ClassValue } from 'clsx';
-import type { Config } from 'unique-username-generator';
 
 import { isEmpty, isNull, isUndefined } from '~/utils/assertion';
 
@@ -34,17 +28,19 @@ export function optimizeAnimation(callback: () => void) {
 }
 
 export const generatorName = (seed: string) => {
-  const marvelCharacters = [seed];
+  const makeRandomString = (length: number) => {
+    let text = '';
+    const possible =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  const config: Config = {
-    dictionaries: [adjectives, nouns, marvelCharacters],
-    separator: '_',
-    style: 'capital',
-    randomDigits: 3,
+    for (let i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+
+    return text;
   };
 
-  const username: string = uniqueUsernameGenerator(config); // Hulk12
-  return username;
+  return `${seed}_${makeRandomString(10)}`;
 };
 
 export const createSearchParams = (params?: Record<string, any>) => {
@@ -229,7 +225,7 @@ export function cosineSimilarity(
   let bMagnitude = 0;
 
   a.forEach((val, key) => {
-    dotProduct += val * (b.get(key) || 0);
+    dotProduct += val * (b.get(key) ?? 0);
     aMagnitude += val * val;
   });
 

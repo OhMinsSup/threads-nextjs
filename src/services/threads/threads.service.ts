@@ -153,7 +153,11 @@ export class ThreadService {
     const reposts = await this.countReposts(item.id);
 
     taskRunner.registerTask(async () => {
-      await this.recalculateRanking(item.id).catch(console.error);
+      try {
+        await this.recalculateRanking(item.id);
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     return {
@@ -218,7 +222,11 @@ export class ThreadService {
     const likes = await this.countLikes(item.id);
 
     taskRunner.registerTask(async () => {
-      await this.recalculateRanking(item.id).catch(console.error);
+      try {
+        await this.recalculateRanking(item.id);
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     return {
@@ -302,7 +310,6 @@ export class ThreadService {
 
     if (
       typeof whoCanLeaveComments !== 'undefined' &&
-      typeof whoCanLeaveComments !== null &&
       !isEqual(whoCanLeaveComments, item.whoCanLeaveComments)
     ) {
       data.whoCanLeaveComments = whoCanLeaveComments;
@@ -338,14 +345,14 @@ export class ThreadService {
       if (diffMentionsRemove.length > 0) {
         const _verifiedMentions: string[] = [];
         for (const mention of diffMentionsRemove) {
-          const data = await userService.byUsername(mention);
-          if (data) {
-            _verifiedMentions.push(data.id);
+          const result = await userService.byUsername(mention);
+          if (result) {
+            _verifiedMentions.push(result.id);
           }
         }
         data.mentions = {
-          deleteMany: _verifiedMentions.map((userId) => ({
-            userId,
+          deleteMany: _verifiedMentions.map((targetId) => ({
+            userId: targetId,
           })),
         };
       }
@@ -355,14 +362,14 @@ export class ThreadService {
       if (diffMentions.length > 0) {
         const _verifiedMentions: string[] = [];
         for (const mention of diffMentions) {
-          const data = await userService.byUsername(mention);
-          if (data) {
-            _verifiedMentions.push(data.id);
+          const result = await userService.byUsername(mention);
+          if (result) {
+            _verifiedMentions.push(result.id);
           }
         }
         data.mentions = {
-          create: _verifiedMentions.map((userId) => ({
-            userId,
+          create: _verifiedMentions.map((targetId) => ({
+            userId: targetId,
           })),
         };
       }
@@ -377,14 +384,14 @@ export class ThreadService {
       if (diffTagsRemove.length > 0) {
         const _verifiedTags: string[] = [];
         for (const tag of diffTagsRemove) {
-          const data = await tagService.byName(tag);
-          if (data) {
-            _verifiedTags.push(data.id);
+          const result = await tagService.byName(tag);
+          if (result) {
+            _verifiedTags.push(result.id);
           }
         }
         data.tags = {
-          deleteMany: _verifiedTags.map((tagId) => ({
-            tagId,
+          deleteMany: _verifiedTags.map((targetId) => ({
+            tagId: targetId,
           })),
         };
       }
@@ -393,14 +400,14 @@ export class ThreadService {
       if (diffTags.length > 0) {
         const _verifiedTags: string[] = [];
         for (const tag of diffTags) {
-          const data = await tagService.byName(tag);
-          if (data) {
-            _verifiedTags.push(data.id);
+          const result = await tagService.byName(tag);
+          if (result) {
+            _verifiedTags.push(result.id);
           }
         }
         data.tags = {
-          create: _verifiedTags.map((tagId) => ({
-            tagId,
+          create: _verifiedTags.map((targetId) => ({
+            tagId: targetId,
           })),
         };
       }
@@ -495,13 +502,13 @@ export class ThreadService {
           create: {},
         },
         mentions: {
-          create: connectMentions.map((userId) => ({
-            userId,
+          create: connectMentions.map((targetId) => ({
+            userId: targetId,
           })),
         },
         tags: {
-          create: connectTags.map((tagId) => ({
-            tagId,
+          create: connectTags.map((targetId) => ({
+            tagId: targetId,
           })),
         },
       },
@@ -575,7 +582,7 @@ export class ThreadService {
       orderBy: {
         createdAt: 'desc',
       },
-      take: input.limit ?? this.DEFAULT_LIMIT,
+      take: input.limit,
       select: getThreadsSelector(userId, input),
     });
   }
@@ -737,7 +744,7 @@ export class ThreadService {
       orderBy: {
         createdAt: 'desc',
       },
-      take: input.limit ?? this.DEFAULT_LIMIT,
+      take: input.limit,
       select: getThreadsSelector(userId, input),
     });
   }
@@ -767,11 +774,7 @@ export class ThreadService {
    * @param {string} endCursor - 스레드 ID
    * @param {LikeListQuerySchema} input - 스레드 목록 조회 조건
    */
-  hasNextLikePage(
-    userId: string,
-    endCursor: string,
-    input: LikeListQuerySchema,
-  ) {
+  hasNextLikePage(userId: string, endCursor: string, _: LikeListQuerySchema) {
     return db.thread.count({
       where: {
         id: {
@@ -794,10 +797,10 @@ export class ThreadService {
    * @param {string} endCursor - 스레드 ID
    * @param {BookmarkListQuerySchema} input - 스레드 목록 조회 조건
    */
-  hasBookmarkPage(
+  hasNextBookmarkPage(
     userId: string,
     endCursor: string,
-    input: BookmarkListQuerySchema,
+    _: BookmarkListQuerySchema,
   ) {
     return db.thread.count({
       where: {
@@ -820,10 +823,10 @@ export class ThreadService {
    * @param {string} endCursor - 스레드 ID
    * @param {RecommendationListQuerySchema} input - 스레드 목록 조회 조건
    */
-  hasRecommendPage(
+  hasNextRecommendPage(
     userId: string,
     endCursor: string,
-    input: RecommendationListQuerySchema,
+    _: RecommendationListQuerySchema,
   ) {
     return db.thread.count({
       where: {
@@ -861,10 +864,10 @@ export class ThreadService {
    * @param {string} endCursor - 스레드 ID
    * @param {FollowListQuerySchema} input - 스레드 목록 조회 조건
    */
-  hasFollowPage(
+  hasNextFollowPage(
     userId: string,
     endCursor: string,
-    input: FollowListQuerySchema,
+    _: FollowListQuerySchema,
   ) {
     return db.thread.count({
       where: {
@@ -896,10 +899,10 @@ export class ThreadService {
    * @param {string} endCursor - 스레드 ID
    * @param {RepostListQuerySchema} input - 스레드 목록 조회 조건
    */
-  hasRepostPage(
+  hasNextRepostPage(
     userId: string,
     endCursor: string,
-    input: RepostListQuerySchema,
+    _: RepostListQuerySchema,
   ) {
     return db.thread.count({
       where: {
@@ -973,7 +976,7 @@ export class ThreadService {
    * @param {string} userId - 스레드 목록 조회 조건
    * @param {LikeListQuerySchema} input - 스레드 목록 조회 조건
    */
-  likeCount(userId: string, input: LikeListQuerySchema) {
+  likeCount(userId: string, _: LikeListQuerySchema) {
     return db.thread.count({
       where: {
         deleted: false,
@@ -992,7 +995,7 @@ export class ThreadService {
    * @param {string} userId - 스레드 목록 조회 조건
    * @param {BookmarkListQuerySchema} input - 스레드 목록 조회 조건
    */
-  bookmarkCount(userId: string, input: BookmarkListQuerySchema) {
+  bookmarkCount(userId: string, _: BookmarkListQuerySchema) {
     return db.thread.count({
       where: {
         deleted: false,
@@ -1010,7 +1013,7 @@ export class ThreadService {
    * @param {string} userId - 사용자 ID
    * @param {RecommendationListQuerySchema} input - 스레드 목록 조회 조건
    */
-  recommendCount(userId: string, input: RecommendationListQuerySchema) {
+  recommendCount(userId: string, _: RecommendationListQuerySchema) {
     return db.thread.count({
       where: {
         deleted: false,
@@ -1031,7 +1034,7 @@ export class ThreadService {
    * @param {string} userId - 사용자 ID
    * @param {FollowListQuerySchema} input - 스레드 목록 조회 조건
    */
-  followCount(userId: string, input: FollowListQuerySchema) {
+  followCount(userId: string, _: FollowListQuerySchema) {
     return db.thread.count({
       where: {
         deleted: false,
@@ -1058,7 +1061,7 @@ export class ThreadService {
    * @param {string} userId - 사용자 ID
    * @param {RepostListQuerySchema} input - 스레드 목록 조회 조건
    */
-  repostCount(userId: string, input: RepostListQuerySchema) {
+  repostCount(userId: string, _: RepostListQuerySchema) {
     return db.thread.count({
       where: {
         deleted: false,

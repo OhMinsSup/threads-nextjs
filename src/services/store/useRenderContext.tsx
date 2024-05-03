@@ -51,11 +51,11 @@ function reducer(state = initialState, action: ActionType) {
   }
 }
 
-interface Props {
+interface RenderContextProviderProps {
   children: React.ReactNode;
 }
 
-function RenderContextProvider({ children }: Props) {
+function RenderContextProvider({ children }: RenderContextProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = () => {

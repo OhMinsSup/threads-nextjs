@@ -1,13 +1,16 @@
 import '~/assets/css/globals.css';
-import { env } from './env';
+
 import { Inter as FontSans } from 'next/font/google';
-import { headers } from 'next/headers';
 import localFont from 'next/font/local';
-import { Providers } from './providers';
-import { cn } from '~/utils/utils';
-import { getHeaderInDomainInfo } from '~/utils/url';
-import { SITE_CONFIG } from '~/constants/constants';
+import { headers } from 'next/headers';
+
 import type { Metadata } from 'next';
+
+import { SITE_CONFIG } from '~/constants/constants';
+import { getHeaderInDomainInfo } from '~/utils/url';
+import { cn } from '~/utils/utils';
+import { env } from './env';
+import { Providers } from './providers';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -19,6 +22,7 @@ const fontHeading = localFont({
   variable: '--font-heading',
 });
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function generateMetadata(): Promise<Metadata> {
   const info = getHeaderInDomainInfo(headers());
   const metadataBase = new URL(info.domainUrl);
@@ -67,7 +71,7 @@ interface RoutesProps {
   modal: React.ReactNode;
 }
 
-export default async function Layout(props: RoutesProps) {
+export default function Layout(props: RoutesProps) {
   const info = getHeaderInDomainInfo(headers());
   return (
     <html lang="ko" dir="ltr" suppressHydrationWarning>

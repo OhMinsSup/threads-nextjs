@@ -1,6 +1,8 @@
 'use client';
-import { useRouter } from 'next/navigation';
+
 import React, { useCallback, useEffect, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+
 import { prepopulatedRichText } from '~/components/editor/lexical-editor';
 import ThreadsForm from '~/components/write/threads-form';
 import ThreadsTitle from '~/components/write/threads-title';
@@ -44,6 +46,7 @@ export default function Page() {
     return () => {
       useLayoutMetaDataSessionStore.getState().clearMetaData();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrating]);
 
   return (

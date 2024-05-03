@@ -1,17 +1,22 @@
 'use client';
 
-interface Props {
+interface GlobalErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
-export default function GlobalError({ error, reset }: Props) {
-  console.log('errors ====>', error);
+export default function GlobalError({ reset }: GlobalErrorProps) {
+  const onReset = () => {
+    reset();
+  };
+
   return (
-    <html>
+    <html lang="ko" dir="ltr" suppressHydrationWarning>
       <body>
         <h2>Something went wrong!</h2>
-        <button onClick={() => reset()}>Try again</button>
+        <button type="button" onClick={onReset}>
+          Try again
+        </button>
       </body>
     </html>
   );

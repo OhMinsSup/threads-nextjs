@@ -1,3 +1,5 @@
+import type { TRPCRouterRecord } from '@trpc/server';
+
 import {
   createInputSchema,
   detailInputSchema,
@@ -13,15 +15,12 @@ import {
   repostListQuerySchema,
 } from '~/services/threads/threads.query';
 import { threadService } from '~/services/threads/threads.service';
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from '~/services/trpc/core/trpc';
+import { protectedProcedure } from '~/services/trpc/core/trpc';
 
-export const threadsRouter = createTRPCRouter({
+export const threadsRouter = {
   simpleById: protectedProcedure
     .input(idInputSchema)
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       try {
         return await threadService.simpleById(input.threadId);
       } catch (error) {
@@ -199,7 +198,11 @@ export const threadsRouter = createTRPCRouter({
 
         const endCursor = list.at(-1)?.id ?? null;
         const hasNextPage = endCursor
-          ? (await threadService.hasRecommendPage(userId, endCursor, input)) > 0
+          ? (await threadService.hasNextRecommendPage(
+              userId,
+              endCursor,
+              input,
+            )) > 0
           : false;
 
         return {
@@ -230,7 +233,8 @@ export const threadsRouter = createTRPCRouter({
 
         const endCursor = list.at(-1)?.id ?? null;
         const hasNextPage = endCursor
-          ? (await threadService.hasFollowPage(userId, endCursor, input)) > 0
+          ? (await threadService.hasNextFollowPage(userId, endCursor, input)) >
+            0
           : false;
 
         return {
@@ -294,7 +298,11 @@ export const threadsRouter = createTRPCRouter({
 
         const endCursor = list.at(-1)?.id ?? null;
         const hasNextPage = endCursor
-          ? (await threadService.hasBookmarkPage(userId, endCursor, input)) > 0
+          ? (await threadService.hasNextBookmarkPage(
+              userId,
+              endCursor,
+              input,
+            )) > 0
           : false;
 
         return {
@@ -325,7 +333,8 @@ export const threadsRouter = createTRPCRouter({
 
         const endCursor = list.at(-1)?.id ?? null;
         const hasNextPage = endCursor
-          ? (await threadService.hasRepostPage(userId, endCursor, input)) > 0
+          ? (await threadService.hasNextRepostPage(userId, endCursor, input)) >
+            0
           : false;
 
         return {
@@ -344,4 +353,4 @@ export const threadsRouter = createTRPCRouter({
         };
       }
     }),
-});
+} satisfies TRPCRouterRecord;

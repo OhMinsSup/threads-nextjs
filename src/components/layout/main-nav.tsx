@@ -14,7 +14,7 @@ export default function MainNav() {
     <>
       <Link
         href={PAGE_ENDPOINTS.ROOT}
-        className="flex w-full items-center justify-center sm:block sm:w-auto"
+        className="flex w-full items-center justify-center hover:scale-110 sm:block sm:w-auto"
       >
         <Icons.threadsWhite className="hidden size-8 dark:block" />
         <Icons.threads className="block size-8 dark:hidden" />
@@ -22,7 +22,11 @@ export default function MainNav() {
 
       <nav className="hidden gap-4 sm:flex lg:gap-6">
         {NAV_CONFIG.mainNav.map((item, index) => (
-          <ButtonGroup key={index} item={item} type="header" />
+          <ButtonGroup
+            key={`main-nav-${index.toString()}`}
+            item={item}
+            type="header"
+          />
         ))}
       </nav>
 

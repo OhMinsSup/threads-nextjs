@@ -7,7 +7,6 @@ import {
   type EditorState,
   type LexicalEditor as ReactLexicalEditor,
   type SerializedEditorState,
-  type SerializedLexicalNode,
 } from 'lexical';
 import { FieldErrors, FieldPath, get, useForm } from 'react-hook-form';
 

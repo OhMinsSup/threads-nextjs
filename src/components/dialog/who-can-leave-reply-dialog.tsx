@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useTransition } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Icons } from '~/components/icons';
 import { Button } from '~/components/ui/button';
@@ -23,7 +23,7 @@ export default function WhoCanLeaveReplyDialog() {
     popup.type === 'WHO_CAN_LEAVE_REPLY' &&
     popup.open &&
     !isNullOrUndefined(popup.meta?.itemId) &&
-    !isNullOrUndefined(popup.meta?.initialValue);
+    !isNullOrUndefined(popup.meta.initialValue);
 
   return (
     <Dialog open={open} onOpenChange={popupClose}>
@@ -45,7 +45,7 @@ WhoCanLeaveReplyDialog.Internal = function Item({ open }: ItemProps) {
 
   const [value, setValue] = useState<string | undefined>();
 
-  const isSameValue = popup?.meta?.initialValue === value;
+  const isSameValue = popup.meta?.initialValue === value;
 
   const mutation = api.threads.update.useMutation({
     async onSuccess() {
@@ -92,6 +92,7 @@ WhoCanLeaveReplyDialog.Internal = function Item({ open }: ItemProps) {
     return () => {
       setValue(undefined);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (
@@ -127,9 +128,9 @@ WhoCanLeaveReplyDialog.Internal = function Item({ open }: ItemProps) {
           disabled={isSameValue || mutation.isPending}
           onClick={onSubmit}
         >
-          {mutation.isPending && (
+          {mutation.isPending ? (
             <Icons.spinner className="mr-2 size-4 animate-spin" />
-          )}
+          ) : null}
           업데이트
         </Button>
       </DialogFooter>
