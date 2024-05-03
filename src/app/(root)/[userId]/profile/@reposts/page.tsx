@@ -1,8 +1,8 @@
 import React from 'react';
 
+import ClientOnly from '~/components/shared/client-only';
 import ThreadRepostList from '~/components/shared/thread-repost-list';
 import SkeletonCardList from '~/components/skeleton/card-thread-list';
-import { api } from '~/services/trpc/server';
 
 interface PagesProps {
   params: {
@@ -10,15 +10,12 @@ interface PagesProps {
   };
 }
 
-export default async function Pages({ params }: PagesProps) {
-  const initialData = await api.threads.getReposts({
-    limit: 10,
-    userId: params.userId,
-  });
-
+export default function Pages({ params }: PagesProps) {
   return (
-    <React.Suspense fallback={<SkeletonCardList />}>
-      <ThreadRepostList initialData={initialData} userId={params.userId} />
-    </React.Suspense>
+    <ClientOnly fallback={<SkeletonCardList />}>
+      <React.Suspense fallback={<SkeletonCardList />}>
+        <ThreadRepostList userId={params.userId} />
+      </React.Suspense>
+    </ClientOnly>
   );
 }
