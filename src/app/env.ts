@@ -1,9 +1,11 @@
 import { createEnv } from '@t3-oss/env-nextjs';
+import { vercel } from '@t3-oss/env-nextjs/presets';
 import { z } from 'zod';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 export const env = createEnv({
+  extends: [vercel()],
   shared: {
     SITE_URL: z.string().min(1).default('http://localhost:3000'),
     API_PREFIX: z.string().min(1).default('/api'),
