@@ -1,0 +1,28 @@
+{
+  "name": "@thread/error",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@thread/enum": "workspace:*"
+  },
+  "devDependencies": {
+    "@thread/eslint-config": "workspace:*",
+    "@thread/prettier-config": "workspace:*",
+    "@thread/tsconfig": "workspace:*",
+    "eslint": "^9.3.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "prettier": "@thread/prettier-config"
+}

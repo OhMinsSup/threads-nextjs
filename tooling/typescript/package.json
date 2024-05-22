@@ -1,0 +1,13 @@
+{
+  "name": "@thread/tsconfig",
+  "version": "0.0.1",
+  "private": true,
+  "files": [
+    "*.json"
+  ],
+  "packageManager": "pnpm@9.0.5",
+  "engines": {
+    "bun": ">=1.0",
+    "node": ">=20.0"
+  }
+}
