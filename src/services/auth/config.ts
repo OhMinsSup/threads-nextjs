@@ -80,9 +80,8 @@ export const authConfig = {
   session: { strategy: 'jwt' },
   callbacks: {
     jwt: ({ token, user }) => {
-      if (user) {
-        token.user = user as unknown as typeof token.user;
-      }
+      token.user = user as unknown as typeof token.user;
+
       return token;
     },
     session: ({ session, token }) => {
