@@ -10,28 +10,54 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 import "~/app/globals.css";
 
-import { env } from "~/env";
+import { headers } from "next/headers";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(
-    env.VERCEL_ENV === "production"
-      ? "https://turbo.t3.gg"
-      : "http://localhost:3000",
-  ),
-  title: "Create T3 Turbo",
-  description: "Simple monorepo with shared backend for web & mobile apps",
-  openGraph: {
-    title: "Create T3 Turbo",
-    description: "Simple monorepo with shared backend for web & mobile apps",
-    url: "https://create-t3-turbo.vercel.app",
-    siteName: "Create T3 Turbo",
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@jullerino",
-    creator: "@jullerino",
-  },
-};
+import { SITE_CONFIG } from "~/constants/constants";
+import { env } from "~/env";
+import { getRequestInfo } from "~/utils/request";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const info = getRequestInfo(headers());
+  const metadataBase = new URL(info.domainUrl);
+  const manifestURL = new URL(SITE_CONFIG.manifest, metadataBase);
+
+  return {
+    title: SITE_CONFIG.title,
+    description: SITE_CONFIG.description,
+    icons: {
+      icon: SITE_CONFIG.favicon,
+      apple: SITE_CONFIG.apple57x57,
+      other: [
+        {
+          url: SITE_CONFIG.apple180x180,
+          sizes: "180x180",
+        },
+        {
+          url: SITE_CONFIG.apple256x256,
+          sizes: "256x256",
+        },
+      ],
+    },
+    metadataBase,
+    manifest: manifestURL,
+    alternates: {
+      canonical: metadataBase,
+    },
+    openGraph: {
+      title: SITE_CONFIG.title,
+      description: SITE_CONFIG.description,
+      url: metadataBase.href,
+      siteName: SITE_CONFIG.title,
+      images: [
+        {
+          url: SITE_CONFIG.ogImage,
+        },
+      ],
+      locale: "ko_KR",
+      type: "article",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [
@@ -42,7 +68,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body
         className={cn(
           "min-h-screen bg-background font-sans text-foreground antialiased",
