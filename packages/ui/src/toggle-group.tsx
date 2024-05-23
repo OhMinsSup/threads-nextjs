@@ -3,10 +3,9 @@
 import * as React from "react";
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
 import { VariantProps } from "class-variance-authority";
+import { toggleVariants } from "src/toggle";
 
 import { cn } from "@thread/ui";
-
-import { toggleVariants } from "./toggle.jsx";
 
 const ToggleGroupContext = React.createContext<
   VariantProps<typeof toggleVariants>

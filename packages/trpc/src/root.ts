@@ -1,5 +1,5 @@
 import { authRouter } from "./router/auth";
-import { commonRouter } from "./router/common";
+import { reasonsRouter } from "./router/reasons";
 import { searchRouter } from "./router/search";
 import { tagsRouter } from "./router/tags";
 import { threadsRouter } from "./router/threads";
@@ -12,7 +12,7 @@ export const appRouter = createTRPCRouter({
   users: usersRouter,
   tags: tagsRouter,
   search: searchRouter,
-  common: commonRouter,
+  reasons: reasonsRouter,
 });
 
 // export type definition of API
