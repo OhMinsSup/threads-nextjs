@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 
 import { Button } from "@thread/ui/button";
@@ -39,4 +41,4 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputPasswordProps>(
 
 InputPassword.displayName = "InputPassword";
 
-export { InputPassword };
+export default InputPassword;

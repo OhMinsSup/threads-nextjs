@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 
-import type { FormFieldsSchema } from "@thread/validators/signin";
+import type { FormFieldsSchema } from "@thread/validators/signup";
 import { isBoolean, isUndefined } from "@thread/shared/assertion";
 import { cn } from "@thread/ui";
 import { Button } from "@thread/ui/button";
@@ -18,14 +18,14 @@ import {
   FormMessage,
 } from "@thread/ui/form";
 import { Input } from "@thread/ui/input";
-import { schema } from "@thread/validators/signin";
+import { schema } from "@thread/validators/signup";
 
 import type { PreviousState } from "~/actions/signup";
-import { serverAction } from "~/actions/signin";
+import { serverAction } from "~/actions/signup";
 import { Icons } from "~/components/icons";
-import { InputPassword } from "~/components/shared/input-password";
+import { InputPassword } from "~/components/shared/InputPassword";
 
-export default function SignInForm() {
+export default function SignupForm() {
   const [isPending, startTransition] = useTransition();
 
   const [state, formAction] = useFormState<PreviousState, FormFieldsSchema>(
@@ -34,11 +34,11 @@ export default function SignInForm() {
   );
 
   const form = useForm<FormFieldsSchema>({
-    progressive: true,
     resolver: zodResolver(schema),
     defaultValues: {
       username: "",
       password: "",
+      confirmPassword: "",
     },
     errors: isUndefined(state) || isBoolean(state) ? undefined : state,
     reValidateMode: "onBlur",
@@ -48,7 +48,8 @@ export default function SignInForm() {
     <div className="grid gap-6">
       <Form {...form}>
         <form
-          id="signin-form"
+          id="signup-form"
+          data-testid="signup-form"
           onSubmit={form.handleSubmit((input) => {
             startTransition(() => {
               formAction(input);
@@ -64,6 +65,7 @@ export default function SignInForm() {
                   <FormLabel>아이디</FormLabel>
                   <FormControl>
                     <Input
+                      data-testid="username"
                       placeholder="아이디"
                       autoCapitalize="none"
                       autoComplete="username"
@@ -84,7 +86,27 @@ export default function SignInForm() {
                   <FormLabel>비밀번호</FormLabel>
                   <FormControl>
                     <InputPassword
+                      data-testid="password"
                       placeholder="비밀번호"
+                      autoComplete="current-password"
+                      dir="ltr"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>비밀번호 확인</FormLabel>
+                  <FormControl>
+                    <InputPassword
+                      data-testid="confirm-password"
+                      placeholder="비밀번호 확인"
                       autoComplete="current-password"
                       dir="ltr"
                       {...field}
@@ -98,11 +120,12 @@ export default function SignInForm() {
               type="submit"
               disabled={isPending}
               aria-disabled={isPending}
+              data-testid="signup-button"
             >
               {isPending ? (
                 <Icons.spinner className="mr-2 size-4 animate-spin" />
               ) : null}
-              <span>로그인</span>
+              <span>회원가입</span>
             </Button>
           </div>
         </form>
