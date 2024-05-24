@@ -9,9 +9,8 @@ import { prisma, Prisma } from "@thread/db";
 import { getFullExternalUserSelector } from "@thread/db/selectors";
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
+import { secureCompare } from "@thread/shared/password";
 import { schema } from "@thread/validators/signin";
-
-import { secureCompare } from "./password";
 
 declare module "next-auth" {
   interface Session {
@@ -46,9 +45,12 @@ export const authConfig = {
         const input = await schema.safeParseAsync(credentials);
         if (!input.success) {
           throw createError({
-            message: "Invalid credentials",
+            message: "잘못된 입력값",
             status: HttpStatus.BAD_REQUEST,
-            data: input.error,
+            data: {
+              key: input.error.name,
+              message: input.error.message,
+            },
           });
         }
 
@@ -66,8 +68,11 @@ export const authConfig = {
 
         if (!user1) {
           throw createError({
-            message: "User not found",
+            message: "유저를 찾을 수 없습니다",
             status: HttpStatus.NOT_FOUND,
+            data: {
+              username: "User not found",
+            },
           });
         }
 
@@ -79,7 +84,7 @@ export const authConfig = {
 
           if (!isMatch) {
             throw createError({
-              message: "Invalid password",
+              message: "비밀번호가 일치하지 않습니다",
               status: HttpStatus.UNAUTHORIZED,
             });
           }

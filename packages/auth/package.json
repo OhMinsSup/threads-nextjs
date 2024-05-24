@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "@thread/shared": "workspace:*",
     "@thread/validators": "workspace:*",
     "@thread/error": "workspace:*",
     "@thread/enum": "workspace:*",
@@ -34,8 +34,7 @@
     "@thread/eslint-config": "workspace:*",
     "@thread/prettier-config": "workspace:*",
     "@thread/tsconfig": "workspace:*",
-    "@types/bcryptjs": "^2.4.6",
-    "eslint": "^9.3.0",
+    "eslint": "^8.57.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5"
   },

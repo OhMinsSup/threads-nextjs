@@ -14,12 +14,16 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.4.2",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.35.5",
     "@thread/auth": "workspace:*",
     "@thread/db": "workspace:*",
+    "@thread/error": "workspace:*",
+    "@thread/enum": "workspace:*",
     "@thread/trpc": "workspace:*",
     "@thread/ui": "workspace:*",
+    "@thread/shared": "workspace:*",
     "@thread/validators": "workspace:*",
     "@trpc/client": "11.0.0-rc.364",
     "@trpc/react-query": "11.0.0-rc.364",
@@ -29,6 +33,7 @@
     "next": "^14.2.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-hook-form": "^7.51.5",
     "superjson": "2.2.1",
     "zod": "^3.23.8"
   },
@@ -41,7 +46,7 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "dotenv-cli": "^7.4.2",
-    "eslint": "^9.3.0",
+    "eslint": "^8.57.0",
     "jiti": "^1.21.0",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.3",

@@ -12,4 +12,4 @@ export const schema = z
     path: ["confirmPassword"],
   });
 
-export type FormFieldsSchem = z.infer<typeof schema>;
+export type FormFieldsSchema = z.infer<typeof schema>;

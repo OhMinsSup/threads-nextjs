@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 
+import type { FormFieldsSchema } from "@thread/validators/signin";
+import { isBoolean, isUndefined } from "@thread/shared/assertion";
 import { cn } from "@thread/ui";
 import { Button } from "@thread/ui/button";
 import {
@@ -16,40 +18,45 @@ import {
   FormMessage,
 } from "@thread/ui/form";
 import { Input } from "@thread/ui/input";
+import { schema } from "@thread/validators/signin";
 
+import type { PreviousState } from "~/actions/signup";
+import { serverAction } from "~/actions/signin";
 import { Icons } from "~/components/icons";
+import { InputPassword } from "~/components/shared/input-password";
 
 export default function SignInForm() {
-  // const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
-  // const [state, formAction] = useFormState<PreviousState, SignInInputSchema>(
-  //   signInAction,
-  //   undefined,
-  // );
+  const [state, formAction] = useFormState<PreviousState, FormFieldsSchema>(
+    serverAction,
+    undefined,
+  );
 
-  // const form = useForm<SignInInputSchema>({
-  //   progressive: true,
-  //   resolver: zodResolver(signInSchema),
-  //   defaultValues: {
-  //     username: "",
-  //     password: "",
-  //   },
-  //   errors: isUndefined(state) || isBoolean(state) ? undefined : state,
-  //   reValidateMode: "onBlur",
-  // });
+  const form = useForm<FormFieldsSchema>({
+    progressive: true,
+    resolver: zodResolver(schema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+    errors: isUndefined(state) || isBoolean(state) ? undefined : state,
+    reValidateMode: "onBlur",
+  });
 
   return (
     <div className="grid gap-6">
-      <form
-        id="signin-form"
-        // onSubmit={form.handleSubmit((input) => {
-        //   startTransition(() => {
-        //     formAction(input);
-        //   });
-        // })}
-      >
-        <div className="grid gap-5">
-          {/* <FormField
+      <Form {...form}>
+        <form
+          id="signin-form"
+          onSubmit={form.handleSubmit((input) => {
+            startTransition(() => {
+              formAction(input);
+            });
+          })}
+        >
+          <div className="grid gap-5">
+            <FormField
               control={form.control}
               name="username"
               render={({ field }) => (
@@ -95,10 +102,11 @@ export default function SignInForm() {
               {isPending ? (
                 <Icons.spinner className="mr-2 size-4 animate-spin" />
               ) : null}
-              로그인
-            </Button> */}
-        </div>
-      </form>
+              <span>로그인</span>
+            </Button>
+          </div>
+        </form>
+      </Form>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />

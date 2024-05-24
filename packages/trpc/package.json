@@ -7,7 +7,8 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./services/*": "./src/services/*.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -22,6 +23,9 @@
     "@thread/auth": "workspace:*",
     "@thread/db": "workspace:*",
     "@thread/validators": "workspace:*",
+    "@thread/enum": "workspace:*",
+    "@thread/shared": "workspace:*",
+    "@thread/error": "workspace:*",
     "@epic-web/remember": "^1.0.2",
     "@trpc/server": "11.0.0-rc.364",
     "superjson": "2.2.1",
@@ -31,7 +35,7 @@
     "@thread/eslint-config": "workspace:*",
     "@thread/prettier-config": "workspace:*",
     "@thread/tsconfig": "workspace:*",
-    "eslint": "^9.3.0",
+    "eslint": "^8.57.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5"
   },

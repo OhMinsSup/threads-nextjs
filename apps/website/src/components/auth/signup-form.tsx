@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useTransition } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFormState } from "react-dom";
+import { useForm } from "react-hook-form";
 
+import type { FormFieldsSchema } from "@thread/validators/signup";
+import { isBoolean, isUndefined } from "@thread/shared/assertion";
 import { cn } from "@thread/ui";
 import { Button } from "@thread/ui/button";
 import {
@@ -13,43 +18,46 @@ import {
   FormMessage,
 } from "@thread/ui/form";
 import { Input } from "@thread/ui/input";
+import { schema } from "@thread/validators/signup";
 
-// import { InputPassword } from "@thread/ui/input-password";
-
+import type { PreviousState } from "~/actions/signup";
+import { serverAction } from "~/actions/signup";
 import { Icons } from "~/components/icons";
+import { InputPassword } from "~/components/shared/input-password";
 
 export default function SignupForm() {
-  // const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
-  // const [state, formAction] = useFormState<PreviousState, SignUpInputSchema>(
-  //   signUpAction,
-  //   undefined,
-  // );
+  const [state, formAction] = useFormState<PreviousState, FormFieldsSchema>(
+    serverAction,
+    undefined,
+  );
 
-  // const form = useForm<SignUpInputSchema>({
-  //   resolver: zodResolver(signUpSchema),
-  //   defaultValues: {
-  //     username: "",
-  //     password: "",
-  //     confirmPassword: "",
-  //   },
-  //   errors: isUndefined(state) || isBoolean(state) ? undefined : state,
-  //   reValidateMode: "onBlur",
-  // });
+  const form = useForm<FormFieldsSchema>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
+    errors: isUndefined(state) || isBoolean(state) ? undefined : state,
+    reValidateMode: "onBlur",
+  });
 
   return (
     <div className="grid gap-6">
-      <form
-        id="signup-form"
-        data-testid="signup-form"
-        // onSubmit={form.handleSubmit((input) => {
-        //   startTransition(() => {
-        //     formAction(input);
-        //   });
-        // })}
-      >
-        <div className="grid gap-5">
-          {/* <FormField
+      <Form {...form}>
+        <form
+          id="signup-form"
+          data-testid="signup-form"
+          onSubmit={form.handleSubmit((input) => {
+            startTransition(() => {
+              formAction(input);
+            });
+          })}
+        >
+          <div className="grid gap-5">
+            <FormField
               control={form.control}
               name="username"
               render={({ field }) => (
@@ -117,11 +125,11 @@ export default function SignupForm() {
               {isPending ? (
                 <Icons.spinner className="mr-2 size-4 animate-spin" />
               ) : null}
-              회원가입
-            </Button> */}
-        </div>
-      </form>
-
+              <span>회원가입</span>
+            </Button>
+          </div>
+        </form>
+      </Form>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />

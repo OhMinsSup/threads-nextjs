@@ -5,4 +5,4 @@ export const schema = z.object({
   password: z.string().min(6, "비밀번호는 6글자 이상이어야 합니다."),
 });
 
-export type FormFieldsSchem = z.infer<typeof schema>;
+export type FormFieldsSchema = z.infer<typeof schema>;
