@@ -2,11 +2,12 @@ import type { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 
-// import GitHub from "next-auth/providers/github";
-
 import type { User, UserProfile } from "@thread/db";
-import { prisma, Prisma } from "@thread/db";
-import { getFullExternalUserSelector } from "@thread/db/selectors";
+import { prisma } from "@thread/db";
+import {
+  getFullExternalUserSelector,
+  getInternalUserSelector,
+} from "@thread/db/selectors";
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
 import { secureCompare } from "@thread/shared/password";
@@ -24,24 +25,10 @@ declare module "next-auth" {
 }
 
 export const authConfig = {
-  adapter: PrismaAdapter(Prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
-    // GitHub({
-    //   clientId: env.GITHUB_CLIENT_ID,
-    //   clientSecret: env.GITHUB_CLIENT_SECRET,
-    //   profile(profile) {
-    //     return {
-    //       id: profile.id.toString(),
-    //       name: profile.name ?? profile.login,
-    //       email: profile.email,
-    //       image: profile.avatar_url,
-    //     };
-    //   },
-    // }),
     Credentials({
-      id: "credentials",
-      name: "Credentials",
-      async authorize(credentials) {
+      authorize: async (credentials) => {
         const input = await schema.safeParseAsync(credentials);
         if (!input.success) {
           throw createError({
@@ -58,12 +45,7 @@ export const authConfig = {
           where: {
             username: input.data.username,
           },
-          select: {
-            id: true,
-            username: true,
-            password: true,
-            salt: true,
-          },
+          select: getInternalUserSelector(),
         });
 
         if (!user1) {
@@ -100,14 +82,8 @@ export const authConfig = {
         return user2;
       },
       credentials: {
-        username: {
-          label: "Username",
-          type: "text",
-        },
-        password: {
-          label: "Password",
-          type: "password",
-        },
+        username: {},
+        password: {},
       },
     }),
   ],
