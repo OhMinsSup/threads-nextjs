@@ -14,10 +14,10 @@ export const tagsRouter = {
       if (exists) return exists;
       return await tagsService.create(ctx.session.user.id, input);
     }),
-  getMentionTags: protectedProcedure
+  getSimpleTags: protectedProcedure
     .input($search.keyword)
     .query(async ({ input }) => {
       if (!input.keyword) return [];
-      return await tagsService.getMentionTags(input.keyword);
+      return await tagsService.getSimpleTags(input.keyword);
     }),
 } satisfies TRPCRouterRecord;

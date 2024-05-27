@@ -1,8 +1,8 @@
 import { remember } from "@epic-web/remember";
 
+import type { FormFieldsCreateSchema } from "@thread/validators/tag";
 import { prisma } from "@thread/db";
 import { getTagsSelector } from "@thread/db/selectors";
-import { type FormFieldsCreateSchema } from "@thread/validators/tag";
 
 export class TagsService {
   /**
@@ -69,10 +69,10 @@ export class TagsService {
   }
 
   /**
-   * @description 멘션 팝업 리스트에서 보여주기 위한 유저 리스트 조회
+   * @description 멘션 팝업 리스트에서 보여주기 위한 태그 리스트 조회
    * @param {string} keyword - 검색 키워드
    */
-  getMentionTags(keyword: string) {
+  getSimpleTags(keyword: string) {
     return prisma.tag.findMany({
       where: {
         name: {

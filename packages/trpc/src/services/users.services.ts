@@ -2,6 +2,7 @@ import { remember } from "@epic-web/remember";
 
 import type { FormFieldsSchema } from "@thread/validators/signup";
 import { prisma } from "@thread/db";
+import { getBaseUserSelector } from "@thread/db/selectors";
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
 import { generateHash, generateSalt } from "@thread/shared/password";
@@ -45,6 +46,25 @@ export class UsersService {
             website: undefined,
           },
         },
+      },
+    });
+  }
+
+  /**
+   * @description 멘션 팝업 리스트에서 보여주기 위한 유저 리스트 조회
+   * @param {string} keyword - 검색 키워드
+   */
+  async getSimpleUsers(keyword: string) {
+    return prisma.user.findMany({
+      where: {
+        username: {
+          contains: keyword,
+        },
+      },
+      take: 10,
+      select: getBaseUserSelector(),
+      orderBy: {
+        createdAt: "asc",
       },
     });
   }
