@@ -1,0 +1,5 @@
+.root {
+  perspective: 1px;
+  perspective-origin: right top;
+  scrollbar-width: none;
+}

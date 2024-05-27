@@ -15,6 +15,8 @@ interface ButtonLinkProps {
 export default function ButtonLink({ item, type }: ButtonLinkProps) {
   const { isActive, href } = useMainLinkActive({ item });
 
+  const Icon = item.icon;
+
   return (
     <Link
       href={item.disabled ? "#" : href}
@@ -26,7 +28,7 @@ export default function ButtonLink({ item, type }: ButtonLinkProps) {
         }),
       )}
     >
-      <item.icon />
+      <Icon className="size-6" aria-label={item.title} role="img" />
     </Link>
   );
 }

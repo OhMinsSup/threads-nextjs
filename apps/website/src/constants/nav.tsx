@@ -16,9 +16,11 @@ export interface NavItem {
     | "follow"
     | "replies"
     | "mentions"
-    | "reposts";
-
-  type: "link" | "myPage" | "home" | "thread";
+    | "reposts"
+    | "recommendation"
+    | "like"
+    | "saved";
+  type: "link" | "myPage";
   title: string;
   href?: string;
   relationHrefs?: string[];
@@ -35,15 +37,10 @@ export const NAV_CONFIG = {
   mainNav: [
     {
       id: "home",
-      type: "home",
+      type: "link",
       title: "Home",
       href: PAGE_ENDPOINTS.ROOT,
       icon: Icons.home,
-      relationHrefs: [PAGE_ENDPOINTS.ROOT, PAGE_ENDPOINTS.FOLLOWING],
-      relationIcons: {
-        [PAGE_ENDPOINTS.FOLLOWING]: Icons.users,
-        [PAGE_ENDPOINTS.ROOT]: Icons.home,
-      },
     },
     {
       id: "search",
@@ -53,25 +50,43 @@ export const NAV_CONFIG = {
       icon: Icons.search,
     },
     {
-      id: "thread",
+      id: "like",
       type: "link",
-      title: "New Thread",
-      href: PAGE_ENDPOINTS.THREADS.ROOT,
-      icon: Icons.pen,
-    },
-    {
-      id: "activity",
-      type: "link",
-      title: "Activity",
-      href: PAGE_ENDPOINTS.ACTIVITY.ROOT,
+      title: "Like",
+      href: PAGE_ENDPOINTS.LIKED,
       icon: Icons.heart,
-      relationHrefs: Object.values(PAGE_ENDPOINTS.ACTIVITY),
     },
     {
       id: "myPage",
       type: "myPage",
       title: "My Page",
       icon: Icons.user,
+    },
+  ] as NavItem[],
+  feedHeaderNav: [
+    {
+      id: "recommendation",
+      type: "link",
+      title: "회원님을 위한 추천",
+      href: PAGE_ENDPOINTS.ROOT,
+    },
+    {
+      id: "follow",
+      type: "link",
+      title: "팔로잉",
+      href: PAGE_ENDPOINTS.FOLLOWING,
+    },
+    {
+      id: "like",
+      type: "link",
+      title: "좋아요",
+      href: PAGE_ENDPOINTS.LIKED,
+    },
+    {
+      id: "saved",
+      type: "link",
+      title: "저장됨",
+      href: PAGE_ENDPOINTS.SAVED,
     },
   ] as NavItem[],
   scrollNav: [
@@ -123,10 +138,7 @@ export const mainNavbuttonVariants = ({
 }: MainNavbuttonVariantsParams) => {
   return cn(
     type === "header"
-      ? "mx-[2px] my-1 flex items-center px-6 py-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm lg:px-8 lg:py-5"
-      : undefined,
-    type === "footer"
-      ? "flex h-10 items-center p-4 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5 sm:text-sm"
+      ? "flex size-[60px] items-center justify-center px-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5"
       : undefined,
     isActive ? "text-foreground" : "text-foreground/60",
     item.disabled && "cursor-not-allowed opacity-80",

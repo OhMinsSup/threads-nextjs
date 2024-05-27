@@ -2,9 +2,8 @@
 
 import React from "react";
 
-import { MainHeader } from "~/components/layout/MainHeader";
-import { MainMobileFooterNav } from "~/components/layout/MainMobileFooterNav";
-import { MainNav } from "~/components/layout/MainNav";
+import { ContentLayout } from "~/components/layout/ContentLayout";
+import { Sidebar } from "~/components/layout/Sidebar";
 
 interface MainLayoutProps {
   before?: React.ReactNode;
@@ -18,18 +17,14 @@ export default function MainLayout({
   after,
 }: MainLayoutProps) {
   return (
-    <div className="flex flex-col">
-      <MainHeader>
-        <MainNav />
-      </MainHeader>
-      <main className="flex-1">
-        <div className="container max-w-2xl px-4">
-          {before}
-          {children}
-          {after}
+    <div>
+      <div>
+        {/* Loading Jazzy bar */}
+        <div>
+          <Sidebar />
+          <ContentLayout>{children}</ContentLayout>
         </div>
-      </main>
-      <MainMobileFooterNav />
+      </div>
     </div>
   );
 }

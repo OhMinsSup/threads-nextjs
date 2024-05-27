@@ -35,7 +35,7 @@ export default function UserMenu() {
       >
         <Icons.alignLeft />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" sideOffset={20}>
+      <DropdownMenuContent align="start" className="w-56" sideOffset={20}>
         <DropdownMenuItem>
           <Button
             className="h-auto w-full justify-start space-x-2 p-0"

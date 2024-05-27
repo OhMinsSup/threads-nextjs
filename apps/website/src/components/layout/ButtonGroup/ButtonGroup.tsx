@@ -9,7 +9,6 @@ interface ButtonGroupProps {
 
 export default function ButtonGroup({ item, type }: ButtonGroupProps) {
   switch (item.type) {
-    case "home":
     case "link": {
       return <ButtonLink item={item} type={type} />;
     }
