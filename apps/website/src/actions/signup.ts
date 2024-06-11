@@ -1,11 +1,11 @@
 "use server";
 
+import type { FieldErrors } from "react-hook-form";
 import { redirect } from "next/navigation";
-import { type FieldErrors } from "react-hook-form";
 
+import type { FormFieldsSchema } from "@thread/validators/signup";
 import { isError } from "@thread/error/http";
 import { usersService } from "@thread/trpc/services/users.services";
-import { type FormFieldsSchema } from "@thread/validators/signup";
 
 import { PAGE_ENDPOINTS } from "~/constants/constants";
 
