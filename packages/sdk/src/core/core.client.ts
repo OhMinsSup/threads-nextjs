@@ -1,27 +1,30 @@
-import type { $Fetch, ResponseType } from "ofetch";
+import type { $Fetch } from "ofetch";
 import { ofetch } from "ofetch";
 import { withBase, withoutTrailingSlash } from "ufo";
 
-import type { ApiVersionString, ClientOptions } from "./types";
-import AuthClient from "./auth/auth.client";
+import type {
+  ApiVersionString,
+  ClientOptions,
+  CoreClientBuilderNameKey,
+} from "./types";
+import CoreClientBuilder from "./core.builder";
 
-export class ThreadClient<R extends ResponseType = ResponseType> {
+export class CoreClient {
   protected url: string;
   protected version: ApiVersionString = "v1";
   protected fetchClient: $Fetch;
 
-  auth: AuthClient;
+  builder: CoreClientBuilder;
 
-  constructor(
-    url: string,
-    { $fetchOptions, apiVersion, $fetchClient }: ClientOptions<R>,
-  ) {
+  constructor(url: string, options?: ClientOptions) {
     if (!url) {
       const error = new Error();
       error.name = "ThreadClientError";
       error.message = "ThreadClient requires a valid URL.";
       throw error;
     }
+
+    const { $fetchOptions, apiVersion, $fetchClient } = options ?? {};
 
     this.url = withBase(withoutTrailingSlash(url), this.version);
 
@@ -41,6 +44,13 @@ export class ThreadClient<R extends ResponseType = ResponseType> {
       });
     }
 
-    this.auth = new AuthClient({ $fetch: this.fetchClient });
+    this.builder = new CoreClientBuilder({
+      $url: url,
+      $fetch: this.fetchClient,
+    });
+  }
+
+  from<Bn extends CoreClientBuilderNameKey>(bn: Bn) {
+    return this.builder[bn];
   }
 }
