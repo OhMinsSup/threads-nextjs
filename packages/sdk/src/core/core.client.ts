@@ -14,7 +14,7 @@ export class CoreClient {
   protected version: ApiVersionString = "v1";
   protected fetchClient: $Fetch;
 
-  builder: CoreClientBuilder;
+  protected _client: CoreClientBuilder;
 
   constructor(url: string, options?: ClientOptions) {
     if (!url) {
@@ -44,13 +44,17 @@ export class CoreClient {
       });
     }
 
-    this.builder = new CoreClientBuilder({
+    this._client = new CoreClientBuilder({
       $url: url,
       $fetch: this.fetchClient,
     });
   }
 
   from<Bn extends CoreClientBuilderNameKey>(bn: Bn) {
-    return this.builder[bn];
+    return this._client[bn];
+  }
+
+  get client() {
+    return this._client;
   }
 }

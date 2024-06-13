@@ -14,6 +14,8 @@ export type $FetchOptions = Omit<JsonFetchOptions, "body" | "baseURL">;
 
 export type $Url = string;
 
+export type $FetchTypeNameKey = keyof Pick<$Fetch, "create" | "raw" | "native">;
+
 export interface ClientOptions {
   /**
    * API version.

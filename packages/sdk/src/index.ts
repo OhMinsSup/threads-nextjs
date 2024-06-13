@@ -4,3 +4,5 @@ import { CoreClient } from "./core/core.client";
 export const createClient = (url: string, options?: ClientOptions) => {
   return new CoreClient(url, options);
 };
+
+const client = createClient("https://api.example.com");
