@@ -2,6 +2,8 @@
   "extends": "@thread/tsconfig/nestjs.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "module": "ES2022",
+    "moduleResolution": "Bundler"
   }
 }

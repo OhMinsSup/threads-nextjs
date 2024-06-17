@@ -2,289 +2,87 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id                  String           @id @default(cuid())
-  name                String
-  username            String           @unique
-  password            String?
-  salt                String?
-  email               String?          @unique
-  emailVerified       DateTime?        @map(name: "email_verified")
-  image               String?
-  createdAt           DateTime         @default(now()) @map(name: "created_at")
-  updatedAt           DateTime         @updatedAt @map(name: "updated_at")
-  accounts            Account[]
-  sessions            Session[]
-  profile             UserProfile?
-  threadAssets        ThreadAsset[]
-  threads             Thread[]
-  threadLikes         ThreadLike[]
-  threadMention       ThreadMention[]
-  following           UserFollow[]     @relation(name: "following_relation")
-  followers           UserFollow[]     @relation(name: "follower_relation")
-  bookmarks           ThreadBookmark[]
-  requestUserBlockeds UserBlock[]      @relation(name: "request_user_blocked_relation")
-  userBlockeds        UserBlock[]      @relation(name: "user_blocked_relation")
-  reports             ThreadReport[]
-  reposts             ThreadRepost[]   @relation(name: "reposts_user_relation")
+  id            String        @id @default(cuid())
+  email         String        @unique
+  emailVerified DateTime?
+  name          String
+  avatarUrl     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime? // 삭제 시간
+  lastActiveAt  DateTime? // 마지막 활동 시간
+  isSuspended   Boolean       @default(false) // true: 정지, false: 활성 
+  Password      Password?
+  UserProfile   UserProfile?
+  UserSettings  UserSettings?
+  Account       Account[]
+  Session       Session[]
 
   @@map(name: "users")
 }
 
+model Password {
+  hash   String //  비밀번호 해시
+  salt   String // 비밀번호 솔트
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+
+  @@map(name: "passwords")
+}
+
 model UserProfile {
-  id      String  @id @default(cuid())
-  bio     String?
-  website String?
-  userId  String  @unique @map(name: "user_id")
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio     String? // default: null, 자기소개
+  website String? // default: null, 웹사이트
+  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String  @unique
 
   @@map("user_profiles")
 }
 
-model UserFollow {
-  id         String @id @default(cuid())
-  userId     String @map(name: "user_id")
-  followerId String @map(name: "follower_id")
-  user       User   @relation(name: "following_relation", fields: [userId], references: [id], onDelete: Cascade)
-  follower   User   @relation(name: "follower_relation", fields: [followerId], references: [id], onDelete: Cascade)
+model UserSettings {
+  privacySettings Boolean @default(false) // true: private, false: public
+  User            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String  @unique
 
-  @@unique([userId, followerId])
-  @@map(name: "user_follows")
+  @@map("user_settings")
 }
 
 model Account {
-  id                String   @id @default(cuid())
-  userId            String   @map(name: "user_id")
+  userId            String
   type              String
   provider          String
-  providerAccountId String   @map(name: "provider_account_id")
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
+  providerAccountId String
+  refreshToken      String?
+  accessToken       String?
+  expiresAt         Int?
+  tokenType         String?
   scope             String?
-  id_token          String?
-  session_state     String?
+  idToken           String?
+  sessionState      String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
-  @@map(name: "accounts")
+  @@id([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map(name: "session_token")
-  userId       String   @map(name: "user_id")
+  sessionToken String   @unique
+  userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@map(name: "sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map(name: "verification_tokens")
-}
-
-model Thread {
-  id                             String           @id @default(cuid())
-  text                           String
-  jsonString                     String?          @map(name: "json_string")
-  level                          Int?             @default(0)
-  deleted                        Boolean?         @default(false)
-  whoCanLeaveComments            String?          @default("everyone") @map(name: "who_can_leave_comments") // everyone, followers, mentiones, nobody
-  hiddenNumberOfLikesAndComments Boolean?         @default(false) @map(name: "hidden_number_of_likes_and_comments")
-  createdAt                      DateTime         @default(now()) @map(name: "created_at")
-  updatedAt                      DateTime         @updatedAt @map(name: "updated_at")
-  userId                         String           @map(name: "user_id")
-  assets                         ThreadAsset[]
-  likes                          ThreadLike[]
-  bookmarks                      ThreadBookmark[]
-  user                           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tags                           ThreadTag[]
-  mentions                       ThreadMention[]
-  stats                          ThreadStats?
-  report                         ThreadReport[]
-  reposts                        ThreadRepost[]   @relation(name: "reposts_thread_relation")
-
-  @@index([createdAt], map: "threads_created_at")
-  @@index([deleted])
-  @@index([userId, deleted], map: "threads_user_id_deleted")
-  @@map(name: "threads")
-}
-
-model ThreadRepost {
-  id        String   @id @default(cuid())
-  threadId  String   @map(name: "thread_id")
-  userId    String   @map(name: "user_id")
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  thread    Thread   @relation(name: "reposts_thread_relation", fields: [threadId], references: [id], onDelete: Cascade)
-  user      User     @relation(name: "reposts_user_relation", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([threadId, userId])
-  @@map(name: "thread_reposts")
-}
-
-model ThreadStats {
-  id        String   @id @default(cuid())
-  threadId  String   @unique @map(name: "thread_id")
-  score     Float    @default(0)
-  likes     Int      @default(0)
-  reposts   Int      @default(0)
-  comments  Int      @default(0)
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
-
-  @@index([score(sort: Desc), threadId(sort: Desc)])
-  @@index([likes(sort: Desc), threadId(sort: Desc)])
-  @@map(name: "thread_stats")
-}
-
-model ThreadBookmark {
-  id        String   @id @default(cuid())
-  userId    String   @map(name: "user_id")
-  threadId  String   @map(name: "thread_id")
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, threadId])
-  @@index(createdAt)
-  @@index(userId)
-  @@map("thread_bookmarks")
-}
-
-model ThreadLike {
-  id        String   @id @default(cuid())
-  threadId  String   @map(name: "thread_id")
-  userId    String   @map(name: "user_id")
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([threadId, userId])
-  @@index(createdAt)
-  @@index(userId)
-  @@map(name: "thread_likes")
-}
-
-model ThreadAsset {
-  id        String   @id @default(cuid())
-  userId    String?  @map(name: "user_id")
-  threadId  String?  @map(name: "thread_id")
-  fileId    String?  @map(name: "file_id")
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  thread    Thread?  @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  file      File?    @relation(fields: [fileId], references: [id], onDelete: Cascade)
-
-  @@map(name: "thread_assets")
-}
-
-model ThreadTag {
-  id       String @id @default(cuid())
-  threadId String @map(name: "thread_id")
-  tagId    String @map(name: "tag_id")
-  thread   Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([threadId, tagId])
-  @@map(name: "thread_tags")
-}
-
-model ThreadMention {
-  id        String   @id @default(cuid())
-  threadId  String   @map(name: "thread_id")
-  userId    String   @map(name: "user_id")
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([threadId, userId])
-  @@map(name: "thread_mentions")
-}
-
-model ThreadReport {
-  id        String       @id @default(cuid())
-  threadId  String       @map(name: "thread_id")
-  userId    String       @map(name: "user_id")
-  reasonId  String       @map(name: "reason_id")
-  comment   String?
-  createdAt DateTime     @default(now()) @map(name: "created_at")
-  updatedAt DateTime     @updatedAt @map(name: "updated_at")
-  thread    Thread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reason    ReportReason @relation(fields: [reasonId], references: [id], onDelete: Cascade)
-
-  @@map(name: "thread_reports")
-}
-
-model File {
-  id         String        @id @default(cuid())
-  filename   String
-  filesize   Int
-  filetype   String        @map(name: "file_type")
-  publicUrl  String        @map(name: "public_url")
-  uploadType String        @map(name: "upload_type")
-  createdAt  DateTime      @default(now()) @map(name: "created_at")
-  updatedAt  DateTime      @updatedAt @map(name: "updated_at")
-  assets     ThreadAsset[]
-
-  @@map(name: "files")
-}
-
-model Tag {
-  id         String      @id @default(cuid())
-  name       String      @unique
-  createdAt  DateTime    @default(now()) @map(name: "created_at")
-  updatedAt  DateTime    @updatedAt @map(name: "updated_at")
-  threadTags ThreadTag[]
-
-  @@map(name: "tags")
-}
-
-model UserBlock {
-  id        String   @id @default(cuid())
-  userId    String   @map(name: "user_id")
-  blockedId String   @map(name: "blocked_id")
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  user      User     @relation(name: "request_user_blocked_relation", fields: [userId], references: [id], onDelete: Cascade)
-  blocked   User     @relation(name: "user_blocked_relation", fields: [blockedId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, blockedId])
-  @@map(name: "user_blocks")
-}
-
-model ReportReason {
-  id        String         @id @default(cuid())
-  name      String         @unique
-  createdAt DateTime       @default(now()) @map(name: "created_at")
-  updatedAt DateTime       @updatedAt @map(name: "updated_at")
-  threads   ThreadReport[]
-
-  @@map(name: "report_reasons")
+  @@map("sessions")
 }
