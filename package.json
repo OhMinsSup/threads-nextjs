@@ -32,10 +32,10 @@
   "prettier": "@thread/prettier-config",
   "devDependencies": {
     "@thread/prettier-config": "workspace:*",
-    "@turbo/gen": "^1.13.3",
+    "@turbo/gen": "^2.0.4",
     "dotenv-cli": "^7.4.2",
-    "prettier": "^3.2.5",
-    "turbo": "^1.13.3",
+    "prettier": "^3.3.2",
+    "turbo": "^2.0.4",
     "typescript": "^5.4.5"
   },
   "packageManager": "pnpm@9.0.5",
