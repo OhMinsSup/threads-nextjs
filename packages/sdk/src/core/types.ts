@@ -16,6 +16,11 @@ export type $Url = string;
 
 export type $FetchTypeNameKey = keyof Pick<$Fetch, "create" | "raw" | "native">;
 
+// 함수 타입의 키만 추출하는 유틸리티 타입
+export type FunctionKeys<T> = {
+  [K in keyof T]: T[K] extends Function ? K : never;
+}[keyof T];
+
 export interface ClientOptions {
   /**
    * API version.
@@ -41,8 +46,6 @@ export interface ClientOptions {
 export interface ICoreClientBuilder {
   auth: AuthClient;
 }
-
-export type CoreClientBuilderNameKey = keyof ICoreClientBuilder;
 
 export interface CoreClientBuilderConstructorOptions {
   $url: $Url;

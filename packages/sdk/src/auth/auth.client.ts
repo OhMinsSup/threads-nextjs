@@ -1,14 +1,14 @@
 import type { $Fetch } from "ofetch";
 
 import type {
-  AuthBuilderConstructorOptions,
   AuthClientConstructorOptions,
   FnNameKey,
+  RpcOptions,
 } from "./types";
 import AuthBuilder from "./auth.builder";
 
 /**
- * ThreadREST client.
+ * ThreadREST Auth client.
  *
  */
 export default class AuthClient {
@@ -20,20 +20,15 @@ export default class AuthClient {
     this.$url = $url;
   }
 
-  rpc<Fn extends FnNameKey>(
-    fn: Fn,
-    options: AuthBuilderConstructorOptions<Fn>,
-  ) {
-    return new AuthBuilder<Fn>({
+  rpc<FnKey extends FnNameKey>(fnKey: FnKey, options: RpcOptions<FnKey> = {}) {
+    const builder = new AuthBuilder<FnKey>({
+      $fnKey: fnKey,
       $url: this.$url,
       $fetch: this.$fetch,
-      input: options.input,
-      method: options.method,
       $fetchOptions: options.$fetchOptions,
-    })[fn];
-  }
+      method: options.method ?? "GET",
+    });
 
-  signUp(options: AuthBuilderConstructorOptions<"signUp">) {
-    return this.rpc("signUp", options);
+    return builder;
   }
 }

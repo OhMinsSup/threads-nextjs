@@ -2,11 +2,7 @@ import type { $Fetch } from "ofetch";
 import { ofetch } from "ofetch";
 import { withBase, withoutTrailingSlash } from "ufo";
 
-import type {
-  ApiVersionString,
-  ClientOptions,
-  CoreClientBuilderNameKey,
-} from "./types";
+import type { ApiVersionString, ClientOptions } from "./types";
 import CoreClientBuilder from "./core.builder";
 
 export class CoreClient {
@@ -50,11 +46,7 @@ export class CoreClient {
     });
   }
 
-  from<Bn extends CoreClientBuilderNameKey>(bn: Bn) {
-    return this._client[bn];
-  }
-
-  get client() {
-    return this._client;
+  get auth() {
+    return this._client.auth;
   }
 }
