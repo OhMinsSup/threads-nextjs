@@ -3,19 +3,36 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./client": {
-      "types": "./dist/client.d.ts",
-      "default": "./src/client.ts"
+      "import": {
+        "types": "./dist/client.d.ts",
+        "default": "./dist/client.js"
+      },
+      "require": {
+        "types": "./dist/client.d.cts",
+        "default": "./dist/client.cjs"
+      }
     },
     "./env": "./env.ts"
   },
   "license": "MIT",
   "scripts": {
+    "build": "tsup",
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
@@ -25,16 +42,14 @@
     "db:generate": "pnpm with-env prisma generate",
     "db:push": "pnpm with-env prisma db push",
     "db:studio": "pnpm with-env prisma studio",
-    "db:seed": "tsx src/seed.ts",
+    "db:seed": "tsx seed.ts",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "postinstall": "tsup"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.1.0",
-    "@prisma/adapter-pg": "^5.14.0",
     "@prisma/client": "^5.14.0",
     "@t3-oss/env-core": "^0.10.1",
-    "@vercel/postgres": "^0.8.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -46,10 +61,11 @@
     "prettier": "^3.2.5",
     "prisma": "^5.14.0",
     "tsx": "^4.10.5",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "tsup": "^8.1.0"
   },
   "prettier": "@thread/prettier-config",
   "prisma": {
-    "seed": "pnpm dlx tsx src/seed.ts"
+    "seed": "pnpm dlx tsx seed.ts"
   }
 }
