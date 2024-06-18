@@ -1,6 +1,9 @@
 import type { INestApplication } from "@nestjs/common";
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
+import { Injectable, OnModuleInit } from "@nestjs/common";
+
+import { PrismaClient } from "@thread/db";
+
+import { LoggerService } from "../logger/logger.service";
 
 export type QueryEvent = {
   timestamp: Date;
@@ -14,7 +17,7 @@ export type QueryEvent = {
 export class PrismaService extends PrismaClient implements OnModuleInit {
   private _contextName = "prisma - database";
 
-  constructor(private readonly logger: Logger) {
+  constructor(private readonly logger: LoggerService) {
     super({
       log: [
         {
@@ -35,12 +38,18 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
     // @ts-ignore - this is a private property
     this.$on("query", (e: QueryEvent) => {
-      this.logger.log("--------------------------------------------------");
+      this.logger.log(
+        "--------------------------------------------------",
+        this._contextName,
+      );
       this.logger.log(`[Timestamp]: ` + e.timestamp, this._contextName);
       this.logger.log(`[Query]: ` + e.query, this._contextName);
       this.logger.log(`[Params]: ` + e.params, this._contextName);
       this.logger.log(`[Duration]: ` + `${e.duration} ms`, this._contextName);
-      this.logger.log("--------------------------------------------------");
+      this.logger.log(
+        "--------------------------------------------------",
+        this._contextName,
+      );
     });
 
     // @ts-ignore - this is a private property
