@@ -1,4 +1,4 @@
-export enum HttpStatus {
+export enum HttpResultStatus {
   OK = 1, // 성공
   FAIL = 0, // 실패
   INCORRECT_PASSWORD = 4004, // 잘못된 패스워드

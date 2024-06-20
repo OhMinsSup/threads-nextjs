@@ -4,14 +4,46 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*.ts"
+    "./package.json": "./package.json",
+    "./http-status": {
+      "import": {
+        "types": "./dist/http-status.d.ts",
+        "default": "./dist/http-status.js"
+      },
+      "require": {
+        "types": "./dist/http-status.d.cts",
+        "default": "./dist/http-status.cjs"
+      }
+    },
+    "./request-method": {
+      "import": {
+        "types": "./dist/request-method.d.ts",
+        "default": "./dist/request-method.js"
+      },
+      "require": {
+        "types": "./dist/request-method.d.cts",
+        "default": "./dist/request-method.cjs"
+      }
+    },
+    "./result-status": {
+      "import": {
+        "types": "./dist/result-status.d.ts",
+        "default": "./dist/result-status.js"
+      },
+      "require": {
+        "types": "./dist/result-status.d.cts",
+        "default": "./dist/result-status.cjs"
+      }
+    }
   },
   "license": "MIT",
   "scripts": {
+    "build": "tsup",
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postinstall": "tsup"
   },
   "devDependencies": {
     "@thread/eslint-config": "workspace:*",
@@ -19,7 +51,8 @@
     "@thread/tsconfig": "workspace:*",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "tsup": "^8.1.0"
   },
   "prettier": "@thread/prettier-config"
 }

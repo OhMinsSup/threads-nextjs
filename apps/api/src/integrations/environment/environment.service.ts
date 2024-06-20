@@ -37,6 +37,15 @@ export class EnvironmentService {
     return this.configService.get<string | undefined>("PASSWORD_SALT_OR_ROUND");
   }
 
+  getSaltRounds(defaultRound = 64): number {
+    const round = this.getPasswordSaltOrRound();
+    const saltRounds = round ? Number(round) : defaultRound;
+    if (isNaN(saltRounds)) {
+      return defaultRound;
+    }
+    return saltRounds;
+  }
+
   // -----------------------------------------------------------------------------
   // logger
   // -----------------------------------------------------------------------------
@@ -58,7 +67,7 @@ export class EnvironmentService {
     return this.configService.get<string>("ACCESS_TOKEN_EXPIRES_IN");
   }
 
-  getAuthTokenExpiresAt() {
+  getAccessTokenExpiresAt() {
     const expiresIn = this.getAccessTokenExpiresIn();
     return addMilliseconds(new Date().getTime(), ms(expiresIn));
   }
@@ -78,5 +87,16 @@ export class EnvironmentService {
 
   getRefreshTokenSecret(): string {
     return this.configService.get<string>("REFRESH_TOKEN_SECRET");
+  }
+
+  // -----------------------------------------------------------------------------
+  // throttle
+  // -----------------------------------------------------------------------------
+  getThrottleConfig() {
+    return {
+      ttl: 10,
+      limit: 60000,
+      ignoreUserAgents: [],
+    };
   }
 }

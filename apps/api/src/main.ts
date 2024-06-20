@@ -2,6 +2,7 @@ import type { NestExpressApplication } from "@nestjs/platform-express";
 import { ValidationPipe, VersioningType } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import compression from "compression";
 import helmet from "helmet";
 
@@ -48,6 +49,17 @@ async function bootstrap() {
     },
     credentials: true,
   });
+
+  const swagger = new DocumentBuilder()
+    .setTitle("API Document")
+    .setDescription("API Document")
+    .setVersion("1.0")
+    .addBearerAuth()
+    .addCookieAuth(config.get("COOKIE_TOKEN_NAME") ?? "access_token")
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swagger);
+  SwaggerModule.setup("api/docs", app, document);
 
   app.use(helmet());
   app.use(compression());

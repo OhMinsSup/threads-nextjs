@@ -51,3 +51,12 @@ export interface CoreClientBuilderConstructorOptions {
   $url: $Url;
   $fetch: $Fetch;
 }
+
+// core client types response type -----------------------------------
+
+export interface CoreClientResponse<Data = any> {
+  resultCode: number;
+  message?: string | string[] | Record<string, any> | null;
+  error?: string | string[] | Record<string, any> | null;
+  result: Data;
+}

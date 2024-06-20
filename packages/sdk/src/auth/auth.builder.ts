@@ -3,7 +3,12 @@ import type { $Fetch } from "ofetch";
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
 
-import type { $FetchOptions, $Url, MethodType } from "../core/types";
+import type {
+  $FetchOptions,
+  $Url,
+  CoreClientResponse,
+  MethodType,
+} from "../core/types";
 import type {
   FormFieldSignInSchema,
   FormFieldSignUpSchema,
@@ -11,6 +16,7 @@ import type {
 import type {
   AuthBuilderConstructorOptions,
   AuthBuilderInput,
+  AuthResponse,
   FnNameKey,
 } from "./types";
 import { schema } from "./auth.schema";
@@ -85,7 +91,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<Record<string, string>, "json">(
+    return await this.$fetch<CoreClientResponse<AuthResponse>, "json">(
       this._endpoints.signUp,
       {
         ...(this.$fetchOptions ?? {}),
@@ -122,7 +128,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<Record<string, string>, "json">(
+    return await this.$fetch<CoreClientResponse<AuthResponse>, "json">(
       this._endpoints.signIn,
       {
         ...(this.$fetchOptions ?? {}),

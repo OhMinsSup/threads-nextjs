@@ -47,3 +47,14 @@ export type AuthBuilderConstructorOptions<FnKey extends FnNameKey> =
 export type RpcOptions<FnKey extends FnNameKey> = Partial<
   Pick<AuthBuilderConstructorOptions<FnKey>, "method" | "$fetchOptions">
 >;
+
+// auth response types -----------------------------------
+
+interface AuthToken {
+  accessToken: string;
+  refreshToken: string;
+}
+export interface AuthResponse {
+  userId: string;
+  tokens: AuthToken;
+}

@@ -1,4 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
+import crypto from "node:crypto";
+import utils from "node:util";
+import { Injectable } from "@nestjs/common";
 
 import {
   generateHash,
@@ -8,6 +10,9 @@ import {
 
 import { EnvironmentService } from "../../../integrations/environment/environment.service";
 import { LoggerService } from "../../../integrations/logger/logger.service";
+
+const randomBytesPromise = utils.promisify(crypto.randomBytes);
+const pbkdf2Promise = utils.promisify(crypto.pbkdf2);
 
 @Injectable()
 export class PasswordService {
@@ -19,27 +24,36 @@ export class PasswordService {
   ) {}
 
   /**
+   * @description Generates a salt
+   */
+  async createSalt() {
+    const buf = await randomBytesPromise(this.env.getSaltRounds(64));
+    return buf.toString("base64");
+  }
+
+  /**
    * @description Hashes a password
    * @param {string} password
    */
-  async hash(password: string) {
-    const saltOrRound =
-      this.env.getPasswordSaltOrRound() || (await generateSalt());
-    const hashed = await generateHash(password, saltOrRound);
-    return {
-      hashed,
-      saltOrRound,
-    };
+  hash(password: string) {
+    return crypto.createHash("sha512").update(password).digest("base64");
   }
 
-  async compare(password: string, hashed: string) {
-    try {
-      return await secureCompare(password, hashed);
-    } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(error, error.stack, this._contextName);
-      }
-      return false;
+  /**
+   * @description Password comparison
+   * @param {string} password
+   * @param {string} userSalt
+   * @param {string} userPassword
+   */
+  async compare(password: string, userSalt: string, userPassword: string) {
+    const key = await pbkdf2Promise(password, userSalt, 104906, 64, "sha512");
+
+    const hashedPassword = key.toString("base64");
+
+    if (hashedPassword === userPassword) {
+      return true;
     }
+
+    return false;
   }
 }
