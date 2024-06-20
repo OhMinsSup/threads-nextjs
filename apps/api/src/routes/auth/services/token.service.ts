@@ -1,13 +1,12 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { assertHttpError } from "src/libs/error";
 
-import { Prisma } from "@thread/db";
-import { HttpResultStatus } from "@thread/enum/result-status";
+import type { Prisma, Token } from "@thread/db";
 
 import { EnvironmentService } from "../../../integrations/environment/environment.service";
 import { LoggerService } from "../../../integrations/logger/logger.service";
 import { PrismaService } from "../../../integrations/prisma/prisma.service";
+import { AppTokenType } from "../../../libs/constants";
 import { JwtPayload } from "../strategies/jwt.auth.strategy";
 
 @Injectable()
@@ -21,63 +20,63 @@ export class TokenService {
     private readonly logger: LoggerService,
   ) {}
 
-  async generateAccessToken(
-    userId: string,
-    tx: Prisma.TransactionClient | undefined = undefined,
-  ) {
+  /**
+   * @description Generate access token
+   * @param {string} userId
+   * @param {Prisma.TransactionClient} tx
+   */
+  generateAccessToken(userId: string) {
+    const secret = this.env.getAccessTokenSecret();
     const expiresAt = this.env.getAccessTokenExpiresAt();
 
-    const user = tx
-      ? await tx.user.findUnique({ where: { id: userId } })
-      : await this.prisma.user.findUnique({ where: { id: userId } });
-
-    assertHttpError(
-      !user,
-      {
-        resultCode: HttpResultStatus.NOT_EXIST,
-        message: "가입되지 않은 사용자 입니다.",
-        error: null,
-        result: null,
-      },
-      "가입되지 않은 사용자 입니다.",
-      HttpStatus.NOT_FOUND,
-    );
-
     const jwtPayload: JwtPayload = {
-      sub: user.id,
+      sub: userId,
     };
 
     return {
-      token: this.jwt.sign(jwtPayload),
+      token: this.jwt.sign(jwtPayload, {
+        secret,
+        expiresIn: this.env.getAccessTokenExpiresIn(),
+        // Jwtid will be used to link RefreshToken entity to this token
+      }),
       expiresAt,
     };
   }
 
-  async generateRefreshToken(userId: string) {
+  /**
+   * @description Generate refresh token
+   * @param {string} userId
+   * @param {Prisma.TransactionClient} tx
+   */
+  async generateRefreshToken(
+    userId: string,
+    tx: Prisma.TransactionClient | undefined = undefined,
+  ) {
     const secret = this.env.getRefreshTokenSecret();
     const expiresAt = this.env.getRefreshTokenExpiresAt();
 
-    const refreshTokenPayload = {
+    const refreshTokenPayload: Pick<Token, "type" | "expires" | "userId"> = {
       userId,
-      expiresAt,
-      // type: AppTokenType.RefreshToken,
+      expires: expiresAt,
+      type: AppTokenType.RefreshToken,
     };
+
     const jwtPayload = {
       sub: userId,
     };
 
-    // const refreshToken = this.appTokenRepository.create(refreshTokenPayload);
+    const refreshToken = tx
+      ? await tx.token.create({ data: refreshTokenPayload })
+      : await this.prisma.token.create({ data: refreshTokenPayload });
 
-    // await this.appTokenRepository.save(refreshToken);
-
-    // return {
-    //   token: this.jwtService.sign(jwtPayload, {
-    //     secret,
-    //     expiresIn,
-    //     // Jwtid will be used to link RefreshToken entity to this token
-    //     jwtid: refreshToken.id,
-    //   }),
-    //   expiresAt,
-    // };
+    return {
+      token: this.jwt.sign(jwtPayload, {
+        secret,
+        expiresIn: this.env.getRefreshTokenExpiresIn(),
+        // Jwtid will be used to link RefreshToken entity to this token
+        jwtid: refreshToken.id,
+      }),
+      expiresAt,
+    };
   }
 }

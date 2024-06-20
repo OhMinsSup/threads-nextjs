@@ -22,8 +22,57 @@ export class AuthService {
     private readonly token: TokenService,
     private readonly user: UsersService,
     private readonly password: PasswordService,
-    @Inject(REQUEST) private request: Request,
+    @Inject(REQUEST) private request: Express.Request,
   ) {}
+
+  async signin(input: SignupDTO) {
+    const user = await this.user.getInternalUserByEmail(input.email);
+
+    assertHttpError(
+      !user,
+      {
+        resultCode: HttpResultStatus.NOT_EXIST,
+        message: "가입되지 않은 사용자 입니다.",
+        error: null,
+        result: null,
+      },
+      "가입되지 않은 사용자 입니다.",
+      HttpStatus.NOT_FOUND,
+    );
+
+    const isMatch = await this.password.compare(
+      input.password,
+      user.Password.salt,
+      user.Password.hash,
+    );
+
+    assertHttpError(
+      !isMatch,
+      {
+        resultCode: HttpResultStatus.INCORRECT_PASSWORD,
+        message: "비밀번호가 일치하지 않습니다.",
+        error: null,
+        result: null,
+      },
+      "비밀번호가 일치하지 않습니다.",
+      HttpStatus.UNAUTHORIZED,
+    );
+
+    const accessToken = this.token.generateAccessToken(user.id);
+    const refreshToken = await this.token.generateRefreshToken(user.id);
+
+    return {
+      resultCode: HttpResultStatus.OK,
+      message: null,
+      error: null,
+      result: {
+        tokens: {
+          accessToken,
+          refreshToken,
+        },
+      },
+    };
+  }
 
   async signup(input: SignupDTO) {
     const user = await this.user.getInternalUserByEmail(input.email);
@@ -44,26 +93,27 @@ export class AuthService {
 
     const emailSplit = input.email.split("@").at(0) ?? "username";
 
-    const signupData = {
-      email: input.email,
-      name: generatorName(emailSplit),
-      password: hash,
-    };
-
     return await this.prisma.$transaction(async (tx) => {
-      const user = await this.user.createUser(signupData, tx);
+      const user = await this.user.createUser(
+        {
+          email: input.email,
+          name: input.name ?? generatorName(emailSplit),
+          password: hash,
+        },
+        tx,
+      );
 
-      const accessToken = await this.token.generateAccessToken(user.id);
-      // const refreshToken = await this.tokenService.generateRefreshToken(user.id);
+      const accessToken = this.token.generateAccessToken(user.id);
+      const refreshToken = await this.token.generateRefreshToken(user.id, tx);
 
       return {
         resultCode: HttpResultStatus.OK,
         message: null,
         error: null,
         result: {
-          userId: user.id,
           tokens: {
             accessToken,
+            refreshToken,
           },
         },
       };

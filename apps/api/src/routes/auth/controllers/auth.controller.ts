@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, Res } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 
+import { SigninDTO } from "../dto/signin.dto";
 import { SignupDTO } from "../dto/signup.dto";
 import { AuthService } from "../services/auth.service";
 
@@ -20,15 +21,23 @@ export class AuthController {
   })
   async signup(
     @Body() body: SignupDTO,
-    // @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    // const user = pickUserMe(
-    //   await this.authService.signup(body.email, body.password),
-    // );
-    // // set cookie, passport login
-    // await new Promise<void>((resolve, reject) => {
-    //   req.login(user, (err) => (err ? reject(err) : resolve()));
-    // });
-    // return user;
+    return await this.service.signup(body);
+  }
+
+  @Throttle({ default: { limit: 10, ttl: 60 } })
+  @Post("signin")
+  @ApiOperation({ summary: "이메일 로그인" })
+  @ApiBody({
+    required: true,
+    description: "로그인 API",
+    type: SignupDTO,
+  })
+  async signin(
+    @Body() body: SigninDTO,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return await this.service.signin(body);
   }
 }

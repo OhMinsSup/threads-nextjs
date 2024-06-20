@@ -26,10 +26,4 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, "jwt") {
       secretOrKey: env.getAccessTokenSecret(),
     });
   }
-
-  async validate(payload: JwtPayload): Promise<PassportUser> {
-    return {
-      user: undefined,
-    };
-  }
 }

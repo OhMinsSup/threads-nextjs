@@ -12,10 +12,10 @@ datasource db {
 
 model User {
     id            String        @id @default(cuid())
-    email         String        @unique
-    emailVerified DateTime?
-    name          String
-    avatarUrl     String?
+    email         String        @unique // 이메일
+    emailVerified DateTime? // true: 이메일 인증 완료, false: 이메일 인증 대기
+    name          String // 사용자 이름
+    avatarUrl     String? // 프로필 이미지 URL
     createdAt     DateTime      @default(now())
     updatedAt     DateTime      @updatedAt
     deletedAt     DateTime? // 삭제 시간
@@ -25,7 +25,7 @@ model User {
     UserProfile   UserProfile?
     UserSettings  UserSettings?
     Account       Account[]
-    Session       Session[]
+    Token         Token[]
 
     @@map(name: "users")
 }
@@ -76,13 +76,14 @@ model Account {
     @@map("accounts")
 }
 
-model Session {
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+model Token {
+    id        String   @id @default(cuid())
+    type      String //   RefreshToken, AccessToken,
+    userId    String
+    expires   DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@map("sessions")
+    @@map("tokens")
 }

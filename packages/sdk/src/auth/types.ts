@@ -50,11 +50,11 @@ export type RpcOptions<FnKey extends FnNameKey> = Partial<
 
 // auth response types -----------------------------------
 
-interface AuthToken {
-  accessToken: string;
-  refreshToken: string;
+interface TokenType {
+  token: string;
+  expiresAt: Date;
 }
 export interface AuthResponse {
   userId: string;
-  tokens: AuthToken;
+  accessToken: TokenType;
 }

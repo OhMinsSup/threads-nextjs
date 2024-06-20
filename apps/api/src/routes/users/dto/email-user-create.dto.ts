@@ -5,7 +5,6 @@ import {
   IsString,
   IsUrl,
   MaxLength,
-  MinLength,
 } from "class-validator";
 
 import { UserPasswordDTO } from "./user-password.dto";
@@ -21,8 +20,8 @@ export class EmailUserCreateDTO extends UserPasswordDTO {
   })
   email: string;
 
+  @IsOptional()
   @IsString()
-  @MinLength(1)
   @MaxLength(50)
   @ApiProperty({
     title: "Name",
@@ -31,7 +30,7 @@ export class EmailUserCreateDTO extends UserPasswordDTO {
     type: String,
     required: true,
   })
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
