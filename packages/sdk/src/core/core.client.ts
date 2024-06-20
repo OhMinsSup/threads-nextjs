@@ -49,4 +49,8 @@ export class CoreClient {
   get auth() {
     return this._client.auth;
   }
+
+  get users() {
+    return this._client.users;
+  }
 }
