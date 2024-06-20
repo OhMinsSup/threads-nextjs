@@ -89,7 +89,9 @@ export class AuthService {
       HttpStatus.BAD_REQUEST,
     );
 
-    const hash = this.password.hash(input.password);
+    const { hashedPassword, salt } = await this.password.hashPassword(
+      input.password,
+    );
 
     const emailSplit = input.email.split("@").at(0) ?? "username";
 
@@ -98,7 +100,8 @@ export class AuthService {
         {
           email: input.email,
           name: input.name ?? generatorName(emailSplit),
-          password: hash,
+          password: hashedPassword,
+          salt: salt,
         },
         tx,
       );

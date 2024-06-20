@@ -32,11 +32,26 @@ export class PasswordService {
   }
 
   /**
+   * @description Hashes a value
+   * @param {string} value
+   */
+  hash(value: string) {
+    return crypto.createHash("sha512").update(value).digest("base64");
+  }
+
+  /**
    * @description Hashes a password
    * @param {string} password
    */
-  hash(password: string) {
-    return crypto.createHash("sha512").update(password).digest("base64");
+  async hashPassword(password: string) {
+    const salt = await this.createSalt();
+    const key = await pbkdf2Promise(password, salt, 104906, 64, "sha512");
+    const hashedPassword = key.toString("base64");
+
+    return {
+      salt,
+      hashedPassword,
+    };
   }
 
   /**

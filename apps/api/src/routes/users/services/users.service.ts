@@ -21,7 +21,7 @@ export class UsersService {
    * @param {Prisma.TransactionClient?} tx
    */
   async createUser(
-    input: EmailUserCreateDTO,
+    input: EmailUserCreateDTO & { salt: string },
     tx: Prisma.TransactionClient | undefined = undefined,
   ) {
     if (tx) {
@@ -31,6 +31,12 @@ export class UsersService {
           name: input.name,
           avatarUrl: input.avatarUrl,
           lastActiveAt: new Date(),
+          Password: {
+            create: {
+              hash: input.password,
+              salt: input.salt,
+            },
+          },
           UserProfile: {
             create: {},
           },
@@ -46,6 +52,12 @@ export class UsersService {
         name: input.name,
         avatarUrl: input.avatarUrl,
         lastActiveAt: new Date(),
+        Password: {
+          create: {
+            hash: input.password,
+            salt: input.salt,
+          },
+        },
         UserProfile: {
           create: {},
         },
@@ -53,6 +65,17 @@ export class UsersService {
           create: {},
         },
       },
+    });
+  }
+
+  /**
+   * @description Get a user by id (external)
+   * @param {string} id
+   */
+  async getExternalUserById(id: string) {
+    return await this.prisma.user.findUnique({
+      where: { id, deletedAt: null },
+      include: { UserProfile: true, UserSettings: true },
     });
   }
 

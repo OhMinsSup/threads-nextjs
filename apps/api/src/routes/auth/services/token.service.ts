@@ -23,10 +23,8 @@ export class TokenService {
   /**
    * @description Generate access token
    * @param {string} userId
-   * @param {Prisma.TransactionClient} tx
    */
   generateAccessToken(userId: string) {
-    const secret = this.env.getAccessTokenSecret();
     const expiresAt = this.env.getAccessTokenExpiresAt();
 
     const jwtPayload: JwtPayload = {
@@ -34,11 +32,7 @@ export class TokenService {
     };
 
     return {
-      token: this.jwt.sign(jwtPayload, {
-        secret,
-        expiresIn: this.env.getAccessTokenExpiresIn(),
-        // Jwtid will be used to link RefreshToken entity to this token
-      }),
+      token: this.jwt.sign(jwtPayload),
       expiresAt,
     };
   }
