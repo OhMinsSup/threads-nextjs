@@ -6,6 +6,7 @@ import type {
   MethodType,
 } from "../core/types";
 import type {
+  FormFieldRefreshTokenSchema,
   FormFieldSignInSchema,
   FormFieldSignUpSchema,
 } from "./auth.schema";
@@ -14,7 +15,7 @@ import type {
 
 export type AuthClientConstructorOptions = CoreClientBuilderConstructorOptions;
 
-export type FnNameKey = "signUp" | "signIn";
+export type FnNameKey = "signUp" | "signIn" | "refresh";
 
 // auth.builder.ts -----------------------------------
 
@@ -22,7 +23,9 @@ export type AuthBuilderInput<Fn extends FnNameKey> = Fn extends "signUp"
   ? FormFieldSignUpSchema
   : Fn extends "signIn"
     ? FormFieldSignInSchema
-    : FetchOptions["body"];
+    : Fn extends "refresh"
+      ? FormFieldRefreshTokenSchema
+      : FetchOptions["body"];
 
 export type AuthBuilderConstructorOptions<FnKey extends FnNameKey> =
   AuthClientConstructorOptions & {
@@ -50,11 +53,16 @@ export type RpcOptions<FnKey extends FnNameKey> = Partial<
 
 // auth response types -----------------------------------
 
-interface TokenType {
+interface TokenItemSchema {
   token: string;
   expiresAt: Date;
 }
-export interface AuthResponse {
+
+interface TokenSchema {
+  accessToken: TokenItemSchema;
+  refreshToken: TokenItemSchema;
+}
+
+export interface AuthSchema extends TokenSchema {
   userId: string;
-  accessToken: TokenType;
 }

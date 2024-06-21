@@ -10,13 +10,14 @@ import type {
   MethodType,
 } from "../core/types";
 import type {
+  FormFieldRefreshTokenSchema,
   FormFieldSignInSchema,
   FormFieldSignUpSchema,
 } from "./auth.schema";
 import type {
   AuthBuilderConstructorOptions,
   AuthBuilderInput,
-  AuthResponse,
+  AuthSchema,
   FnNameKey,
 } from "./types";
 import { schema } from "./auth.schema";
@@ -35,6 +36,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   private _endpoints = {
     signUp: "/auth/signup",
     signIn: "/auth/signin",
+    refresh: "/auth/refresh",
   };
 
   constructor({
@@ -65,8 +67,45 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   }
 
   /**
-   * @public
+   * @description 리프레시 토큰을 이용하여 새로운 토큰을 발급합니다.
+   * @param {FormFieldRefreshTokenSchema} input
+   */
+  protected async refresh(
+    input: FnKey extends "refresh" ? FormFieldRefreshTokenSchema : never,
+  ) {
+    if (this.method !== "PATCH") {
+      throw createError({
+        message: "Invalid method",
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const body = await schema.refresh.safeParseAsync(input);
+    if (!body.success) {
+      const { error } = body;
+      throw createError({
+        message: "Invalid input",
+        status: HttpStatus.BAD_REQUEST,
+        data: {
+          key: error.name,
+          message: error.message,
+        },
+      });
+    }
+
+    return await this.$fetch<CoreClientResponse<AuthSchema>, "json">(
+      this._endpoints.refresh,
+      {
+        ...(this.$fetchOptions ?? {}),
+        method: this.method,
+        body: body.data,
+      },
+    );
+  }
+
+  /**
    * @description 회원가입
+   * @param {FormFieldSignUpSchema} input
    */
   protected async signUp(
     input: FnKey extends "signUp" ? FormFieldSignUpSchema : never,
@@ -91,7 +130,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<CoreClientResponse<AuthResponse>, "json">(
+    return await this.$fetch<CoreClientResponse<AuthSchema>, "json">(
       this._endpoints.signUp,
       {
         ...(this.$fetchOptions ?? {}),
@@ -102,8 +141,8 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   }
 
   /**
-   * @public
    * @description 로그인
+   * @param {FormFieldSignInSchema} input
    */
   protected async signIn(
     input: FnKey extends "signIn" ? FormFieldSignInSchema : never,
@@ -128,7 +167,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<CoreClientResponse<AuthResponse>, "json">(
+    return await this.$fetch<CoreClientResponse<AuthSchema>, "json">(
       this._endpoints.signIn,
       {
         ...(this.$fetchOptions ?? {}),
