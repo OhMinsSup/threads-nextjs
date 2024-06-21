@@ -1,7 +1,8 @@
-import { Body, Controller, Post, Res } from "@nestjs/common";
+import { Body, Controller, Patch, Post } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Throttle } from "@nestjs/throttler";
+import { SkipThrottle, Throttle } from "@nestjs/throttler";
 
+import { RefreshTokenDTO } from "../dto/refresh-token.dto";
 import { SigninDTO } from "../dto/signin.dto";
 import { SignupDTO } from "../dto/signup.dto";
 import { AuthService } from "../services/auth.service";
@@ -19,10 +20,7 @@ export class AuthController {
     description: "회원가입 API",
     type: SignupDTO,
   })
-  async signup(
-    @Body() body: SignupDTO,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async signup(@Body() body: SignupDTO) {
     return await this.service.signup(body);
   }
 
@@ -32,12 +30,21 @@ export class AuthController {
   @ApiBody({
     required: true,
     description: "로그인 API",
-    type: SignupDTO,
+    type: SigninDTO,
   })
-  async signin(
-    @Body() body: SigninDTO,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async signin(@Body() body: SigninDTO) {
     return await this.service.signin(body);
+  }
+
+  @SkipThrottle()
+  @Patch("refresh")
+  @ApiOperation({ summary: "토큰 갱신" })
+  @ApiBody({
+    required: true,
+    description: "토큰 갱신 API",
+    type: RefreshTokenDTO,
+  })
+  async refresh(@Body() body: RefreshTokenDTO) {
+    return await this.service.refresh(body);
   }
 }

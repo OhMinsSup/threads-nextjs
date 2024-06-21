@@ -78,7 +78,7 @@ model Account {
 
 model Token {
   id        String   @id @default(cuid())
-  type      String // REFRESH
+  type      String // RefreshToken, AccessToken
   userId    String
   expires   DateTime
   createdAt DateTime @default(now())

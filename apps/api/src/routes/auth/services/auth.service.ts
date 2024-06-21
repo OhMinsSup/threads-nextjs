@@ -1,13 +1,18 @@
-import { HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { REQUEST } from "@nestjs/core";
+import { HttpStatus, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { subMilliseconds } from "date-fns";
 
 import { HttpResultStatus } from "@thread/enum/result-status";
 import { generatorName } from "@thread/shared/utils";
 
+import type { JwtPayload } from "../strategies/jwt.auth.strategy";
+import { EnvironmentService } from "../../../integrations/environment/environment.service";
 import { LoggerService } from "../../../integrations/logger/logger.service";
 import { PrismaService } from "../../../integrations/prisma/prisma.service";
-import { assertHttpError } from "../../../libs/error";
+import { AppTokenType } from "../../../libs/constants";
+import { assertHttpError, isHttpError } from "../../../libs/error";
 import { UsersService } from "../../../routes/users/services/users.service";
+import { RefreshTokenDTO } from "../dto/refresh-token.dto";
 import { SignupDTO } from "../dto/signup.dto";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
@@ -17,14 +22,129 @@ export class AuthService {
   private _contextName = "auth - service";
 
   constructor(
+    private readonly env: EnvironmentService,
     private readonly prisma: PrismaService,
     private readonly logger: LoggerService,
     private readonly token: TokenService,
     private readonly user: UsersService,
     private readonly password: PasswordService,
-    @Inject(REQUEST) private request: Express.Request,
+    private readonly jwt: JwtService,
   ) {}
 
+  /**
+   * @description Refresh Handler
+   * @param {RefreshTokenDTO} input
+   */
+  async refresh(input: RefreshTokenDTO) {
+    let jwtDto: JwtPayload;
+    try {
+      jwtDto = await this.jwt.verifyAsync<JwtPayload>(input.refreshToken, {
+        secret: this.env.getRefreshTokenSecret(),
+      });
+    } catch {
+      assertHttpError(
+        true,
+        {
+          resultCode: HttpResultStatus.TOKEN_EXPIRED,
+          message: "Unauthorized",
+          result: null,
+        },
+        "Unauthorized",
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    assertHttpError(
+      !jwtDto || (jwtDto && !jwtDto.sub),
+      {
+        resultCode: HttpResultStatus.TOKEN_EXPIRED,
+        message: "Unauthorized",
+        result: null,
+      },
+      "Unauthorized",
+      HttpStatus.UNAUTHORIZED,
+    );
+
+    assertHttpError(
+      !jwtDto.jti,
+      {
+        resultCode: HttpResultStatus.TOKEN_EXPIRED,
+        message: "Unauthorized",
+        result: null,
+      },
+      "Unauthorized",
+      HttpStatus.UNAUTHORIZED,
+    );
+
+    const token = await this.token.findByTokenId(jwtDto.jti);
+    assertHttpError(
+      !token,
+      {
+        resultCode: HttpResultStatus.NOT_EXIST,
+        message: "token not found",
+        result: null,
+      },
+      "Not Found",
+      HttpStatus.NOT_FOUND,
+    );
+
+    try {
+      const user = await this.user.getExternalUserById(jwtDto.sub);
+      assertHttpError(
+        !user,
+        {
+          resultCode: HttpResultStatus.NOT_EXIST,
+          message: "user not found",
+          result: null,
+        },
+        "Not Found",
+        HttpStatus.NOT_FOUND,
+      );
+
+      const accessToken = this.token.generateAccessToken(user.id);
+      const refreshToken = await this.token.generateRefreshToken(user.id);
+
+      // 현재 발급한 token의 만료일 이전에 만료된 token을 삭제
+      const conditionExpiredAt = subMilliseconds(
+        refreshToken.expiresAt.getTime(),
+        1000,
+      );
+
+      await this.token.deleteByExpiresAtTokens({
+        userId: user.id,
+        expiresAt: conditionExpiredAt,
+        tokenType: AppTokenType.RefreshToken,
+      });
+
+      return {
+        resultCode: HttpResultStatus.OK,
+        message: null,
+        error: null,
+        result: {
+          tokens: {
+            accessToken,
+            refreshToken,
+          },
+        },
+      };
+    } catch (error) {
+      if (isHttpError(error)) {
+        try {
+          await this.token.deleteByTokenId(jwtDto.jti);
+        } catch (error) {
+          // Nothing to do
+          this.logger.error(error, this._contextName);
+        }
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * @description Signin Handler
+   * @param {SignupDTO} input
+   */
   async signin(input: SignupDTO) {
     const user = await this.user.getInternalUserByEmail(input.email);
 
@@ -36,7 +156,7 @@ export class AuthService {
         error: null,
         result: null,
       },
-      "가입되지 않은 사용자 입니다.",
+      "Not Found",
       HttpStatus.NOT_FOUND,
     );
 
@@ -54,12 +174,24 @@ export class AuthService {
         error: null,
         result: null,
       },
-      "비밀번호가 일치하지 않습니다.",
+      "Unauthorized",
       HttpStatus.UNAUTHORIZED,
     );
 
     const accessToken = this.token.generateAccessToken(user.id);
     const refreshToken = await this.token.generateRefreshToken(user.id);
+
+    // 현재 발급한 token의 만료일 이전에 만료된 token을 삭제
+    const conditionExpiredAt = subMilliseconds(
+      refreshToken.expiresAt.getTime(),
+      1000,
+    );
+
+    await this.token.deleteByExpiresAtTokens({
+      userId: user.id,
+      expiresAt: conditionExpiredAt,
+      tokenType: AppTokenType.RefreshToken,
+    });
 
     return {
       resultCode: HttpResultStatus.OK,
@@ -74,6 +206,10 @@ export class AuthService {
     };
   }
 
+  /**
+   * @description Signup Handler
+   * @param {SignupDTO} input
+   */
   async signup(input: SignupDTO) {
     const user = await this.user.getInternalUserByEmail(input.email);
 
@@ -85,7 +221,7 @@ export class AuthService {
         error: "email",
         result: null,
       },
-      "이미 가입된 이메일입니다.",
+      "Bad Request",
       HttpStatus.BAD_REQUEST,
     );
 
@@ -108,6 +244,21 @@ export class AuthService {
 
       const accessToken = this.token.generateAccessToken(user.id);
       const refreshToken = await this.token.generateRefreshToken(user.id, tx);
+
+      // 현재 발급한 token의 만료일 이전에 만료된 token을 삭제
+      const conditionExpiredAt = subMilliseconds(
+        refreshToken.expiresAt.getTime(),
+        1000,
+      );
+
+      await this.token.deleteByExpiresAtTokens(
+        {
+          userId: user.id,
+          expiresAt: conditionExpiredAt,
+          tokenType: AppTokenType.RefreshToken,
+        },
+        tx,
+      );
 
       return {
         resultCode: HttpResultStatus.OK,

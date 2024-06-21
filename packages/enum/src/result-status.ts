@@ -8,4 +8,6 @@ export enum HttpResultStatus {
   INVALID = 2004, // 유효하지 않음
   CANNOT_BE_LOGIN = 5000, // 로그인 할 수 없음
   LOGIN_REQUIRED = 5001, // 로그인이 필요함
+  SUSPENDED_ACCOUNT = 5002, // 정지된 계정
+  TOKEN_EXPIRED = 5003, // 토큰 만료
 }

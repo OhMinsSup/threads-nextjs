@@ -21,6 +21,51 @@ export class TokenService {
   ) {}
 
   /**
+   * @description Find token by tokenId
+   * @param {string} tokenId
+   */
+  async findByTokenId(tokenId: string) {
+    return await this.prisma.token.findUnique({ where: { id: tokenId } });
+  }
+
+  /**
+   * @description Delete token by tokenId
+   * @param {string} tokenId
+   */
+  async deleteByTokenId(tokenId: string) {
+    return await this.prisma.token.delete({ where: { id: tokenId } });
+  }
+
+  /**
+   * @description Delete tokens by userId and expiresAt
+   * @param {{ userId: string; expiresAt: Date; tokenType?: AppTokenType; }} args
+   * @param {Prisma.TransactionClient?} tx
+   */
+  async deleteByExpiresAtTokens(
+    {
+      userId,
+      expiresAt,
+      tokenType,
+    }: {
+      userId: string;
+      expiresAt: Date;
+      tokenType?: AppTokenType;
+    },
+    tx: Prisma.TransactionClient | undefined = undefined,
+  ) {
+    const token = tx ? tx.token : this.prisma.token;
+    return await token.deleteMany({
+      where: {
+        userId,
+        expires: {
+          lte: expiresAt,
+        },
+        ...(tokenType && { type: tokenType }),
+      },
+    });
+  }
+
+  /**
    * @description Generate access token
    * @param {string} userId
    */
@@ -59,9 +104,9 @@ export class TokenService {
       sub: userId,
     };
 
-    const refreshToken = tx
-      ? await tx.token.create({ data: refreshTokenPayload })
-      : await this.prisma.token.create({ data: refreshTokenPayload });
+    const token = tx ? tx.token : this.prisma.token;
+
+    const refreshToken = await token.create({ data: refreshTokenPayload });
 
     return {
       token: this.jwt.sign(jwtPayload, {

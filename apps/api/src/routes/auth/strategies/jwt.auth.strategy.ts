@@ -14,8 +14,6 @@ import { UsersService } from "../../../routes/users/services/users.service";
 export type JwtPayload = { sub: string; jti?: string };
 export type PassportUser = { user?: User };
 
-const defaultCookieTokenName = "thread.access_token";
-
 const fromCookie = (cookieName: string) => {
   return (request: Request) => {
     let token: string | null = null;
@@ -34,7 +32,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, "jwt") {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        fromCookie(defaultCookieTokenName),
+        fromCookie(env.getAccessTokenName()),
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       secretOrKey: env.getAccessTokenSecret(),
@@ -42,11 +40,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, "jwt") {
   }
 
   async validate({ sub }: JwtPayload): Promise<PassportUser> {
-    console.log("sub --->", sub);
-
     const user = await this.users.getExternalUserById(sub);
-
-    console.log("user --->", user);
 
     assertHttpError(
       !user,
@@ -59,7 +53,16 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, "jwt") {
       HttpStatus.UNAUTHORIZED,
     );
 
-    console.log("user --->", user);
+    assertHttpError(
+      user.isSuspended,
+      {
+        resultCode: HttpResultStatus.SUSPENDED_ACCOUNT,
+        message: "suspended account",
+        result: null,
+      },
+      "suspended account",
+      HttpStatus.UNAUTHORIZED,
+    );
 
     return {
       user,

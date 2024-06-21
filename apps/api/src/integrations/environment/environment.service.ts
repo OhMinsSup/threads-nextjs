@@ -72,6 +72,14 @@ export class EnvironmentService {
     return addMilliseconds(new Date().getTime(), ms(expiresIn));
   }
 
+  getAccessTokenSecret(): string {
+    return this.configService.get<string>("ACCESS_TOKEN_SECRET");
+  }
+
+  getAccessTokenName(): string {
+    return this.configService.get<string>("ACCESS_TOKEN_NAME");
+  }
+
   getRefreshTokenExpiresIn(): string {
     return this.configService.get<string>("REFRESH_TOKEN_EXPIRES_IN");
   }
@@ -81,12 +89,12 @@ export class EnvironmentService {
     return addMilliseconds(new Date().getTime(), ms(expiresIn));
   }
 
-  getAccessTokenSecret(): string {
-    return this.configService.get<string>("ACCESS_TOKEN_SECRET");
-  }
-
   getRefreshTokenSecret(): string {
     return this.configService.get<string>("REFRESH_TOKEN_SECRET");
+  }
+
+  getRefreshTokenName(): string {
+    return this.configService.get<string>("REFRESH_TOKEN_NAME");
   }
 
   // -----------------------------------------------------------------------------

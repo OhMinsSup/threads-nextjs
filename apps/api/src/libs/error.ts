@@ -8,6 +8,8 @@ export type HttpErrorData<D = any> = {
 };
 
 export class HttpError<D = any> extends HttpException {
+  static __http_error__ = true;
+
   private readonly _input: HttpErrorData<D>;
 
   constructor(
@@ -21,7 +23,7 @@ export class HttpError<D = any> extends HttpException {
     this._input = input;
   }
 
-  isCustomError(): this is HttpError<D> {
+  isHttpError(): this is HttpError<D> {
     return (
       this._input !== undefined &&
       Object.prototype.hasOwnProperty.call(this, "getData")
@@ -31,6 +33,12 @@ export class HttpError<D = any> extends HttpException {
   getData() {
     return this._input;
   }
+}
+
+export function isHttpError<DataT = unknown>(
+  input: any,
+): input is HttpError<DataT> {
+  return input?.constructor?.__http_error__ === true;
 }
 
 export const assertHttpError = <D = any>(

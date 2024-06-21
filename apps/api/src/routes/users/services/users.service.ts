@@ -24,29 +24,8 @@ export class UsersService {
     input: EmailUserCreateDTO & { salt: string },
     tx: Prisma.TransactionClient | undefined = undefined,
   ) {
-    if (tx) {
-      return await tx.user.create({
-        data: {
-          email: input.email,
-          name: input.name,
-          avatarUrl: input.avatarUrl,
-          lastActiveAt: new Date(),
-          Password: {
-            create: {
-              hash: input.password,
-              salt: input.salt,
-            },
-          },
-          UserProfile: {
-            create: {},
-          },
-          UserSettings: {
-            create: {},
-          },
-        },
-      });
-    }
-    return await this.prisma.user.create({
+    const user = tx ? tx.user : this.prisma.user;
+    return await user.create({
       data: {
         email: input.email,
         name: input.name,

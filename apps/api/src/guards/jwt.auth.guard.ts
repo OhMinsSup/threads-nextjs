@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { JsonWebTokenError } from "jsonwebtoken";
+import { assertHttpError } from "src/libs/error";
 
-import { assert } from "../libs/assert";
+import { HttpResultStatus } from "@thread/enum/result-status";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard(["jwt"]) {
@@ -11,10 +12,16 @@ export class JwtAuthGuard extends AuthGuard(["jwt"]) {
   }
 
   handleRequest(err: any, user: any, info: any) {
-    console.log("err --->", err);
-    console.log("user --->", user);
-    console.log("info --->", info);
-    assert(user, "", UnauthorizedException);
+    assertHttpError(
+      !user,
+      {
+        resultCode: HttpResultStatus.NOT_EXIST,
+        message: "Unauthorized",
+        result: null,
+      },
+      "Unauthorized",
+      HttpStatus.UNAUTHORIZED,
+    );
 
     if (err) {
       throw err;
@@ -25,7 +32,16 @@ export class JwtAuthGuard extends AuthGuard(["jwt"]) {
         info = String(info);
       }
 
-      throw new UnauthorizedException(info);
+      assertHttpError(
+        true,
+        {
+          resultCode: HttpResultStatus.TOKEN_EXPIRED,
+          message: "Unauthorized",
+          result: info,
+        },
+        "Unauthorized",
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     return user;
