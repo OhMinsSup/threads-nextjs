@@ -13,7 +13,6 @@ import "~/app/globals.css";
 import { headers } from "next/headers";
 
 import { SITE_CONFIG } from "~/constants/constants";
-import { env } from "~/env";
 import { getRequestInfo } from "~/utils/request";
 
 export async function generateMetadata(): Promise<Metadata> {

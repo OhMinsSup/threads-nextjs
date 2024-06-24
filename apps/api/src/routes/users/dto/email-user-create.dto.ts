@@ -36,11 +36,11 @@ export class EmailUserCreateDTO extends UserPasswordDTO {
   @IsString()
   @IsUrl()
   @ApiProperty({
-    title: "Avatar URL",
+    title: "Image URL",
     description: "The URL of the user's avatar",
     example: "https://example.com/avatar.png",
     type: String,
     required: false,
   })
-  avatarUrl?: string;
+  image?: string;
 }

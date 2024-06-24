@@ -307,15 +307,15 @@ importers:
       '@t3-oss/env-nextjs':
         specifier: ^0.10.1
         version: 0.10.1(typescript@5.5.2)(zod@3.23.8)
-      '@thread/db':
-        specifier: workspace:*
-        version: link:../db
       '@thread/enum':
         specifier: workspace:*
         version: link:../enum
       '@thread/error':
         specifier: workspace:*
         version: link:../error
+      '@thread/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@thread/shared':
         specifier: workspace:*
         version: link:../shared
@@ -484,9 +484,6 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@thread/db':
-        specifier: workspace:*
-        version: link:../db
       '@thread/enum':
         specifier: workspace:*
         version: link:../enum
@@ -506,6 +503,9 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
     devDependencies:
+      '@thread/db':
+        specifier: workspace:*
+        version: link:../db
       '@thread/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
@@ -521,6 +521,9 @@ importers:
       prettier:
         specifier: ^3.3.2
         version: 3.3.2
+      tsup:
+        specifier: ^8.1.0
+        version: 8.1.0(@swc/core@1.6.1)(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.8)(typescript@5.5.2))(typescript@5.5.2)
       typescript:
         specifier: ^5.5.2
         version: 5.5.2

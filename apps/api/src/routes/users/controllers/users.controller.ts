@@ -2,9 +2,9 @@ import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthUser } from "src/decorators/auth-user.decorator";
 
+import type { UserExternalPayload } from "@thread/db/selectors";
 import { HttpResultStatus } from "@thread/enum/result-status";
 
-import type { UserExternalPayload } from "../../../integrations/prisma/selectors/users.selector";
 import { JwtAuthGuard } from "../../../guards/jwt.auth.guard";
 import { UsersService } from "../services/users.service";
 

@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
+
+import { Prisma } from "@thread/db";
 import {
   getExternalUserSelector,
   getInternalUserSelector,
-} from "src/integrations/prisma/selectors/users.selector";
-
-import { Prisma } from "@thread/db";
+} from "@thread/db/selectors";
 
 import { LoggerService } from "../../../integrations/logger/logger.service";
 import { PrismaService } from "../../../integrations/prisma/prisma.service";
@@ -33,7 +33,7 @@ export class UsersService {
       data: {
         email: input.email,
         name: input.name,
-        avatarUrl: input.avatarUrl,
+        image: input.image,
         lastActiveAt: new Date(),
         Password: {
           create: {

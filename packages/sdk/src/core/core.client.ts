@@ -2,12 +2,12 @@ import type { $Fetch } from "ofetch";
 import { ofetch } from "ofetch";
 import { withBase, withoutTrailingSlash } from "ufo";
 
-import type { ApiVersionString, ClientOptions } from "./types";
+import type { ClientOptions } from "./types";
 import CoreClientBuilder from "./core.builder";
 
 export class CoreClient {
   protected url: string;
-  protected version: ApiVersionString = "v1";
+  protected prefix = "/api/v1";
   protected fetchClient: $Fetch;
 
   protected _client: CoreClientBuilder;
@@ -20,13 +20,15 @@ export class CoreClient {
       throw error;
     }
 
-    const { $fetchOptions, apiVersion, $fetchClient } = options ?? {};
+    const { $fetchOptions, prefix, $fetchClient } = options ?? {};
 
-    this.url = withBase(withoutTrailingSlash(url), this.version);
-
-    if (apiVersion) {
-      this.version = apiVersion;
+    if (prefix) {
+      this.prefix = prefix;
     }
+
+    this.url = withBase(this.prefix, withoutTrailingSlash(url));
+
+    console.log("this.url", this.url);
 
     if ($fetchClient) {
       this.fetchClient = $fetchClient.create({

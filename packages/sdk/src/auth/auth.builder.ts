@@ -3,12 +3,7 @@ import type { $Fetch } from "ofetch";
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
 
-import type {
-  $FetchOptions,
-  $Url,
-  CoreClientResponse,
-  MethodType,
-} from "../core/types";
+import type { $FetchOptions, $Url, MethodType } from "../core/types";
 import type {
   FormFieldRefreshTokenSchema,
   FormFieldSignInSchema,
@@ -17,7 +12,7 @@ import type {
 import type {
   AuthBuilderConstructorOptions,
   AuthBuilderInput,
-  AuthSchema,
+  AuthBuilderReturnValue,
   FnNameKey,
 } from "./types";
 import { schema } from "./auth.schema";
@@ -72,7 +67,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
    */
   protected async refresh(
     input: FnKey extends "refresh" ? FormFieldRefreshTokenSchema : never,
-  ) {
+  ): Promise<AuthBuilderReturnValue<FnKey>> {
     if (this.method !== "PATCH") {
       throw createError({
         message: "Invalid method",
@@ -93,7 +88,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<CoreClientResponse<AuthSchema>, "json">(
+    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
       this._endpoints.refresh,
       {
         ...(this.$fetchOptions ?? {}),
@@ -109,7 +104,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
    */
   protected async signUp(
     input: FnKey extends "signUp" ? FormFieldSignUpSchema : never,
-  ) {
+  ): Promise<AuthBuilderReturnValue<FnKey>> {
     if (this.method !== "POST") {
       throw createError({
         message: "Invalid method",
@@ -130,7 +125,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<CoreClientResponse<AuthSchema>, "json">(
+    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
       this._endpoints.signUp,
       {
         ...(this.$fetchOptions ?? {}),
@@ -146,7 +141,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
    */
   protected async signIn(
     input: FnKey extends "signIn" ? FormFieldSignInSchema : never,
-  ) {
+  ): Promise<AuthBuilderReturnValue<FnKey>> {
     if (this.method !== "POST") {
       throw createError({
         message: "Invalid method",
@@ -167,7 +162,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<CoreClientResponse<AuthSchema>, "json">(
+    const response = await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
       this._endpoints.signIn,
       {
         ...(this.$fetchOptions ?? {}),
@@ -175,5 +170,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
         body: body.data,
       },
     );
+
+    return response;
   }
 }

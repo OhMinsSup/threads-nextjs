@@ -12,16 +12,7 @@ export default defineConfig((options: Options) => [
     ...options,
   },
   {
-    entry: ["src/client.ts"],
-    format: ["esm", "cjs"],
-    dts: true,
-    minify: !options.watch,
-    minifyWhitespace: true,
-    clean: true,
-    ...options,
-  },
-  {
-    entry: ["src/selector.ts"],
+    entry: ["src/schema.ts"],
     format: ["esm", "cjs"],
     dts: true,
     minify: !options.watch,

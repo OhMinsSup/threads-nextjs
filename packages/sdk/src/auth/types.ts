@@ -1,8 +1,11 @@
 import type { FetchOptions } from "ofetch";
 
+import type { UserExternalPayload } from "@thread/db/selectors";
+
 import type {
   $FetchOptions,
   CoreClientBuilderConstructorOptions,
+  CoreClientResponse,
   MethodType,
 } from "../core/types";
 import type {
@@ -26,6 +29,16 @@ export type AuthBuilderInput<Fn extends FnNameKey> = Fn extends "signUp"
     : Fn extends "refresh"
       ? FormFieldRefreshTokenSchema
       : FetchOptions["body"];
+
+export type AuthBuilderReturnValue<Fn extends FnNameKey> = CoreClientResponse<
+  Fn extends "signUp"
+    ? SignupResponse
+    : Fn extends "signIn"
+      ? SigninResponse
+      : Fn extends "refresh"
+        ? TokenResponse
+        : unknown
+>;
 
 export type AuthBuilderConstructorOptions<FnKey extends FnNameKey> =
   AuthClientConstructorOptions & {
@@ -58,11 +71,13 @@ interface TokenItemSchema {
   expiresAt: Date;
 }
 
-interface TokenSchema {
+export interface TokenResponse {
   accessToken: TokenItemSchema;
   refreshToken: TokenItemSchema;
 }
 
-export interface AuthSchema extends TokenSchema {
-  userId: string;
+export type SignupResponse = TokenResponse;
+
+export interface SigninResponse extends TokenResponse {
+  user: UserExternalPayload;
 }

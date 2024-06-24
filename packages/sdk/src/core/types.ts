@@ -4,8 +4,6 @@ import type AuthClient from "../auth/auth.client";
 
 // common types -----------------------------------
 
-export type ApiVersionString = `v${number}`;
-
 export type MethodType = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD";
 
 export type JsonFetchOptions = FetchOptions<"json">;
@@ -23,11 +21,11 @@ export type FunctionKeys<T> = {
 
 export interface ClientOptions {
   /**
-   * API version.
-   * @description apiVersionName은 'v' + 숫자 형태로 되어야 합니다.
-   * @example 'v1', 'v2'
+   * api prefix
+   * @description API prefix.
+   * @example '/api/v1'
    */
-  apiVersion?: ApiVersionString;
+  prefix?: string;
   /**
    * Fetch options.
    * @description $fetchOptions는 ofetch의 FetchOptions와 동일합니다.

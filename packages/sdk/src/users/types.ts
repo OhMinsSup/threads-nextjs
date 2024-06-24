@@ -1,5 +1,7 @@
 import type { FetchOptions } from "ofetch";
 
+import type { UserExternalPayload } from "@thread/db/selectors";
+
 import type {
   $FetchOptions,
   CoreClientBuilderConstructorOptions,
@@ -43,3 +45,4 @@ export type RpcOptions<FnKey extends FnNameKey> = Partial<
 >;
 
 // users response types -----------------------------------
+export type GetMeResponse = UserExternalPayload;

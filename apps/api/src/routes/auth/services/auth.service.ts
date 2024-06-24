@@ -193,11 +193,14 @@ export class AuthService {
       tokenType: AppTokenType.RefreshToken,
     });
 
+    const userExternal = await this.user.getExternalUserById(user.id);
+
     return {
       resultCode: HttpResultStatus.OK,
       message: null,
       error: null,
       result: {
+        user: userExternal,
         tokens: {
           accessToken,
           refreshToken,

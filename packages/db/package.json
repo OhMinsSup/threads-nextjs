@@ -28,6 +28,16 @@
         "default": "./dist/client.cjs"
       }
     },
+    "./selectors": {
+      "import": {
+        "types": "./dist/selector.d.ts",
+        "default": "./dist/selector.js"
+      },
+      "require": {
+        "types": "./dist/selector.d.cts",
+        "default": "./dist/selector.cjs"
+      }
+    },
     "./env": "./env.ts"
   },
   "license": "MIT",

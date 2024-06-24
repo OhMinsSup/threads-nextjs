@@ -15,7 +15,7 @@ model User {
   email         String        @unique // 이메일
   emailVerified DateTime? // true: 이메일 인증 완료, false: 이메일 인증 대기
   name          String // 사용자 이름
-  avatarUrl     String? // 프로필 이미지 URL
+  image         String? // 프로필 이미지 URL
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   deletedAt     DateTime? // 삭제 시간

@@ -22,7 +22,7 @@
     "@thread/validators": "workspace:*",
     "@thread/error": "workspace:*",
     "@thread/enum": "workspace:*",
-    "@thread/db": "workspace:*",
+    "@thread/sdk": "workspace:*",
     "@t3-oss/env-nextjs": "^0.10.1",
     "next": "^14.2.4",
     "next-auth": "5.0.0-beta.18",

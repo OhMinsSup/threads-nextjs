@@ -1,35 +1,28 @@
-import type { NextAuthConfig } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import type { User, UserProfile } from "@thread/db";
-import { prisma } from "@thread/db";
-import {
-  getFullExternalUserSelector,
-  getInternalUserSelector,
-} from "@thread/db/selectors";
+import type { SigninResponse } from "@thread/sdk";
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
-import { secureCompare } from "@thread/shared/password";
-import { schema } from "@thread/validators/signin";
+import { createClient } from "@thread/sdk";
+import { authSchema } from "@thread/sdk/schema";
 
 declare module "next-auth" {
   interface Session {
-    user: {
-      profile: Pick<UserProfile, "bio" | "website"> | null;
-    } & Pick<
-      User,
-      "id" | "name" | "username" | "email" | "emailVerified" | "image"
-    >;
+    user: SigninResponse["user"] & {
+      refreshToken: SigninResponse["refreshToken"];
+      accessToken: SigninResponse["accessToken"];
+    };
   }
 }
 
+const client = createClient("http://localhost:8080");
+
 export const authConfig = {
-  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       authorize: async (credentials) => {
-        const input = await schema.safeParseAsync(credentials);
+        const input = await authSchema.signIn.safeParseAsync(credentials);
         if (!input.success) {
           throw createError({
             message: "잘못된 입력값",
@@ -41,45 +34,24 @@ export const authConfig = {
           });
         }
 
-        const user1 = await prisma.user.findUnique({
-          where: {
-            username: input.data.username,
-          },
-          select: getInternalUserSelector(),
-        });
-
-        if (!user1) {
-          throw createError({
-            message: "유저를 찾을 수 없습니다",
-            status: HttpStatus.NOT_FOUND,
-            data: {
-              username: "User not found",
-            },
-          });
-        }
-
-        if (user1.password && user1.salt) {
-          const isMatch = await secureCompare(
-            input.data.password,
-            user1.password,
-          );
-
-          if (!isMatch) {
-            throw createError({
-              message: "비밀번호가 일치하지 않습니다",
-              status: HttpStatus.UNAUTHORIZED,
-            });
+        try {
+          const response = await client.auth.rpc("signIn").call(input.data);
+          if (response.error) {
+            return null;
           }
+
+          const { user, refreshToken, accessToken } = response.result;
+
+          const nextUser = {
+            ...user,
+            refreshToken,
+            accessToken,
+          };
+
+          return nextUser;
+        } catch (error) {
+          return null;
         }
-
-        const user2 = await prisma.user.findUnique({
-          where: {
-            id: user1.id,
-          },
-          select: getFullExternalUserSelector({ userId: user1.id }),
-        });
-
-        return user2;
       },
       credentials: {
         username: {},
@@ -88,18 +60,16 @@ export const authConfig = {
     }),
   ],
   callbacks: {
-    session: (opts) => {
-      if (!("user" in opts)) throw "unreachable with session strategy";
-
-      console.log("opts ==>", opts);
-
-      return {
-        ...opts.session,
-        user: {
-          ...opts.session.user,
-          id: opts.user.id,
-        },
-      };
-    },
+    // session: (opts) => {
+    //   if (!("user" in opts)) throw "unreachable with session strategy";
+    //   console.log("opts ==>", opts);
+    //   return {
+    //     ...opts.session,
+    //     user: {
+    //       ...opts.session.user,
+    //       id: opts.user.id,
+    //     },
+    //   };
+    // },
   },
 } satisfies NextAuthConfig;

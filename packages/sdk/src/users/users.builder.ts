@@ -11,6 +11,7 @@ import type {
 } from "../core/types";
 import type {
   FnNameKey,
+  GetMeResponse,
   UsersBuilderConstructorOptions,
   UsersBuilderInput,
 } from "./types";
@@ -69,12 +70,12 @@ export default class UsersBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    return await this.$fetch<
-      CoreClientResponse<Record<string, undefined>>,
-      "json"
-    >(this._endpoints.root, {
-      ...(this.$fetchOptions ?? {}),
-      method: this.method,
-    });
+    return await this.$fetch<CoreClientResponse<GetMeResponse>, "json">(
+      this._endpoints.root,
+      {
+        ...(this.$fetchOptions ?? {}),
+        method: this.method,
+      },
+    );
   }
 }
