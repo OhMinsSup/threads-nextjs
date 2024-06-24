@@ -1,4 +1,8 @@
 import { Injectable } from "@nestjs/common";
+import {
+  getExternalUserSelector,
+  getInternalUserSelector,
+} from "src/integrations/prisma/selectors/users.selector";
 
 import { Prisma } from "@thread/db";
 
@@ -54,7 +58,7 @@ export class UsersService {
   async getExternalUserById(id: string) {
     return await this.prisma.user.findUnique({
       where: { id, deletedAt: null },
-      include: { UserProfile: true, UserSettings: true },
+      select: getExternalUserSelector(),
     });
   }
 
@@ -65,7 +69,7 @@ export class UsersService {
   async getInternalUserById(id: string) {
     return await this.prisma.user.findUnique({
       where: { id, deletedAt: null },
-      include: { Password: true, UserProfile: true, UserSettings: true },
+      select: getInternalUserSelector(),
     });
   }
 
@@ -76,7 +80,7 @@ export class UsersService {
   async getInternalUserByEmail(email: string) {
     return await this.prisma.user.findUnique({
       where: { email, deletedAt: null },
-      include: { Password: true, UserProfile: true, UserSettings: true },
+      select: getInternalUserSelector(),
     });
   }
 }

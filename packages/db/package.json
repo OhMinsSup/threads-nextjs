@@ -58,10 +58,10 @@
     "@thread/tsconfig": "workspace:*",
     "dotenv-cli": "^7.4.2",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.2",
     "prisma": "^5.14.0",
     "tsx": "^4.10.5",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "tsup": "^8.1.0"
   },
   "prettier": "@thread/prettier-config",

@@ -21,8 +21,8 @@
     "@thread/prettier-config": "workspace:*",
     "@thread/tsconfig": "workspace:*",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.2"
   },
   "prettier": "@thread/prettier-config"
 }

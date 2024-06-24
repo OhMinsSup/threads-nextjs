@@ -15,7 +15,7 @@
   "prettier": "@thread/prettier-config",
   "dependencies": {
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
+    "tailwindcss": "^3.4.4",
     "tailwindcss-animate": "^1.0.7",
     "@tailwindcss/typography": "^0.5.13"
   },
@@ -24,9 +24,9 @@
     "@thread/prettier-config": "workspace:*",
     "@thread/tsconfig": "workspace:*",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.2",
     "rimraf": "^5.0.7",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "packageManager": "pnpm@9.0.5",
   "engines": {

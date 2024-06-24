@@ -24,7 +24,7 @@
     "@thread/enum": "workspace:*",
     "@thread/db": "workspace:*",
     "@t3-oss/env-nextjs": "^0.10.1",
-    "next": "^14.2.3",
+    "next": "^14.2.4",
     "next-auth": "5.0.0-beta.18",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -35,8 +35,8 @@
     "@thread/prettier-config": "workspace:*",
     "@thread/tsconfig": "workspace:*",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.2"
   },
   "prettier": "@thread/prettier-config"
 }

@@ -146,7 +146,7 @@ export class AuthService {
    * @param {SignupDTO} input
    */
   async signin(input: SignupDTO) {
-    const user = await this.user.getInternalUserByEmail(input.email);
+    const user = await this.user.getInternalUserById(input.email);
 
     assertHttpError(
       !user,
