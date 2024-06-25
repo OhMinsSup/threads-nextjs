@@ -1,8 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 
-import { reasonService } from "../services/reason.service";
 import { protectedProcedure } from "../trpc";
 
 export const reasonsRouter = {
-  list: protectedProcedure.query(() => reasonService.list()),
+  list: protectedProcedure.query(() => {}),
 } satisfies TRPCRouterRecord;

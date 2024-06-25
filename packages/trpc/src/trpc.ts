@@ -11,7 +11,6 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import type { Session } from "@thread/auth";
-import { prisma } from "@thread/db";
 
 /**
  * 1. CONTEXT
@@ -36,7 +35,6 @@ export const createTRPCContext = (opts: {
 
   return {
     session,
-    prisma,
   };
 };
 

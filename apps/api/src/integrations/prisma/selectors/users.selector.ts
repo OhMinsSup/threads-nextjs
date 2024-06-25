@@ -34,7 +34,7 @@ export const getBaseUserSelector = () => {
     email: true,
     emailVerified: true,
     name: true,
-    avatarUrl: true,
+    image: true,
   });
 };
 

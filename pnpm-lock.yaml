@@ -207,6 +207,9 @@ importers:
       '@thread/hooks':
         specifier: workspace:*
         version: link:../../packages/hooks
+      '@thread/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       '@thread/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -576,6 +579,9 @@ importers:
       '@thread/error':
         specifier: workspace:*
         version: link:../error
+      '@thread/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@thread/shared':
         specifier: workspace:*
         version: link:../shared

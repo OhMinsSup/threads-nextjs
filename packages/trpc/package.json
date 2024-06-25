@@ -24,6 +24,7 @@
     "@thread/db": "workspace:*",
     "@thread/validators": "workspace:*",
     "@thread/enum": "workspace:*",
+    "@thread/sdk": "workspace:*",
     "@thread/shared": "workspace:*",
     "@thread/error": "workspace:*",
     "@epic-web/remember": "^1.0.2",

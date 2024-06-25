@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 
-import type { FormFieldsSchema } from "@thread/validators/signin";
+import type { FormFieldSignUpSchema } from "@thread/sdk/schema";
+import { authSchema } from "@thread/sdk/schema";
 import { isBoolean, isUndefined } from "@thread/shared/assertion";
 import { cn } from "@thread/ui";
 import { Button } from "@thread/ui/button";
@@ -18,7 +19,6 @@ import {
   FormMessage,
 } from "@thread/ui/form";
 import { Input } from "@thread/ui/input";
-import { schema } from "@thread/validators/signin";
 
 import type { PreviousState } from "~/actions/signup";
 import { serverAction } from "~/actions/signin";
@@ -28,16 +28,16 @@ import { InputPassword } from "~/components/shared/InputPassword";
 export default function SignInForm() {
   const [isPending, startTransition] = useTransition();
 
-  const [state, formAction] = useFormState<PreviousState, FormFieldsSchema>(
-    serverAction,
-    undefined,
-  );
+  const [state, formAction] = useFormState<
+    PreviousState,
+    FormFieldSignUpSchema
+  >(serverAction, undefined);
 
-  const form = useForm<FormFieldsSchema>({
+  const form = useForm<FormFieldSignUpSchema>({
     progressive: true,
-    resolver: zodResolver(schema),
+    resolver: zodResolver(authSchema.signIn),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
     errors: isUndefined(state) || isBoolean(state) ? undefined : state,
@@ -58,15 +58,16 @@ export default function SignInForm() {
           <div className="grid gap-5">
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>아이디</FormLabel>
+                  <FormLabel>이메일</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="아이디"
+                      data-testid="email"
+                      placeholder="example@example.com"
                       autoCapitalize="none"
-                      autoComplete="username"
+                      autoComplete="email"
                       autoCorrect="off"
                       dir="ltr"
                       {...field}

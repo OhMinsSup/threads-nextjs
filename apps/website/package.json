@@ -25,6 +25,7 @@
     "@thread/auth": "workspace:*",
     "@thread/db": "workspace:*",
     "@thread/error": "workspace:*",
+    "@thread/sdk": "workspace:*",
     "@thread/enum": "workspace:*",
     "@thread/trpc": "workspace:*",
     "@thread/ui": "workspace:*",

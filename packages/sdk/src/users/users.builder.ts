@@ -1,14 +1,10 @@
 import type { $Fetch } from "ofetch";
+import { joinURL } from "ufo";
 
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
 
-import type {
-  $FetchOptions,
-  $Url,
-  CoreClientResponse,
-  MethodType,
-} from "../core/types";
+import type { $FetchOptions, $Url, CoreClientResponse } from "../core/types";
 import type {
   FnNameKey,
   GetMeResponse,
@@ -23,8 +19,6 @@ export default class UsersBuilder<FnKey extends FnNameKey = FnNameKey> {
 
   private $fetch: $Fetch;
 
-  private method: MethodType;
-
   private $fetchOptions?: $FetchOptions;
 
   private _endpoints = {
@@ -35,13 +29,11 @@ export default class UsersBuilder<FnKey extends FnNameKey = FnNameKey> {
     $fnKey,
     $fetch,
     $url,
-    method,
     $fetchOptions,
   }: UsersBuilderConstructorOptions<FnKey>) {
     this.$fnKey = $fnKey;
     this.$fetch = $fetch;
     this.$url = $url;
-    this.method = method;
     this.$fetchOptions = $fetchOptions;
   }
 
@@ -63,18 +55,13 @@ export default class UsersBuilder<FnKey extends FnNameKey = FnNameKey> {
    * @description 회원가입
    */
   protected async getMe() {
-    if (this.method !== "GET") {
-      throw createError({
-        message: "Invalid method",
-        status: HttpStatus.BAD_REQUEST,
-      });
-    }
+    const requestUrl = joinURL(this.$url, this._endpoints.root);
 
     return await this.$fetch<CoreClientResponse<GetMeResponse>, "json">(
-      this._endpoints.root,
+      requestUrl,
       {
         ...(this.$fetchOptions ?? {}),
-        method: this.method,
+        method: "GET",
       },
     );
   }

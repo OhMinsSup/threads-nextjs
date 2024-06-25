@@ -1,9 +1,10 @@
 import type { $Fetch } from "ofetch";
+import { joinURL } from "ufo";
 
 import { HttpStatus } from "@thread/enum/http-status";
 import { createError } from "@thread/error/http";
 
-import type { $FetchOptions, $Url, MethodType } from "../core/types";
+import type { $FetchOptions, $Url } from "../core/types";
 import type {
   FormFieldRefreshTokenSchema,
   FormFieldSignInSchema,
@@ -24,8 +25,6 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
 
   private $fetch: $Fetch;
 
-  private method: MethodType;
-
   private $fetchOptions?: $FetchOptions;
 
   private _endpoints = {
@@ -38,13 +37,11 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
     $fnKey,
     $fetch,
     $url,
-    method,
     $fetchOptions,
   }: AuthBuilderConstructorOptions<FnKey>) {
     this.$fnKey = $fnKey;
     this.$fetch = $fetch;
     this.$url = $url;
-    this.method = method;
     this.$fetchOptions = $fetchOptions;
   }
 
@@ -68,12 +65,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   protected async refresh(
     input: FnKey extends "refresh" ? FormFieldRefreshTokenSchema : never,
   ): Promise<AuthBuilderReturnValue<FnKey>> {
-    if (this.method !== "PATCH") {
-      throw createError({
-        message: "Invalid method",
-        status: HttpStatus.BAD_REQUEST,
-      });
-    }
+    const requestUrl = joinURL(this.$url, this._endpoints.refresh);
 
     const body = await schema.refresh.safeParseAsync(input);
     if (!body.success) {
@@ -89,10 +81,10 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
     }
 
     return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
-      this._endpoints.refresh,
+      requestUrl,
       {
         ...(this.$fetchOptions ?? {}),
-        method: this.method,
+        method: "PATCH",
         body: body.data,
       },
     );
@@ -105,12 +97,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   protected async signUp(
     input: FnKey extends "signUp" ? FormFieldSignUpSchema : never,
   ): Promise<AuthBuilderReturnValue<FnKey>> {
-    if (this.method !== "POST") {
-      throw createError({
-        message: "Invalid method",
-        status: HttpStatus.BAD_REQUEST,
-      });
-    }
+    const requestUrl = joinURL(this.$url, this._endpoints.signUp);
 
     const body = await schema.signUp.safeParseAsync(input);
     if (!body.success) {
@@ -126,10 +113,10 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
     }
 
     return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
-      this._endpoints.signUp,
+      requestUrl,
       {
         ...(this.$fetchOptions ?? {}),
-        method: this.method,
+        method: "POST",
         body: body.data,
       },
     );
@@ -142,12 +129,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   protected async signIn(
     input: FnKey extends "signIn" ? FormFieldSignInSchema : never,
   ): Promise<AuthBuilderReturnValue<FnKey>> {
-    if (this.method !== "POST") {
-      throw createError({
-        message: "Invalid method",
-        status: HttpStatus.BAD_REQUEST,
-      });
-    }
+    const requestUrl = joinURL(this.$url, this._endpoints.signIn);
 
     const body = await schema.signIn.safeParseAsync(input);
     if (!body.success) {
@@ -162,15 +144,13 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
       });
     }
 
-    const response = await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
-      this._endpoints.signIn,
+    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
+      requestUrl,
       {
         ...(this.$fetchOptions ?? {}),
-        method: this.method,
+        method: "POST",
         body: body.data,
       },
     );
-
-    return response;
   }
 }

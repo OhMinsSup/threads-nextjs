@@ -4,7 +4,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { assertHttpError } from "src/libs/error";
 
-import type { users } from "@thread/db/selectors";
+import type { UserExternalPayload } from "@thread/db/selectors";
 import { HttpResultStatus } from "@thread/enum/result-status";
 
 import { EnvironmentService } from "../../../integrations/environment/environment.service";
@@ -12,7 +12,7 @@ import { PrismaService } from "../../../integrations/prisma/prisma.service";
 import { UsersService } from "../../../routes/users/services/users.service";
 
 export type JwtPayload = { sub: string; jti?: string };
-export type PassportUser = { user?: users.UserExternalPayload };
+export type PassportUser = { user?: UserExternalPayload };
 
 const fromCookie = (cookieName: string) => {
   return (request: Request) => {

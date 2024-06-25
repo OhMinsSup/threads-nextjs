@@ -26,7 +26,6 @@ export default class UsersClient {
       $url: this.$url,
       $fetch: this.$fetch,
       $fetchOptions: options.$fetchOptions,
-      method: options.method ?? "GET",
     });
 
     return builder;

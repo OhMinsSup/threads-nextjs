@@ -28,22 +28,20 @@ export class CoreClient {
 
     this.url = withBase(this.prefix, withoutTrailingSlash(url));
 
-    console.log("this.url", this.url);
-
     if ($fetchClient) {
       this.fetchClient = $fetchClient.create({
         ...$fetchOptions,
-        baseURL: url,
+        baseURL: this.url,
       });
     } else {
       this.fetchClient = ofetch.create({
         ...$fetchOptions,
-        baseURL: url,
+        baseURL: this.url,
       });
     }
 
     this._client = new CoreClientBuilder({
-      $url: url,
+      $url: this.url,
       $fetch: this.fetchClient,
     });
   }

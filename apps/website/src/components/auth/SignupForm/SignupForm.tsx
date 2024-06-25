@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 
-import type { FormFieldsSchema } from "@thread/validators/signup";
+import type { FormFieldSignUpSchema } from "@thread/sdk/schema";
+import { authSchema } from "@thread/sdk/schema";
 import { isBoolean, isUndefined } from "@thread/shared/assertion";
 import { cn } from "@thread/ui";
 import { Button } from "@thread/ui/button";
@@ -18,7 +19,6 @@ import {
   FormMessage,
 } from "@thread/ui/form";
 import { Input } from "@thread/ui/input";
-import { schema } from "@thread/validators/signup";
 
 import type { PreviousState } from "~/actions/signup";
 import { serverAction } from "~/actions/signup";
@@ -28,15 +28,15 @@ import { InputPassword } from "~/components/shared/InputPassword";
 export default function SignupForm() {
   const [isPending, startTransition] = useTransition();
 
-  const [state, formAction] = useFormState<PreviousState, FormFieldsSchema>(
-    serverAction,
-    undefined,
-  );
+  const [state, formAction] = useFormState<
+    PreviousState,
+    FormFieldSignUpSchema
+  >(serverAction, undefined);
 
-  const form = useForm<FormFieldsSchema>({
-    resolver: zodResolver(schema.create),
+  const form = useForm<FormFieldSignUpSchema>({
+    resolver: zodResolver(authSchema.signUp),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
       confirmPassword: "",
     },
@@ -59,16 +59,16 @@ export default function SignupForm() {
           <div className="grid gap-5">
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>아이디</FormLabel>
+                  <FormLabel>이메일</FormLabel>
                   <FormControl>
                     <Input
-                      data-testid="username"
-                      placeholder="아이디"
+                      data-testid="email"
+                      placeholder="example@example.com"
                       autoCapitalize="none"
-                      autoComplete="username"
+                      autoComplete="email"
                       autoCorrect="off"
                       dir="ltr"
                       {...field}
