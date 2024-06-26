@@ -6,10 +6,8 @@ import type { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 
 import type { SigninResponse } from "@thread/sdk";
-import { HttpStatus } from "@thread/enum/http-status";
-import { createError } from "@thread/error/http";
+import type { FormFieldSignInSchema } from "@thread/sdk/schema";
 import { createClient } from "@thread/sdk";
-import { authSchema } from "@thread/sdk/schema";
 
 import { env } from "../env";
 
@@ -25,22 +23,12 @@ export const authConfig = {
         password: {},
       },
       authorize: async (credentials) => {
-        const input = await authSchema.signIn.safeParseAsync(credentials);
-        if (!input.success) {
-          throw createError({
-            message: "잘못된 입력값",
-            status: HttpStatus.BAD_REQUEST,
-            data: {
-              key: input.error.name,
-              message: input.error.message,
-            },
-          });
-        }
-
         const client = createClient(env.NEXT_PUBLIC_SERVER_URL);
 
         try {
-          const response = await client.auth.rpc("signIn").call(input.data);
+          const response = await client.auth
+            .rpc("signIn")
+            .call(credentials as unknown as FormFieldSignInSchema);
           if (response.error) {
             return null;
           }
@@ -54,7 +42,6 @@ export const authConfig = {
 
           return nextUser;
         } catch (error) {
-          console.log("asdsa");
           console.error(error);
           return null;
         }
