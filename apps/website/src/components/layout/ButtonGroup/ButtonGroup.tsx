@@ -1,6 +1,6 @@
+import type { NavItem } from "~/constants/nav";
 import { ButtonLink } from "~/components/layout/ButtonLink";
 import { ButtonMyPage } from "~/components/layout/ButtonMyPage";
-import { type NavItem } from "~/constants/nav";
 
 interface ButtonGroupProps {
   item: NavItem;

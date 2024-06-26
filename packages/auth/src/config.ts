@@ -29,6 +29,7 @@ export const authConfig = {
           const response = await client.auth
             .rpc("signIn")
             .call(credentials as unknown as FormFieldSignInSchema);
+
           if (response.error) {
             return null;
           }
@@ -123,6 +124,7 @@ export const authConfig = {
 
         return nextUser;
       } catch (error) {
+        console.error(error);
         // The error property can be used client-side to handle the refresh token error
         return {
           ...token,

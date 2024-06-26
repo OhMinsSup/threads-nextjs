@@ -5,6 +5,7 @@ import { SkipThrottle, Throttle } from "@nestjs/throttler";
 import { RefreshTokenDTO } from "../dto/refresh-token.dto";
 import { SigninDTO } from "../dto/signin.dto";
 import { SignupDTO } from "../dto/signup.dto";
+import { VerifyTokenDTO } from "../dto/verify-token.dto";
 import { AuthService } from "../services/auth.service";
 
 @ApiTags("인증")
@@ -34,6 +35,18 @@ export class AuthController {
   })
   async signin(@Body() body: SigninDTO) {
     return await this.service.signin(body);
+  }
+
+  @SkipThrottle()
+  @Post("verify")
+  @ApiOperation({ summary: "토큰 검증" })
+  @ApiBody({
+    required: true,
+    description: "토큰 검증 API",
+    type: VerifyTokenDTO,
+  })
+  async verifyToken(@Body() body: VerifyTokenDTO) {
+    return await this.service.verifyToken(body);
   }
 
   @SkipThrottle()

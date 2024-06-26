@@ -52,6 +52,17 @@ export class UsersService {
   }
 
   /**
+   * @description Check if a user exists by id
+   * @param {string} id
+   */
+  async checkUserById(id: string) {
+    return await this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+  }
+
+  /**
    * @description Get a user by id (external)
    * @param {string} id
    */

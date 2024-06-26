@@ -11,13 +11,14 @@ import type {
   FormFieldRefreshTokenSchema,
   FormFieldSignInSchema,
   FormFieldSignUpSchema,
+  FormFieldVerifyTokenSchema,
 } from "./auth.schema";
 
 // auth.client.ts -----------------------------------
 
 export type AuthClientConstructorOptions = CoreClientBuilderConstructorOptions;
 
-export type FnNameKey = "signUp" | "signIn" | "refresh";
+export type FnNameKey = "signUp" | "signIn" | "refresh" | "verify";
 
 // auth.builder.ts -----------------------------------
 
@@ -27,7 +28,9 @@ export type AuthBuilderInput<Fn extends FnNameKey> = Fn extends "signUp"
     ? FormFieldSignInSchema
     : Fn extends "refresh"
       ? FormFieldRefreshTokenSchema
-      : FetchOptions["body"];
+      : Fn extends "verify"
+        ? FormFieldVerifyTokenSchema
+        : FetchOptions["body"];
 
 export type AuthBuilderReturnValue<Fn extends FnNameKey> = CoreClientResponse<
   Fn extends "signUp"
@@ -36,7 +39,9 @@ export type AuthBuilderReturnValue<Fn extends FnNameKey> = CoreClientResponse<
       ? SigninResponse
       : Fn extends "refresh"
         ? TokenResponse
-        : unknown
+        : Fn extends "verify"
+          ? boolean
+          : unknown
 >;
 
 export type AuthBuilderConstructorOptions<FnKey extends FnNameKey> =

@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@thread/ui";
 
-import { Icons } from "~/components/icons";
+import type { Icons } from "~/components/icons";
 import { PAGE_ENDPOINTS } from "./constants";
 
 export interface NavItem {
@@ -25,7 +25,7 @@ export interface NavItem {
   href?: string;
   relationHrefs?: string[];
   disabled?: boolean;
-  icon: LucideIcon;
+  icon: keyof typeof Icons;
   relationIcons?: Record<string, LucideIcon>;
 }
 
@@ -40,27 +40,31 @@ export const NAV_CONFIG = {
       type: "link",
       title: "Home",
       href: PAGE_ENDPOINTS.ROOT,
-      icon: Icons.home,
+      // icon: Icons.home,
+      icon: "home",
     },
     {
       id: "search",
       type: "link",
       title: "Search",
       href: PAGE_ENDPOINTS.SEARCH,
-      icon: Icons.search,
+      // icon: Icons.search,
+      icon: "search",
     },
     {
       id: "like",
       type: "link",
       title: "Like",
       href: PAGE_ENDPOINTS.LIKED,
-      icon: Icons.heart,
+      // icon: Icons.heart,
+      icon: "heart",
     },
     {
       id: "myPage",
       type: "myPage",
       title: "My Page",
-      icon: Icons.user,
+      // icon: Icons.user,
+      icon: "user",
     },
   ] as NavItem[],
   feedHeaderNav: [

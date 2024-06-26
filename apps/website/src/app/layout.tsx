@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
+import { SessionProvider } from "next-auth/react";
 
 import { cn } from "@thread/ui";
 import { ThemeProvider } from "@thread/ui/theme";
@@ -15,6 +16,7 @@ import { headers } from "next/headers";
 import { SITE_CONFIG } from "~/constants/constants";
 import { getRequestInfo } from "~/utils/request";
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function generateMetadata(): Promise<Metadata> {
   const info = getRequestInfo(headers());
   const metadataBase = new URL(info.domainUrl);
@@ -65,7 +67,11 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function Layout(props: { children: React.ReactNode }) {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export default function Layout(props: LayoutProps) {
   return (
     <html lang="ko" suppressHydrationWarning>
       <body
@@ -75,10 +81,12 @@ export default function Layout(props: { children: React.ReactNode }) {
           GeistMono.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TRPCReactProvider>{props.children}</TRPCReactProvider>
-          <Toaster />
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <TRPCReactProvider>{props.children}</TRPCReactProvider>
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -1,36 +1,37 @@
-"use client";
-
 import React from "react";
-import Link from "next/link";
 
-import { cn } from "@thread/ui";
-import { Button, buttonVariants } from "@thread/ui/button";
+import { auth } from "@thread/auth";
 
-import { Icons } from "~/components/icons";
-import { ContentLayout } from "~/components/layout/ContentLayout";
-import { Sidebar } from "~/components/layout/Sidebar";
-import { PAGE_ENDPOINTS } from "~/constants/constants";
+import { Footer } from "~/components/layout/Footer";
+import { Header } from "~/components/layout/Header";
+import { HeaderNavigation } from "~/components/layout/HeaderNavigation";
 
 interface MainLayoutProps {
   children: React.ReactNode;
+  before?: React.ReactNode;
+  after?: React.ReactNode;
 }
 
-export default function MainLayout({ children }: MainLayoutProps) {
+export default async function MainLayout({
+  children,
+  before,
+  after,
+}: MainLayoutProps) {
+  const session = await auth();
+
   return (
-    <div>
-      <div>
-        {/* Loading Jazzy bar */}
-        <div>
-          <Sidebar />
-          <ContentLayout>{children}</ContentLayout>
-          <Link
-            href={PAGE_ENDPOINTS.THREADS.ROOT}
-            className={cn(buttonVariants(), "fixed bottom-5 right-6")}
-          >
-            <Icons.add />
-          </Link>
+    <div className="flex flex-col">
+      <Header>
+        <HeaderNavigation session={session} />
+      </Header>
+      <main className="flex-1">
+        <div className="container max-w-2xl px-4">
+          {before}
+          {children}
+          {after}
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

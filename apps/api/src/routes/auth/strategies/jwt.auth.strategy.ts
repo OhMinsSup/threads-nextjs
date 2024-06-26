@@ -2,13 +2,13 @@ import type { Request } from "express";
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { assertHttpError } from "src/libs/error";
 
 import type { UserExternalPayload } from "@thread/db/selectors";
 import { HttpResultStatus } from "@thread/enum/result-status";
 
 import { EnvironmentService } from "../../../integrations/environment/environment.service";
 import { PrismaService } from "../../../integrations/prisma/prisma.service";
+import { assertHttpError } from "../../../libs/error";
 import { UsersService } from "../../../routes/users/services/users.service";
 
 export type JwtPayload = { sub: string; jti?: string };

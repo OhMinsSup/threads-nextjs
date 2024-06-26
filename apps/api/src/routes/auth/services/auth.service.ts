@@ -14,6 +14,7 @@ import { assertHttpError, isHttpError } from "../../../libs/error";
 import { UsersService } from "../../../routes/users/services/users.service";
 import { RefreshTokenDTO } from "../dto/refresh-token.dto";
 import { SignupDTO } from "../dto/signup.dto";
+import { VerifyTokenDTO } from "../dto/verify-token.dto";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
@@ -30,6 +31,60 @@ export class AuthService {
     private readonly password: PasswordService,
     private readonly jwt: JwtService,
   ) {}
+
+  /**
+   * @description Verify Token Handler
+   * @param {VerifyTokenDTO} input
+   */
+  async verifyToken(input: VerifyTokenDTO) {
+    let jwtDto: JwtPayload;
+    try {
+      jwtDto = await this.jwt.verifyAsync<JwtPayload>(input.token, {
+        secret: this.env.getAccessTokenSecret(),
+      });
+    } catch {
+      assertHttpError(
+        true,
+        {
+          resultCode: HttpResultStatus.TOKEN_EXPIRED,
+          message: "Unauthorized",
+          result: null,
+        },
+        "Unauthorized",
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    assertHttpError(
+      !jwtDto || (jwtDto && !jwtDto.sub),
+      {
+        resultCode: HttpResultStatus.TOKEN_EXPIRED,
+        message: "Unauthorized",
+        result: null,
+      },
+      "Unauthorized",
+      HttpStatus.UNAUTHORIZED,
+    );
+
+    const user = await this.user.checkUserById(jwtDto.sub);
+    assertHttpError(
+      !user,
+      {
+        resultCode: HttpResultStatus.NOT_EXIST,
+        message: "user not found",
+        result: null,
+      },
+      "Not Found",
+      HttpStatus.NOT_FOUND,
+    );
+
+    return {
+      resultCode: HttpResultStatus.OK,
+      message: null,
+      error: null,
+      result: true,
+    };
+  }
 
   /**
    * @description Refresh Handler
@@ -75,6 +130,8 @@ export class AuthService {
       "Unauthorized",
       HttpStatus.UNAUTHORIZED,
     );
+
+    console.log(jwtDto.jti);
 
     const token = await this.token.findByTokenId(jwtDto.jti);
     assertHttpError(

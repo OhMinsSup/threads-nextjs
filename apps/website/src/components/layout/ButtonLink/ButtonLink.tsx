@@ -4,7 +4,9 @@ import Link from "next/link";
 
 import { cn } from "@thread/ui";
 
-import { mainNavbuttonVariants, NavItem } from "~/constants/nav";
+import type { NavItem } from "~/constants/nav";
+import { Icons } from "~/components/icons";
+import { mainNavbuttonVariants } from "~/constants/nav";
 import { useMainLinkActive } from "~/hooks/useMainLinkActive";
 
 interface ButtonLinkProps {
@@ -15,7 +17,7 @@ interface ButtonLinkProps {
 export default function ButtonLink({ item, type }: ButtonLinkProps) {
   const { isActive, href } = useMainLinkActive({ item });
 
-  const Icon = item.icon;
+  const Icon = Icons[item.icon];
 
   return (
     <Link

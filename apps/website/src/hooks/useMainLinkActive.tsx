@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
-import { type NavItem, type ScrollNavItem } from "~/constants/nav";
+import type { NavItem, ScrollNavItem } from "~/constants/nav";
 
 interface UseMainLinkActiveOptions {
   item: NavItem;

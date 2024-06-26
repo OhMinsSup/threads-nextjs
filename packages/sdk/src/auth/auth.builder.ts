@@ -9,6 +9,7 @@ import type {
   FormFieldRefreshTokenSchema,
   FormFieldSignInSchema,
   FormFieldSignUpSchema,
+  FormFieldVerifyTokenSchema,
 } from "./auth.schema";
 import type {
   AuthBuilderConstructorOptions,
@@ -31,6 +32,7 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
     signUp: "/auth/signup",
     signIn: "/auth/signin",
     refresh: "/auth/refresh",
+    verify: "/auth/verify",
   };
 
   constructor({
@@ -132,6 +134,34 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
     const requestUrl = joinURL(this.$url, this._endpoints.signIn);
 
     const body = await schema.signIn.safeParseAsync(input);
+    if (!body.success) {
+      const { error } = body;
+      throw createError({
+        message: "Invalid input",
+        status: HttpStatus.BAD_REQUEST,
+        data: {
+          key: error.name,
+          message: error.message,
+        },
+      });
+    }
+
+    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
+      requestUrl,
+      {
+        ...(this.$fetchOptions ?? {}),
+        method: "POST",
+        body: body.data,
+      },
+    );
+  }
+
+  protected async verify(
+    input: FnKey extends "verify" ? FormFieldVerifyTokenSchema : never,
+  ): Promise<AuthBuilderReturnValue<FnKey>> {
+    const requestUrl = joinURL(this.$url, this._endpoints.verify);
+
+    const body = await schema.verify.safeParseAsync(input);
     if (!body.success) {
       const { error } = body;
       throw createError({
