@@ -1,14 +1,10 @@
-import { HttpStatus } from "@thread/enum/http-status";
-
 import { ErrorDisplayType } from "./enum";
 
-export class HttpError<DataT = unknown> extends Error {
-  static __thread_http_error__ = true;
-  statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+export class ThreadError<DataT = unknown> extends Error {
+  static __thread_error__ = true;
   fatal = false;
   unhandled = false;
   displayType = ErrorDisplayType.NONE;
-  statusMessage?: string;
   data?: DataT;
   cause?: unknown;
 
@@ -23,17 +19,10 @@ export class HttpError<DataT = unknown> extends Error {
   }
 
   toJSON() {
-    const obj: Pick<
-      HttpError<DataT>,
-      "message" | "statusCode" | "statusMessage" | "data"
-    > = {
+    const obj: Pick<ThreadError<DataT>, "message" | "data"> = {
       message: this.message,
-      statusCode: this.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
     };
 
-    if (this.statusMessage) {
-      obj.statusMessage = this.statusMessage;
-    }
     if (this.data !== undefined) {
       obj.data = this.data;
     }
@@ -43,24 +32,20 @@ export class HttpError<DataT = unknown> extends Error {
 }
 
 export function createError<DataT = unknown>(
-  input:
-    | string
-    | (Partial<HttpError<DataT>> & {
-        status?: number;
-        statusText?: string;
-      }),
+  input: string | Partial<ThreadError<DataT>>,
 ) {
   if (typeof input === "string") {
-    return new HttpError<DataT>(input);
+    return new ThreadError<DataT>(input);
   }
 
   if (isError<DataT>(input)) {
     return input;
   }
 
-  const err = new HttpError<DataT>(input.message ?? input.statusMessage ?? "", {
+  const err = new ThreadError<DataT>(input.message ?? "", {
     cause: input.cause || input,
   });
+
   if ("stack" in input) {
     try {
       Object.defineProperty(err, "stack", {
@@ -81,18 +66,6 @@ export function createError<DataT = unknown>(
     err.data = input.data;
   }
 
-  if (input.statusCode) {
-    err.statusCode = input.statusCode;
-  } else if (input.status) {
-    err.statusCode = input.status;
-  }
-
-  if (input.statusMessage) {
-    err.statusMessage = input.statusMessage;
-  } else if (input.statusText) {
-    err.statusMessage = input.statusText;
-  }
-
   if (input.fatal !== undefined) {
     err.fatal = input.fatal;
   }
@@ -110,6 +83,6 @@ export function createError<DataT = unknown>(
 
 export function isError<DataT = unknown>(
   input: any,
-): input is HttpError<DataT> {
-  return input?.constructor?.__thread_http_error__ === true;
+): input is ThreadError<DataT> {
+  return input?.constructor?.__thread_error__ === true;
 }

@@ -257,7 +257,10 @@ export class AuthService {
       message: null,
       error: null,
       result: {
-        user: userExternal,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        image: user.image,
         tokens: {
           accessToken,
           refreshToken,
@@ -325,6 +328,10 @@ export class AuthService {
         message: null,
         error: null,
         result: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
           tokens: {
             accessToken,
             refreshToken,

@@ -2,16 +2,37 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextAuthConfig } from "next-auth";
 // The `JWT` interface can be found in the `next-auth/jwt` submodule
-import type { JWT } from "next-auth/jwt";
+import type { DefaultJWT, JWT as NextAuthJWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 
 import type { SigninResponse } from "@thread/sdk";
 import type { FormFieldSignInSchema } from "@thread/sdk/schema";
+import { HttpResultStatus } from "@thread/enum/result-status";
+import { createError, isError } from "@thread/error";
 import { createClient } from "@thread/sdk";
 
 import { env } from "../env";
 
-type User = SigninResponse["user"] & SigninResponse["tokens"];
+interface Token {
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiresAt: number;
+  refreshTokenExpiresAt: number;
+}
+
+type User = SigninResponse;
+
+const dateToNumber = (date: Date | number | string) => {
+  if (date instanceof Date) {
+    return date.getTime();
+  }
+
+  if (typeof date === "string") {
+    return new Date(date).getTime();
+  }
+
+  return date;
+};
 
 export const authConfig = {
   providers: [
@@ -31,19 +52,40 @@ export const authConfig = {
             .call(credentials as unknown as FormFieldSignInSchema);
 
           if (response.error) {
-            return null;
+            throw createError({
+              message: "Failed to sign in",
+              data: response.error,
+            });
           }
 
-          const { user, tokens } = response.result;
+          const code = response.resultCode.toString();
+          if (code === HttpResultStatus.INCORRECT_PASSWORD.toString()) {
+            throw createError({
+              message: "Incorrect password",
+              data: {
+                password: {
+                  message: response.message,
+                },
+              },
+            });
+          }
 
-          const nextUser = {
-            ...user,
-            ...tokens,
-          };
+          if (code === HttpResultStatus.NOT_EXIST.toString()) {
+            throw createError({
+              message: "User does not exist",
+              data: {
+                email: {
+                  message: response.message,
+                },
+              },
+            });
+          }
 
-          return nextUser;
+          return response.result;
         } catch (error) {
-          console.error(error);
+          if (isError(error)) {
+            throw error;
+          }
           return null;
         }
       },
@@ -51,47 +93,51 @@ export const authConfig = {
   ],
   callbacks: {
     jwt: async ({ token, user, trigger, session }) => {
-      console.log({
-        token,
-        user,
-        trigger,
-        session,
-      });
-
       // Listen for `update` event
       if (trigger === "update" && session?.user) {
-        const { id, accessToken, refreshToken } = session.user;
-
+        const {
+          accessToken,
+          accessTokenExpiresAt,
+          refreshToken,
+          refreshTokenExpiresAt,
+        } = session.user;
         return {
           ...token,
-          user: {
-            ...(token.user ?? {}),
-            id,
-            accessToken,
-            refreshToken,
-          },
-        } as JWT | null;
+          accessToken,
+          accessTokenExpiresAt,
+          refreshToken,
+          refreshTokenExpiresAt,
+        } as NextAuthJWT | null;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (user) {
+        token.sub = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image;
         // Save the access token and refresh token in the JWT on the initial login, as well as the user details
-        token.user = user as User;
+        token.accessToken = (user as User).tokens.accessToken.token;
+        token.accessTokenExpiresAt = dateToNumber(
+          (user as User).tokens.accessToken.expiresAt,
+        );
+        token.refreshToken = (user as User).tokens.refreshToken.token;
+        token.refreshTokenExpiresAt = dateToNumber(
+          (user as User).tokens.refreshToken.expiresAt,
+        );
         return token;
       } else if (
-        token.user &&
-        Date.now() <
-          (token.user.accessToken.expiresAt as unknown as number) * 1000
+        token.accessToken &&
+        token.accessTokenExpiresAt &&
+        Date.now() < token.accessTokenExpiresAt * 1000
       ) {
         // Subsequent logins, if the access token is still valid, return the JWT
-        return token as JWT | null;
+        return token as NextAuthJWT | null;
       }
       // Subsequent logins, if the access token has expired, try to refresh it
-      if (!token.user?.refreshToken) {
-        const error = new Error();
-        error.name = "RefreshAccessTokenError";
-        error.message = "Missing refresh token";
-        throw error;
+      if (!token.refreshToken) {
+        throw createError({
+          message: "Missing refresh token",
+        });
       }
 
       const client = createClient(env.NEXT_PUBLIC_SERVER_URL);
@@ -104,22 +150,29 @@ export const authConfig = {
          * * You'll need to throw an error yourself to use Promise#catch
          */
         const response = await client.auth.rpc("refresh").call({
-          refreshToken: token.user.refreshToken.token,
+          refreshToken: token.refreshToken,
         });
 
         if (response.error) {
-          const error = new Error();
-          error.name = "RefreshAccessTokenError";
-          error.message = "Failed to refresh access token";
-          throw error;
+          throw createError({
+            message: "Failed to refresh access token",
+            data: response.error,
+          });
         }
 
-        const { accessToken, refreshToken } = response.result;
-
-        const nextUser = {
-          ...token.user,
-          accessToken,
-          refreshToken,
+        const nextUser: NextAuthJWT = {
+          id: token.sub,
+          email: token.email,
+          name: token.name,
+          image: token.picture,
+          accessToken: response.result.accessToken.token,
+          accessTokenExpiresAt: dateToNumber(
+            response.result.accessToken.expiresAt,
+          ),
+          refreshToken: response.result.refreshToken.token,
+          refreshTokenExpiresAt: dateToNumber(
+            response.result.refreshToken.expiresAt,
+          ),
         };
 
         return nextUser;
@@ -129,14 +182,23 @@ export const authConfig = {
         return {
           ...token,
           error: "RefreshAccessTokenError" as const,
-        } as JWT | null;
+        } as NextAuthJWT | null;
       }
     },
     session: ({ session, token }) => {
       session.error = token.error;
       return {
         ...session,
-        ...token,
+        user: {
+          id: token.sub,
+          email: token.email,
+          name: token.name,
+          image: token.picture,
+          accessToken: token.accessToken,
+          refreshToken: token.refreshToken,
+          accessTokenExpiresAt: token.accessTokenExpiresAt,
+          refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+        },
       };
     },
   },
@@ -144,15 +206,14 @@ export const authConfig = {
 
 declare module "next-auth" {
   interface Session {
-    user: User;
+    user: Pick<User, "email" | "id" | "image" | "name"> & Token;
     error?: "RefreshAccessTokenError";
   }
 }
 
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
-  interface JWT {
-    user?: User;
+  interface JWT extends DefaultJWT, Token {
     error?: "RefreshAccessTokenError";
   }
 }

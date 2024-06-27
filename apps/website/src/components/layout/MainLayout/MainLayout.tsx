@@ -19,6 +19,8 @@ export default async function MainLayout({
 }: MainLayoutProps) {
   const session = await auth();
 
+  console.log("session ==>", session);
+
   return (
     <div className="flex flex-col">
       <Header>

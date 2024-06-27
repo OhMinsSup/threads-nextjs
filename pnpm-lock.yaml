@@ -164,7 +164,7 @@ importers:
         version: 9.5.1(typescript@5.5.2)(webpack@5.90.1(@swc/core@1.6.1(@swc/helpers@0.5.5)))
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.6.1)(@types/node@20.14.8)(typescript@5.5.2)
+        version: 10.9.2(@swc/core@1.6.1(@swc/helpers@0.5.5))(@types/node@20.14.8)(typescript@5.5.2)
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -264,6 +264,9 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.23.8
+      zustand:
+        specifier: ^4.5.4
+        version: 4.5.4(@types/react@18.3.3)(react@18.3.1)
     devDependencies:
       '@thread/eslint-config':
         specifier: workspace:*
@@ -6762,6 +6765,11 @@ packages:
       '@types/react':
         optional: true
 
+  use-sync-external-store@1.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -6929,6 +6937,21 @@ packages:
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
+  zustand@4.5.4:
+    resolution: {integrity: sha512-/BPMyLKJPtFEvVL0E9E9BTUM63MNyhPGlvxk1XjrfWTUlV+BR8jufjsovHzrtR6YNcBEcL7cMHovL1n9xHawEg==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
 
 snapshots:
 
@@ -9025,7 +9048,7 @@ snapshots:
       minimatch: 9.0.4
       node-plop: 0.26.3
       proxy-agent: 6.4.0
-      ts-node: 10.9.2(@swc/core@1.6.1)(@types/node@20.14.8)(typescript@5.5.2)
+      ts-node: 10.9.2(@swc/core@1.6.1(@swc/helpers@0.5.5))(@types/node@20.14.8)(typescript@5.5.2)
       update-check: 1.5.4
       validate-npm-package-name: 5.0.1
     transitivePeerDependencies:
@@ -11466,7 +11489,7 @@ snapshots:
       strip-json-comments: 3.1.1
     optionalDependencies:
       '@types/node': 20.14.8
-      ts-node: 10.9.2(@swc/core@1.6.1)(@types/node@20.14.8)(typescript@5.5.2)
+      ts-node: 10.9.2(@swc/core@1.6.1(@swc/helpers@0.5.5))(@types/node@20.14.8)(typescript@5.5.2)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -12355,7 +12378,7 @@ snapshots:
       yaml: 2.4.2
     optionalDependencies:
       postcss: 8.4.38
-      ts-node: 10.9.2(@swc/core@1.6.1)(@types/node@20.14.8)(typescript@5.5.2)
+      ts-node: 10.9.2(@swc/core@1.6.1(@swc/helpers@0.5.5))(@types/node@20.14.8)(typescript@5.5.2)
 
   postcss-nested@6.0.1(postcss@8.4.38):
     dependencies:
@@ -13238,7 +13261,7 @@ snapshots:
       typescript: 5.5.2
       webpack: 5.90.1(@swc/core@1.6.1(@swc/helpers@0.5.5))
 
-  ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.8)(typescript@5.5.2):
+  ts-node@10.9.2(@swc/core@1.6.1(@swc/helpers@0.5.5))(@types/node@20.14.8)(typescript@5.5.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -13461,6 +13484,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.3
 
+  use-sync-external-store@1.2.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   util-deprecate@1.0.2: {}
 
   utils-merge@1.0.1: {}
@@ -13659,3 +13686,10 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.23.8: {}
+
+  zustand@4.5.4(@types/react@18.3.3)(react@18.3.1):
+    dependencies:
+      use-sync-external-store: 1.2.0(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.3
+      react: 18.3.1

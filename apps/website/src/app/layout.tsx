@@ -1,19 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
-import { SessionProvider } from "next-auth/react";
 
 import { cn } from "@thread/ui";
-import { ThemeProvider } from "@thread/ui/theme";
 import { Toaster } from "@thread/ui/toaster";
-
-import { TRPCReactProvider } from "~/trpc/react";
 
 import "~/app/globals.css";
 
 import { headers } from "next/headers";
 
 import { SITE_CONFIG } from "~/constants/constants";
+import RootProvider from "~/contexts/root";
 import { getRequestInfo } from "~/utils/request";
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -81,12 +78,10 @@ export default function Layout(props: LayoutProps) {
           GeistMono.variable,
         )}
       >
-        <SessionProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <TRPCReactProvider>{props.children}</TRPCReactProvider>
-            <Toaster />
-          </ThemeProvider>
-        </SessionProvider>
+        <RootProvider>
+          {props.children}
+          <Toaster />
+        </RootProvider>
       </body>
     </html>
   );

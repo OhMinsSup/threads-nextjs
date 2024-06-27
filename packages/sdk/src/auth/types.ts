@@ -74,11 +74,12 @@ export interface TokenResponse {
   refreshToken: TokenItemSchema;
 }
 
-export interface SignupResponse {
+export interface SignupResponse
+  extends Pick<UserExternalPayload, "email" | "id" | "name" | "image"> {
   tokens: TokenResponse;
 }
 
-export interface SigninResponse {
-  user: UserExternalPayload;
+export interface SigninResponse
+  extends Pick<UserExternalPayload, "email" | "id" | "name" | "image"> {
   tokens: TokenResponse;
 }

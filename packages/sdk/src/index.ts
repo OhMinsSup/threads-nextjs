@@ -5,6 +5,8 @@ const createClient = (url: string, options?: ClientOptions) => {
   return new CoreClient(url, options);
 };
 
+export type Client = ReturnType<typeof createClient>;
+
 export { CoreClient, createClient };
 export type {
   TokenResponse,

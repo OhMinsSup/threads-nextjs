@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*.ts"
+    ".": "./src/index.ts",
+    "./http": "./src/http.ts"
   },
   "license": "MIT",
   "scripts": {
