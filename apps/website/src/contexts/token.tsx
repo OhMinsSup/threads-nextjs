@@ -1,12 +1,19 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { signOut, useSession } from "next-auth/react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { signIn, useSession } from "next-auth/react";
 
 import type { Session } from "@thread/auth";
 import { HttpResultStatus } from "@thread/enum/result-status";
 import { createError } from "@thread/error";
 
+import { TokenScheduler } from "~/utils/token-scheduler/token";
 import { useApiClient } from "./api";
 
 interface TokenProviderProps {
@@ -26,100 +33,77 @@ const dateToNumber = (date: Date | number | string) => {
 };
 
 export default function TokenProvider({ children }: TokenProviderProps) {
-  const { data: session, update } = useSession();
+  const { data, update } = useSession();
   const client = useApiClient();
 
-  const [isFirstMounted, setIsFirstMounted] = useState<boolean>(true);
+  const tokenScheduler = useRef(new TokenScheduler());
 
-  const sessionError = useMemo(() => {
-    if (!session) return false;
-    if (session.error === "RefreshAccessTokenError") {
-      return true;
-    }
-    return false;
-  }, [session]);
+  const getTokenScheduler = () => tokenScheduler.current;
 
-  const refresh = useCallback(
-    async (session: Session) => {
-      try {
-        console.log("[Refreshing token]");
-        const response = await client.auth.rpc("refresh").call({
-          refreshToken: session.user.refreshToken,
-        });
-        if (response.error) {
-          throw createError({
-            message: "Failed to validate token",
-            data: response.error,
-          });
-        }
-
-        if (response.resultCode.toString() !== HttpResultStatus.OK.toString()) {
-          throw createError({
-            message: "Failed to refresh access token",
-            data: response.error,
-          });
-        }
-
-        const { accessToken, refreshToken } = response.result;
-        const user = {
-          accessToken: accessToken.token,
-          accessTokenExpiresAt: dateToNumber(accessToken.expiresAt),
-          refreshToken: refreshToken.token,
-          refreshTokenExpiresAt: dateToNumber(refreshToken.expiresAt),
-        };
-        await update({ user });
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log("[Refresh token error, logging out]");
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          setTimeout(() => signOut(), 1000);
-        }
-      } finally {
-        if (isFirstMounted) {
-          setIsFirstMounted(false);
-        }
-      }
-    },
-    [client, isFirstMounted, update],
-  );
-
-  // Auto logout when refresh token expired
   useEffect(() => {
-    console.log("[TokenProvider] sessionError ==>", sessionError);
-    if (sessionError) {
-      console.log("[Refresh token error, logging out]");
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      setTimeout(() => signOut(), 1000);
-    }
-  }, [sessionError]);
+    getTokenScheduler().setSession(data);
+  }, [data]);
 
-  // Auto refresh token after interval
-  useEffect(() => {
-    console.log("[TokenProvider]");
-    if (session) {
-      // Check if first render
-      if (isFirstMounted) {
-        console.log("[First render]");
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        refresh(session);
-      }
+  // const isRefreshAccessTokenError = useMemo(() => {
+  //   if (!data) return false;
+  //   if (data.error === "RefreshAccessTokenError") {
+  //     return true;
+  //   }
+  //   return false;
+  // }, [data]);
 
-      // Set refresh time shorten than token expired 10% (datetime)
-      const expiresAt = session.user.refreshTokenExpiresAt;
-      const refreshTime =
-        expiresAt -
-        Date.now() -
-        (expiresAt - session.user.accessTokenExpiresAt) * 0.1;
+  // const refresh = useCallback(
+  //   async (session: Session) => {
+  //     try {
+  //       console.log("[Refreshing token]");
+  //       const response = await client.auth.rpc("refresh").call({
+  //         refreshToken: session.user.refreshToken,
+  //       });
+  //       if (response.error) {
+  //         throw createError({
+  //           message: "Failed to validate token",
+  //           data: response.error,
+  //         });
+  //       }
 
-      console.log("[Setting refresh timer]", refresh);
+  //       if (response.resultCode.toString() !== HttpResultStatus.OK.toString()) {
+  //         throw createError({
+  //           message: "Failed to refresh access token",
+  //           data: response.error,
+  //         });
+  //       }
 
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      const timer = setInterval(() => refresh(session), refreshTime);
+  //       const { accessToken, refreshToken } = response.result;
+  //       const user = {
+  //         accessToken: accessToken.token,
+  //         accessTokenExpiresAt: dateToNumber(accessToken.expiresAt),
+  //         refreshToken: refreshToken.token,
+  //         refreshTokenExpiresAt: dateToNumber(refreshToken.expiresAt),
+  //       };
+  //       await update({ user });
+  //     } catch (error) {
+  //       if (error instanceof Error) {
+  //         console.log("[Refresh token error, logging out]");
 
-      // Clean up
-      return () => clearInterval(timer);
-    }
-  }, [session, isFirstMounted, update, refresh]);
+  //         // setTimeout(() => signOut(), 1000);
+  //       }
+  //     } finally {
+  //       if (isFirstMounted) {
+  //         setIsFirstMounted(false);
+  //       }
+  //     }
+  //   },
+  //   [client, isFirstMounted, update],
+  // );
+
+  // // // Auto logout when refresh token expired
+  // useEffect(() => {
+  //   console.log("[sessionError] frist");
+  //   if (isRefreshAccessTokenError) {
+  //     console.log("[sessionError]", isRefreshAccessTokenError);
+  //     // setTimeout(() => signOut(), 1000);
+  //   }
+  // }, [data]);
 
   return <>{children}</>;
 }

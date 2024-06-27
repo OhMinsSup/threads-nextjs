@@ -124,15 +124,19 @@ export const authConfig = {
         token.refreshTokenExpiresAt = dateToNumber(
           (user as User).tokens.refreshToken.expiresAt,
         );
+        console.log("[JWT] token - login", token);
         return token;
       } else if (
         token.accessToken &&
         token.accessTokenExpiresAt &&
-        Date.now() < token.accessTokenExpiresAt * 1000
+        Date.now() < token.accessTokenExpiresAt
       ) {
+        console.log("[JWT] token - valid", token);
         // Subsequent logins, if the access token is still valid, return the JWT
         return token as NextAuthJWT | null;
       }
+
+      console.log("[JWT] token - invalid", token);
       // Subsequent logins, if the access token has expired, try to refresh it
       if (!token.refreshToken) {
         throw createError({

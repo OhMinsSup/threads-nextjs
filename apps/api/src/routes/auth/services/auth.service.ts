@@ -131,8 +131,6 @@ export class AuthService {
       HttpStatus.UNAUTHORIZED,
     );
 
-    console.log(jwtDto.jti);
-
     const token = await this.token.findByTokenId(jwtDto.jti);
     assertHttpError(
       !token,
