@@ -1,4 +1,5 @@
 import type { $Fetch } from "ofetch";
+import { FetchError } from "ofetch";
 import { joinURL } from "ufo";
 
 import { HttpStatus } from "@thread/enum/http-status";
@@ -53,7 +54,8 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
     if (!isFnExist) {
       throw createError({
         message: "Invalid function",
-        status: HttpStatus.BAD_REQUEST,
+        status: HttpStatus.NOT_FOUND,
+        statusMessage: "Not Found",
       });
     }
 
@@ -67,29 +69,37 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   protected async refresh(
     input: FnKey extends "refresh" ? FormFieldRefreshTokenSchema : never,
   ): Promise<AuthBuilderReturnValue<FnKey>> {
-    const requestUrl = joinURL(this.$url, this._endpoints.refresh);
+    try {
+      const requestUrl = joinURL(this.$url, this._endpoints.refresh);
 
-    const body = await schema.refresh.safeParseAsync(input);
-    if (!body.success) {
-      const { error } = body;
-      throw createError({
-        message: "Invalid input",
-        status: HttpStatus.BAD_REQUEST,
-        data: {
-          key: error.name,
-          message: error.message,
+      const body = await schema.refresh.safeParseAsync(input);
+      if (!body.success) {
+        const { error } = body;
+        throw createError({
+          message: "Invalid input",
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            [error.name]: {
+              message: error.message,
+            },
+          },
+        });
+      }
+
+      return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
+        requestUrl,
+        {
+          ...(this.$fetchOptions ?? {}),
+          method: "PATCH",
+          body: body.data,
         },
-      });
+      );
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw createError(error);
+      }
+      throw error;
     }
-
-    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
-      requestUrl,
-      {
-        ...(this.$fetchOptions ?? {}),
-        method: "PATCH",
-        body: body.data,
-      },
-    );
   }
 
   /**
@@ -99,29 +109,38 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   protected async signUp(
     input: FnKey extends "signUp" ? FormFieldSignUpSchema : never,
   ): Promise<AuthBuilderReturnValue<FnKey>> {
-    const requestUrl = joinURL(this.$url, this._endpoints.signUp);
+    try {
+      const requestUrl = joinURL(this.$url, this._endpoints.signUp);
 
-    const body = await schema.signUp.safeParseAsync(input);
-    if (!body.success) {
-      const { error } = body;
-      throw createError({
-        message: "Invalid input",
-        status: HttpStatus.BAD_REQUEST,
-        data: {
-          key: error.name,
-          message: error.message,
+      const body = await schema.signUp.safeParseAsync(input);
+      if (!body.success) {
+        const { error } = body;
+        throw createError({
+          message: "Invalid input",
+          status: HttpStatus.BAD_REQUEST,
+          statusMessage: "Bad Request",
+          data: {
+            [error.name]: {
+              message: error.message,
+            },
+          },
+        });
+      }
+
+      return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
+        requestUrl,
+        {
+          ...(this.$fetchOptions ?? {}),
+          method: "POST",
+          body: body.data,
         },
-      });
+      );
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw createError(error);
+      }
+      throw error;
     }
-
-    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
-      requestUrl,
-      {
-        ...(this.$fetchOptions ?? {}),
-        method: "POST",
-        body: body.data,
-      },
-    );
   }
 
   /**
@@ -131,56 +150,73 @@ export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {
   protected async signIn(
     input: FnKey extends "signIn" ? FormFieldSignInSchema : never,
   ): Promise<AuthBuilderReturnValue<FnKey>> {
-    const requestUrl = joinURL(this.$url, this._endpoints.signIn);
+    try {
+      const requestUrl = joinURL(this.$url, this._endpoints.signIn);
 
-    const body = await schema.signIn.safeParseAsync(input);
-    if (!body.success) {
-      const { error } = body;
-      throw createError({
-        message: "Invalid input",
-        status: HttpStatus.BAD_REQUEST,
-        data: {
-          key: error.name,
-          message: error.message,
+      const body = await schema.signIn.safeParseAsync(input);
+      if (!body.success) {
+        const { error } = body;
+        throw createError({
+          message: "Invalid input",
+          status: HttpStatus.BAD_REQUEST,
+          statusMessage: "Bad Request",
+          data: {
+            [error.name]: {
+              message: error.message,
+            },
+          },
+        });
+      }
+
+      return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
+        requestUrl,
+        {
+          ...(this.$fetchOptions ?? {}),
+          method: "POST",
+          body: body.data,
         },
-      });
+      );
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw createError(error);
+      }
+      throw error;
     }
-
-    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
-      requestUrl,
-      {
-        ...(this.$fetchOptions ?? {}),
-        method: "POST",
-        body: body.data,
-      },
-    );
   }
 
   protected async verify(
     input: FnKey extends "verify" ? FormFieldVerifyTokenSchema : never,
   ): Promise<AuthBuilderReturnValue<FnKey>> {
-    const requestUrl = joinURL(this.$url, this._endpoints.verify);
+    try {
+      const requestUrl = joinURL(this.$url, this._endpoints.verify);
 
-    const body = await schema.verify.safeParseAsync(input);
-    if (!body.success) {
-      const { error } = body;
-      throw createError({
-        message: "Invalid input",
-        status: HttpStatus.BAD_REQUEST,
-        data: {
-          key: error.name,
-          message: error.message,
+      const body = await schema.verify.safeParseAsync(input);
+      if (!body.success) {
+        const { error } = body;
+        throw createError({
+          message: "Invalid input",
+          status: HttpStatus.BAD_REQUEST,
+          statusMessage: "Bad Request",
+          data: {
+            key: error.name,
+            message: error.message,
+          },
+        });
+      }
+
+      return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
+        requestUrl,
+        {
+          ...(this.$fetchOptions ?? {}),
+          method: "POST",
+          body: body.data,
         },
-      });
+      );
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw createError(error);
+      }
+      throw error;
     }
-
-    return await this.$fetch<AuthBuilderReturnValue<FnKey>, "json">(
-      requestUrl,
-      {
-        ...(this.$fetchOptions ?? {}),
-        method: "POST",
-        body: body.data,
-      },
-    );
   }
 }

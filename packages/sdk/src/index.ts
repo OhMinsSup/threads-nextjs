@@ -10,6 +10,7 @@ const createClient = (url: string, options?: ClientOptions) => {
 export type Client = ReturnType<typeof createClient>;
 
 export { CoreClient, createClient, FetchError };
+export type { CoreClientResponse } from "./core/types";
 export type {
   TokenResponse,
   SigninResponse,

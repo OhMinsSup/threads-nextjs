@@ -11,4 +11,9 @@ export default [
   ...reactConfig,
   ...nextjsConfig,
   ...restrictEnvAccess,
+  {
+    rules: {
+      "@typescript-eslint/no-unsafe-enum-comparison": "off",
+    },
+  },
 ];

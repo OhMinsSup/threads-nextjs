@@ -33,6 +33,8 @@ export default function SignupForm() {
     FormFieldSignUpSchema
   >(serverAction, undefined);
 
+  console.log(state);
+
   const form = useForm<FormFieldSignUpSchema>({
     resolver: zodResolver(authSchema.signUp),
     defaultValues: {
@@ -41,7 +43,7 @@ export default function SignupForm() {
       confirmPassword: "",
     },
     errors: isUndefined(state) || isBoolean(state) ? undefined : state,
-    reValidateMode: "onBlur",
+    reValidateMode: "onSubmit",
   });
 
   return (

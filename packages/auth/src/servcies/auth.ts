@@ -29,48 +29,17 @@ class AuthService {
 
   // 로그인
   authorize = async (credentials: unknown) => {
-    try {
-      const unsafeInput = credentials as FormFieldSignInSchema;
+    const unsafeInput = credentials as FormFieldSignInSchema;
+    const response = await this._client.auth.rpc("signIn").call(unsafeInput);
 
-      const response = await this._client.auth.rpc("signIn").call(unsafeInput);
-
-      if (response.error) {
-        throw createError({
-          message: "Failed to sign in",
-          data: response.error,
-        });
-      }
-
-      const code = response.resultCode.toString();
-      if (code === HttpResultStatus.INCORRECT_PASSWORD.toString()) {
-        throw createError({
-          message: "Incorrect password",
-          data: {
-            password: {
-              message: response.message,
-            },
-          },
-        });
-      }
-
-      if (code === HttpResultStatus.NOT_EXIST.toString()) {
-        throw createError({
-          message: "User does not exist",
-          data: {
-            email: {
-              message: response.message,
-            },
-          },
-        });
-      }
-
-      return response.result;
-    } catch (error) {
-      if (isError(error)) {
-        throw error;
-      }
-      return null;
+    if (response.resultCode !== HttpResultStatus.OK) {
+      throw createError({
+        message: "Failed to sign in",
+        data: response.message,
+      });
     }
+
+    return response.result;
   };
 
   // jwt

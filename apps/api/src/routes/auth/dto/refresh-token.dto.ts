@@ -2,7 +2,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsJWT } from "class-validator";
 
 export class RefreshTokenDTO {
-  @IsJWT()
+  @IsJWT({
+    message: "잘못된 토큰 형식입니다.",
+  })
   @ApiProperty({
     title: "Refresh Token",
     description: "The refresh token of the user",
@@ -11,5 +13,5 @@ export class RefreshTokenDTO {
     type: String,
     required: true,
   })
-  refreshToken: string;
+  readonly refreshToken: string;
 }

@@ -3,45 +3,62 @@
 import type { FieldErrors } from "react-hook-form";
 import { redirect } from "next/navigation";
 
+import type { CoreClientResponse } from "@thread/sdk";
 import type { FormFieldSignUpSchema } from "@thread/sdk/schema";
-import { isError } from "@thread/error/http";
+import { HttpResultStatus } from "@thread/enum/result-status";
+import { isError as isValidateError } from "@thread/error";
+import { isError as isHttpError } from "@thread/error/http";
 import { createClient } from "@thread/sdk";
 
 import { PAGE_ENDPOINTS } from "~/constants/constants";
 import { env } from "~/env";
 
-export type PreviousState =
-  | FieldErrors<FormFieldSignUpSchema>
-  | undefined
-  | boolean;
+type ZodValidateError = FieldErrors<FormFieldSignUpSchema>;
+
+export type PreviousState = ZodValidateError | undefined | boolean;
+
+const defaultErrorMessage = {
+  email: {
+    message: "인증에 실패했습니다. 이메일을 확인해주세요.",
+  },
+};
 
 export async function serverAction(
   _: PreviousState,
   input: FormFieldSignUpSchema,
 ) {
-  let redirectFlag = false;
-
-  console.log("???", env.NEXT_PUBLIC_SERVER_URL);
+  let isRedirect = false;
 
   const client = createClient(env.NEXT_PUBLIC_SERVER_URL);
 
   try {
-    const response = await client.auth.rpc("signUp").call(input);
-    console.log("response", response);
-    redirectFlag = true;
+    await client.auth.rpc("signUp").call(input);
+    isRedirect = true;
     return true;
   } catch (error) {
-    console.error("error", error);
-    redirectFlag = false;
-    if (isError(error)) {
-      return {
-        username: {
-          message: error.message,
-        },
-      } as FieldErrors<FormFieldSignUpSchema>;
+    isRedirect = false;
+    if (isValidateError<ZodValidateError>(error) && error.data) {
+      return error.data;
+    }
+
+    if (isHttpError<CoreClientResponse>(error) && error.data) {
+      switch (error.data.resultCode) {
+        case HttpResultStatus.INVALID: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return Array.isArray(error.data.message)
+            ? error.data.message.at(0)
+            : defaultErrorMessage;
+        }
+        case HttpResultStatus.NOT_EXIST: {
+          return error.data.message;
+        }
+        default: {
+          return defaultErrorMessage;
+        }
+      }
     }
   } finally {
-    if (redirectFlag) {
+    if (isRedirect) {
       redirect(PAGE_ENDPOINTS.AUTH.SIGNIN);
     }
   }

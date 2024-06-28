@@ -1,4 +1,5 @@
 import type { $Fetch } from "ofetch";
+import { FetchError } from "ofetch";
 import { joinURL } from "ufo";
 
 import { HttpStatus } from "@thread/enum/http-status";
@@ -43,7 +44,8 @@ export default class UsersBuilder<FnKey extends FnNameKey = FnNameKey> {
     if (!isFnExist) {
       throw createError({
         message: "Invalid function",
-        status: HttpStatus.BAD_REQUEST,
+        status: HttpStatus.NOT_FOUND,
+        statusMessage: "Not Found",
       });
     }
 
@@ -55,14 +57,21 @@ export default class UsersBuilder<FnKey extends FnNameKey = FnNameKey> {
    * @description 회원가입
    */
   protected async getMe() {
-    const requestUrl = joinURL(this.$url, this._endpoints.root);
+    try {
+      const requestUrl = joinURL(this.$url, this._endpoints.root);
 
-    return await this.$fetch<CoreClientResponse<GetMeResponse>, "json">(
-      requestUrl,
-      {
-        ...(this.$fetchOptions ?? {}),
-        method: "GET",
-      },
-    );
+      return await this.$fetch<CoreClientResponse<GetMeResponse>, "json">(
+        requestUrl,
+        {
+          ...(this.$fetchOptions ?? {}),
+          method: "GET",
+        },
+      );
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw createError(error);
+      }
+      throw error;
+    }
   }
 }

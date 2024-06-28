@@ -63,6 +63,17 @@ export class UsersService {
   }
 
   /**
+   * @description Check if a user exists by email
+   * @param {string} email
+   */
+  async checkUserByEmail(email: string) {
+    return await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+  }
+
+  /**
    * @description Get a user by id (simple)
    * @param {string} id
    */

@@ -2,7 +2,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsJWT } from "class-validator";
 
 export class VerifyTokenDTO {
-  @IsJWT()
+  @IsJWT({
+    message: "잘못된 토큰 형식입니다.",
+  })
   @ApiProperty({
     title: "Token",
     description: "The token to verify",
@@ -11,5 +13,5 @@ export class VerifyTokenDTO {
     type: String,
     required: true,
   })
-  token: string;
+  readonly token: string;
 }

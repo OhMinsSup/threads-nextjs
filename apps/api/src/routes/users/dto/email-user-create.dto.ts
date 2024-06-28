@@ -10,7 +10,7 @@ import {
 import { UserPasswordDTO } from "./user-password.dto";
 
 export class EmailUserCreateDTO extends UserPasswordDTO {
-  @IsEmail()
+  @IsEmail(undefined, { message: "잘못된 이메일 형식입니다." })
   @ApiProperty({
     title: "Email",
     description: "The email of the user",
@@ -18,11 +18,15 @@ export class EmailUserCreateDTO extends UserPasswordDTO {
     type: String,
     required: true,
   })
-  email: string;
+  readonly email: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
+  @IsString({
+    message: "이름은 문자열이어야 합니다.",
+  })
+  @MaxLength(50, {
+    message: "이름은 50자 이하여야 합니다.",
+  })
   @ApiProperty({
     title: "Name",
     description: "The name of the user",
@@ -30,11 +34,15 @@ export class EmailUserCreateDTO extends UserPasswordDTO {
     type: String,
     required: true,
   })
-  name?: string;
+  readonly name?: string;
 
   @IsOptional()
-  @IsString()
-  @IsUrl()
+  @IsString({
+    message: "사용자의 이미지 URL은 문자열이어야 합니다.",
+  })
+  @IsUrl(undefined, {
+    message: "잘못된 이미지 URL 형식입니다.",
+  })
   @ApiProperty({
     title: "Image URL",
     description: "The URL of the user's avatar",
@@ -42,5 +50,5 @@ export class EmailUserCreateDTO extends UserPasswordDTO {
     type: String,
     required: false,
   })
-  image?: string;
+  readonly image?: string;
 }

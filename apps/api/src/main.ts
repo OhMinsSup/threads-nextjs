@@ -1,5 +1,9 @@
 import type { NestExpressApplication } from "@nestjs/platform-express";
-import { ValidationPipe, VersioningType } from "@nestjs/common";
+import {
+  BadRequestException,
+  ValidationPipe,
+  VersioningType,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -18,6 +22,14 @@ async function bootstrap() {
       transform: true,
       stopAtFirstError: true,
       forbidUnknownValues: false,
+      exceptionFactory: (errors) => {
+        const result = errors.map((error) => ({
+          [error.property]: {
+            message: error.constraints[Object.keys(error.constraints)[0]],
+          },
+        }));
+        return new BadRequestException(result);
+      },
     }),
   );
 

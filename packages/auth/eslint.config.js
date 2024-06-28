@@ -7,4 +7,9 @@ export default [
   },
   ...baseConfig,
   ...restrictEnvAccess,
+  {
+    rules: {
+      "@typescript-eslint/no-unsafe-enum-comparison": "off",
+    },
+  },
 ];

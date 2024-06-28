@@ -13,6 +13,7 @@ import { AppTokenType } from "../../../libs/constants";
 import { assertHttpError, isHttpError } from "../../../libs/error";
 import { UsersService } from "../../../routes/users/services/users.service";
 import { RefreshTokenDTO } from "../dto/refresh-token.dto";
+import { SigninDTO } from "../dto/signin.dto";
 import { SignupDTO } from "../dto/signup.dto";
 import { VerifyTokenDTO } from "../dto/verify-token.dto";
 import { PasswordService } from "./password.service";
@@ -98,10 +99,10 @@ export class AuthService {
       });
     } catch (e) {
       assertHttpError(
-        true,
+        e instanceof Error,
         {
           resultCode: HttpResultStatus.TOKEN_EXPIRED,
-          message: "unauthorized",
+          message: e.message,
           result: null,
         },
         "Unauthorized",
@@ -113,7 +114,7 @@ export class AuthService {
       !jwtDto || (jwtDto && !jwtDto.sub),
       {
         resultCode: HttpResultStatus.TOKEN_EXPIRED,
-        message: "token invalid",
+        message: "token sub invalid",
         result: null,
       },
       "Unauthorized",
@@ -124,7 +125,7 @@ export class AuthService {
       !jwtDto.jti,
       {
         resultCode: HttpResultStatus.TOKEN_EXPIRED,
-        message: "token refresh invalid",
+        message: "token refresh jti invalid",
         result: null,
       },
       "Unauthorized",
@@ -135,12 +136,12 @@ export class AuthService {
     assertHttpError(
       !token,
       {
-        resultCode: HttpResultStatus.NOT_EXIST,
+        resultCode: HttpResultStatus.TOKEN_EXPIRED,
         message: "token not found",
         result: null,
       },
       "Not Found",
-      HttpStatus.NOT_FOUND,
+      HttpStatus.UNAUTHORIZED,
     );
 
     try {
@@ -197,17 +198,21 @@ export class AuthService {
 
   /**
    * @description Signin Handler
-   * @param {SignupDTO} input
+   * @param {SigninDTO} input
    */
-  async signin(input: SignupDTO) {
+  async signin(input: SigninDTO) {
     const user = await this.user.getInternalUserByEmail(input.email);
 
     assertHttpError(
       !user,
       {
         resultCode: HttpResultStatus.NOT_EXIST,
-        message: "가입되지 않은 사용자 입니다.",
-        error: null,
+        message: {
+          email: {
+            message: "가입되지 않은 이메일입니다.",
+          },
+        },
+        error: "email",
         result: null,
       },
       "Not Found",
@@ -224,8 +229,12 @@ export class AuthService {
       !isMatch,
       {
         resultCode: HttpResultStatus.INCORRECT_PASSWORD,
-        message: "비밀번호가 일치하지 않습니다.",
-        error: null,
+        message: {
+          password: {
+            message: "비밀번호가 일치하지 않습니다.",
+          },
+        },
+        error: "password",
         result: null,
       },
       "Unauthorized",
@@ -264,13 +273,17 @@ export class AuthService {
    * @param {SignupDTO} input
    */
   async signup(input: SignupDTO) {
-    const user = await this.user.getInternalUserByEmail(input.email);
+    const user = await this.user.checkUserByEmail(input.email);
 
     assertHttpError(
       !!user,
       {
         resultCode: HttpResultStatus.NOT_EXIST,
-        message: "이미 가입된 이메일입니다.",
+        message: {
+          email: {
+            message: "이미 가입된 이메일입니다.",
+          },
+        },
         error: "email",
         result: null,
       },

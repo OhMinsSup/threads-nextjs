@@ -3,70 +3,72 @@
 import type { FieldErrors } from "react-hook-form";
 import { redirect } from "next/navigation";
 
+import type { CoreClientResponse } from "@thread/sdk";
 import type { FormFieldSignInSchema } from "@thread/sdk/schema";
 import { signIn } from "@thread/auth";
-
-// import { HttpStatus } from "@thread/enum/http-status";
-// import { isError } from "@thread/error/http";
+import { HttpResultStatus } from "@thread/enum/result-status";
+import { isError as isValidateError } from "@thread/error";
+import { isError as isHttpError } from "@thread/error/http";
 
 import { PAGE_ENDPOINTS } from "~/constants/constants";
+
+type ZodValidateError = FieldErrors<FormFieldSignInSchema>;
 
 export type PreviousState =
   | FieldErrors<FormFieldSignInSchema>
   | undefined
   | boolean;
 
+const defaultErrorMessage = {
+  email: {
+    message: "인증에 실패했습니다. 이메일을 확인해주세요.",
+  },
+};
+
 export async function serverAction(
   _: PreviousState,
   input: FormFieldSignInSchema,
 ) {
-  let redirectFlag = false;
+  let isRedirect = false;
   try {
     await signIn("credentials", {
       ...input,
       redirect: false,
     });
-
-    redirectFlag = true;
+    isRedirect = true;
     return true;
   } catch (e) {
-    redirectFlag = false;
+    isRedirect = false;
     // Auth.js signIn method throws a CallbackRouteError
     if (e instanceof Error && e.name === "CallbackRouteError") {
       console.error(e);
-      // const error = (e as any).cause?.err;
-      // if (isError(error)) {
-      //   switch (error.statusCode) {
-      //     case HttpStatus.BAD_REQUEST: {
-      //       return {
-      //         ...(error.data
-      //           ? {
-      //               [(error.data as any).key]: {
-      //                 message: [(error.data as any).message],
-      //               },
-      //             }
-      //           : {}),
-      //       } as FieldErrors<FormFieldSignInSchema>;
-      //     }
-      //     case HttpStatus.NOT_FOUND: {
-      //       return {
-      //         username: {
-      //           message: "유저를 찾을 수 없습니다",
-      //         },
-      //       } as FieldErrors<FormFieldSignInSchema>;
-      //     }
-      //     case HttpStatus.UNAUTHORIZED: {
-      //       return {
-      //         password: {
-      //           message: "비밀번호가 일치하지 않습니다",
-      //         },
-      //       } as FieldErrors<FormFieldSignInSchema>;
-      //     }
-      //   }
-      // }
+      // @ts-expect-error - The error object has a cause property
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const error = e.cause?.err;
+      if (isValidateError<ZodValidateError>(error) && error.data) {
+        return error.data;
+      }
+
+      if (isHttpError<CoreClientResponse>(error) && error.data) {
+        switch (error.data.resultCode) {
+          case HttpResultStatus.INVALID: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            return Array.isArray(error.data.message)
+              ? error.data.message.at(0)
+              : defaultErrorMessage;
+          }
+          case HttpResultStatus.INCORRECT_PASSWORD:
+          case HttpResultStatus.NOT_EXIST: {
+            return error.data.message;
+          }
+          default: {
+            return defaultErrorMessage;
+          }
+        }
+      }
     }
   } finally {
-    if (redirectFlag) {
+    if (isRedirect) {
       redirect(PAGE_ENDPOINTS.ROOT);
     }
   }
