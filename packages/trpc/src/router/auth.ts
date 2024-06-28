@@ -4,9 +4,9 @@ import { protectedProcedure, publicProcedure } from "../trpc";
 
 export const authRouter = {
   getRequireSession: protectedProcedure.query(({ ctx }) => {
-    return ctx.session;
+    return null;
   }),
   getSession: publicProcedure.query(({ ctx }) => {
-    return ctx.session;
+    return null;
   }),
 } satisfies TRPCRouterRecord;

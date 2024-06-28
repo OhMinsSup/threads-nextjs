@@ -63,6 +63,23 @@ export class UsersService {
   }
 
   /**
+   * @description Get a user by id (simple)
+   * @param {string} id
+   */
+  async getUserById(id: string) {
+    return await this.prisma.user.findUnique({
+      where: { id, deletedAt: null },
+      select: {
+        id: true,
+        email: true,
+        emailVerified: true,
+        name: true,
+        image: true,
+      },
+    });
+  }
+
+  /**
    * @description Get a user by id (external)
    * @param {string} id
    */

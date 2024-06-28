@@ -11,7 +11,7 @@ export class LoggerMiddleware implements NestMiddleware {
     const { ip, method, originalUrl } = req;
     const userAgent = req.get("user-agent");
 
-    this.logger.log(
+    this.logger.debug(
       `[start][${method} - request]${originalUrl} ${ip} ${userAgent}`,
       this._contextName,
     );
@@ -24,7 +24,7 @@ export class LoggerMiddleware implements NestMiddleware {
       if (statusCode >= 400) {
         this.logger.error(message, this._contextName);
       } else {
-        this.logger.log(message, this._contextName);
+        this.logger.debug(message, this._contextName);
       }
     });
 

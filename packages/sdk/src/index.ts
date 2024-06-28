@@ -1,3 +1,5 @@
+import { FetchError } from "ofetch";
+
 import type { ClientOptions } from "./core/types";
 import { CoreClient } from "./core/core.client";
 
@@ -7,7 +9,7 @@ const createClient = (url: string, options?: ClientOptions) => {
 
 export type Client = ReturnType<typeof createClient>;
 
-export { CoreClient, createClient };
+export { CoreClient, createClient, FetchError };
 export type {
   TokenResponse,
   SigninResponse,

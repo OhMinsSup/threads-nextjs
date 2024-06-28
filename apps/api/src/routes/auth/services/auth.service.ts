@@ -96,12 +96,12 @@ export class AuthService {
       jwtDto = await this.jwt.verifyAsync<JwtPayload>(input.refreshToken, {
         secret: this.env.getRefreshTokenSecret(),
       });
-    } catch {
+    } catch (e) {
       assertHttpError(
         true,
         {
           resultCode: HttpResultStatus.TOKEN_EXPIRED,
-          message: "Unauthorized",
+          message: "unauthorized",
           result: null,
         },
         "Unauthorized",
@@ -113,7 +113,7 @@ export class AuthService {
       !jwtDto || (jwtDto && !jwtDto.sub),
       {
         resultCode: HttpResultStatus.TOKEN_EXPIRED,
-        message: "Unauthorized",
+        message: "token invalid",
         result: null,
       },
       "Unauthorized",
@@ -124,7 +124,7 @@ export class AuthService {
       !jwtDto.jti,
       {
         resultCode: HttpResultStatus.TOKEN_EXPIRED,
-        message: "Unauthorized",
+        message: "token refresh invalid",
         result: null,
       },
       "Unauthorized",
@@ -144,7 +144,7 @@ export class AuthService {
     );
 
     try {
-      const user = await this.user.getExternalUserById(jwtDto.sub);
+      const user = await this.user.getUserById(jwtDto.sub);
       assertHttpError(
         !user,
         {
@@ -156,26 +156,25 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
 
-      const accessToken = this.token.generateAccessToken(user.id);
-      const refreshToken = await this.token.generateRefreshToken(user.id);
-
       // 현재 발급한 token의 만료일 이전에 만료된 token을 삭제
-      const conditionExpiredAt = subMilliseconds(
-        refreshToken.expiresAt.getTime(),
-        1000,
-      );
-
       await this.token.deleteByExpiresAtTokens({
         userId: user.id,
-        expiresAt: conditionExpiredAt,
+        expiresAt: subMilliseconds(token.expires.getTime(), 1000),
         tokenType: AppTokenType.RefreshToken,
       });
+
+      const accessToken = this.token.generateAccessToken(user.id);
+      const refreshToken = await this.token.generateRefreshToken(user.id);
 
       return {
         resultCode: HttpResultStatus.OK,
         message: null,
         error: null,
         result: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
           tokens: {
             accessToken,
             refreshToken,
@@ -237,18 +236,11 @@ export class AuthService {
     const refreshToken = await this.token.generateRefreshToken(user.id);
 
     // 현재 발급한 token의 만료일 이전에 만료된 token을 삭제
-    const conditionExpiredAt = subMilliseconds(
-      refreshToken.expiresAt.getTime(),
-      1000,
-    );
-
     await this.token.deleteByExpiresAtTokens({
       userId: user.id,
-      expiresAt: conditionExpiredAt,
+      expiresAt: subMilliseconds(refreshToken.expiresAt.getTime(), 1000),
       tokenType: AppTokenType.RefreshToken,
     });
-
-    const userExternal = await this.user.getExternalUserById(user.id);
 
     return {
       resultCode: HttpResultStatus.OK,

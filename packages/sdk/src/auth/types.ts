@@ -38,7 +38,7 @@ export type AuthBuilderReturnValue<Fn extends FnNameKey> = CoreClientResponse<
     : Fn extends "signIn"
       ? SigninResponse
       : Fn extends "refresh"
-        ? TokenResponse
+        ? RefreshTokenResponse
         : Fn extends "verify"
           ? boolean
           : unknown
@@ -72,6 +72,11 @@ interface TokenItemSchema {
 export interface TokenResponse {
   accessToken: TokenItemSchema;
   refreshToken: TokenItemSchema;
+}
+
+export interface RefreshTokenResponse
+  extends Pick<UserExternalPayload, "email" | "id" | "name" | "image"> {
+  tokens: TokenResponse;
 }
 
 export interface SignupResponse
