@@ -13,6 +13,8 @@ import { env } from "../../env";
 class AuthService {
   private _BUFFER_TIME = 5 * 60;
 
+  private _isDebug = false;
+
   private _client = createClient(env.NEXT_PUBLIC_SERVER_URL);
 
   private _safeToDate = (date: Date | number | string) => {
@@ -44,15 +46,17 @@ class AuthService {
 
   // jwt
   jwt = async ({ token, user, trigger, session }: JWTParams) => {
-    console.log("[JWT] jwt - token", token);
-    console.log("[JWT] jwt - user", user);
-    console.log("[JWT] jwt - trigger", trigger);
+    if (this._isDebug) {
+      console.log("[JWT] jwt - token", token);
+      console.log("[JWT] jwt - user", user);
+      console.log("[JWT] jwt - trigger", trigger);
+      console.log("[JWT] jwt - session", session);
+    }
 
     // Listen for `update` event
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (trigger === "update" && session?.user) {
       const { user } = session as { user: User };
-      console.log("[JWT] jwt - update", user);
       return {
         ...token,
         sub: user.id,
@@ -83,7 +87,10 @@ class AuthService {
         accessTokenExpiresAt: this._safeToDate(accessToken.expiresAt),
         refreshTokenExpiresAt: this._safeToDate(refreshToken.expiresAt),
       });
-      console.log("[JWT] token - login", token);
+
+      if (this._isDebug) {
+        console.log("[JWT] token - login", token);
+      }
       return token;
     } else if (
       token.accessToken &&
@@ -91,17 +98,23 @@ class AuthService {
       // Check if the access token is not expired
       token.accessTokenExpiresAt - this._BUFFER_TIME * 1000 > Date.now()
     ) {
-      // The access token not expired
-      console.log("[JWT] token - valid", token);
+      if (this._isDebug) {
+        // The access token not expired
+        console.log("[JWT] token - valid", token);
+      }
       // Subsequent logins, if the access token is still valid, return the JWT
       return token as NextAuthJWT | null;
     }
 
     try {
-      console.log("[JWT] token - invalid", token);
+      if (this._isDebug) {
+        console.log("[JWT] token - invalid", token);
+      }
       // Subsequent logins, if the access token has expired, try to refresh it
       if (!token.refreshToken) {
-        console.log("[JWT] token - missing refresh token", token);
+        if (this._isDebug) {
+          console.log("[JWT] token - missing refresh token", token);
+        }
         throw createError({
           message: "MissingRefreshToken",
         });
@@ -113,7 +126,9 @@ class AuthService {
         refreshToken: token.refreshToken,
       });
 
-      console.log("[JWT] token - refresh", response);
+      if (this._isDebug) {
+        console.log("[JWT] token - refresh", response);
+      }
 
       if (response.error) {
         throw createError({
@@ -140,9 +155,11 @@ class AuthService {
 
       return nextUser;
     } catch (error) {
-      console.log("[JWT] token - error", error);
-      console.log("[JWT] token - error isHttpError", isHttpError(error));
-      console.log("[JWT] token - error isError", isError(error));
+      if (this._isDebug) {
+        console.log("[JWT] token - error", error);
+        console.log("[JWT] token - error isHttpError", isHttpError(error));
+        console.log("[JWT] token - error isError", isError(error));
+      }
       // console.error(error);
       if (isHttpError(error) || error instanceof FetchError) {
         switch (error.statusCode) {
@@ -183,8 +200,10 @@ class AuthService {
   };
 
   session = ({ session, token }: SessionParams) => {
-    console.log("[JWT] session - session", session);
-    console.log("[JWT] session - token", token);
+    if (this._isDebug) {
+      console.log("[JWT] session - session", session);
+      console.log("[JWT] session - token", token);
+    }
     session.error = token.error;
     return {
       ...session,
