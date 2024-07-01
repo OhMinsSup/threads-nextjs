@@ -8,6 +8,9 @@ export const authConfig = {
   pages: {
     signIn: "/signin",
   },
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
@@ -31,22 +34,7 @@ export const authConfig = {
       });
     },
     session: ({ session, token }) => {
-      console.log("[JWT] session - session", session);
-      console.log("[JWT] session - token", token);
-      session.error = token.error;
-      return {
-        ...session,
-        user: {
-          id: token.sub,
-          email: token.email,
-          name: token.name,
-          image: token.picture,
-          accessToken: token.accessToken,
-          refreshToken: token.refreshToken,
-          accessTokenExpiresAt: token.accessTokenExpiresAt,
-          refreshTokenExpiresAt: token.refreshTokenExpiresAt,
-        },
-      };
+      return authService.session({ session, token });
     },
   },
 } satisfies NextAuthConfig;

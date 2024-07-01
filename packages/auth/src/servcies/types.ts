@@ -1,4 +1,4 @@
-import type { Account, Profile } from "next-auth";
+import type { Account, Profile, Session } from "next-auth";
 import type { DefaultJWT, JWT as NextAuthJWT } from "next-auth/jwt";
 
 import type { SigninResponse } from "@thread/sdk";
@@ -77,4 +77,10 @@ export interface JWTParams {
    * ⚠ Note, you should validate this data before using it.
    */
   session?: any;
+}
+
+export interface SessionParams {
+  session: Session;
+  /** Available when {@link AuthConfig.session} is set to `strategy: "jwt"` */
+  token: NextAuthJWT;
 }

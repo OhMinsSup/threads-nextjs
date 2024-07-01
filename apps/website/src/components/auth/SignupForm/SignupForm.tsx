@@ -33,8 +33,6 @@ export default function SignupForm() {
     FormFieldSignUpSchema
   >(serverAction, undefined);
 
-  console.log(state);
-
   const form = useForm<FormFieldSignUpSchema>({
     resolver: zodResolver(authSchema.signUp),
     defaultValues: {

@@ -7,7 +7,7 @@ import { createError, isError } from "@thread/error";
 import { isError as isHttpError } from "@thread/error/http";
 import { createClient, FetchError } from "@thread/sdk";
 
-import type { JWTParams } from "./types";
+import type { JWTParams, SessionParams, User } from "./types";
 import { env } from "../../env";
 
 class AuthService {
@@ -43,27 +43,32 @@ class AuthService {
   };
 
   // jwt
-  jwt = async ({ token, user, trigger }: JWTParams) => {
+  jwt = async ({ token, user, trigger, session }: JWTParams) => {
     console.log("[JWT] jwt - token", token);
     console.log("[JWT] jwt - user", user);
     console.log("[JWT] jwt - trigger", trigger);
 
     // Listen for `update` event
-    // if (trigger === "update" && session?.user) {
-    //   const {
-    //     accessToken,
-    //     accessTokenExpiresAt,
-    //     refreshToken,
-    //     refreshTokenExpiresAt,
-    //   } = session.user;
-    //   return {
-    //     ...token,
-    //     accessToken,
-    //     refreshToken,
-    //     accessTokenExpiresAt,
-    //     refreshTokenExpiresAt,
-    //   } as NextAuthJWT | null;
-    // }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (trigger === "update" && session?.user) {
+      const { user } = session as { user: User };
+      console.log("[JWT] jwt - update", user);
+      return {
+        ...token,
+        sub: user.id,
+        email: user.email,
+        name: user.name,
+        picture: user.image,
+        accessToken: user.tokens.accessToken.token,
+        refreshToken: user.tokens.refreshToken.token,
+        accessTokenExpiresAt: this._safeToDate(
+          user.tokens.accessToken.expiresAt,
+        ),
+        refreshTokenExpiresAt: this._safeToDate(
+          user.tokens.refreshToken.expiresAt,
+        ),
+      } as NextAuthJWT | null;
+    }
 
     if (user) {
       const { refreshToken, accessToken } = user.tokens;
@@ -175,6 +180,25 @@ class AuthService {
       // The error property can be used client-side to handle the refresh token error
       return token as NextAuthJWT | null;
     }
+  };
+
+  session = ({ session, token }: SessionParams) => {
+    console.log("[JWT] session - session", session);
+    console.log("[JWT] session - token", token);
+    session.error = token.error;
+    return {
+      ...session,
+      user: {
+        id: token.sub,
+        email: token.email,
+        name: token.name,
+        image: token.picture,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        accessTokenExpiresAt: token.accessTokenExpiresAt,
+        refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+      },
+    };
   };
 }
 

@@ -2,12 +2,6 @@ import crypto from "node:crypto";
 import utils from "node:util";
 import { Injectable } from "@nestjs/common";
 
-import {
-  generateHash,
-  generateSalt,
-  secureCompare,
-} from "@thread/shared/password";
-
 import { EnvironmentService } from "../../../integrations/environment/environment.service";
 import { LoggerService } from "../../../integrations/logger/logger.service";
 
