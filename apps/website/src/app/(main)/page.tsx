@@ -7,11 +7,11 @@ import { FeedInput } from "~/components/layout/FeedInput";
 export default function Page() {
   return (
     <>
-      <FeedHeader />
+      {/* <FeedHeader />
       <FeedArea>
         <FeedInput />
         <Separator orientation="horizontal" />
-      </FeedArea>
+      </FeedArea> */}
     </>
   );
 }

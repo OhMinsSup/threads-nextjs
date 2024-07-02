@@ -8,14 +8,14 @@ import { cn } from "@thread/ui";
 
 import type { NavItem } from "~/constants/nav";
 import { Icons } from "~/components/icons";
-import { mainNavbuttonVariants } from "~/constants/nav";
+import styles from "./styles.module.css";
 
 interface ButtonMyPageProps {
   item: NavItem;
   type: "footer" | "header";
 }
 
-export default function ButtonMyPage({ item, type }: ButtonMyPageProps) {
+export default function ButtonMyPage({ item }: ButtonMyPageProps) {
   const segment = useSelectedLayoutSegment();
   const href = "#";
 
@@ -24,17 +24,15 @@ export default function ButtonMyPage({ item, type }: ButtonMyPageProps) {
   const Icon = Icons[item.icon];
 
   return (
-    <Link
-      href={item.disabled ? "#" : href}
-      className={cn(
-        mainNavbuttonVariants({
-          item,
-          type,
-          isActive,
-        }),
-      )}
-    >
-      <Icon className="size-6" aria-label={item.title} role="img" />
+    <Link href={item.disabled ? "#" : href} className={cn(styles.root)}>
+      <div className={styles.root_icon_container}>
+        <Icon
+          className={cn(isActive && "!text-foreground")}
+          aria-label={item.title}
+          role="img"
+        />
+      </div>
+      <div className={styles.overlay} />
     </Link>
   );
 }

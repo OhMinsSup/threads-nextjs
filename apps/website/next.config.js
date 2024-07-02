@@ -10,6 +10,8 @@ const config = {
 
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: [
+    "@thread/hooks",
+    "@thread/error",
     "@thread/trpc",
     "@thread/auth",
     "@thread/db",

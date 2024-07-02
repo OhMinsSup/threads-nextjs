@@ -1,15 +1,21 @@
 import React from "react";
 
 import { auth } from "@thread/auth";
+import { cn } from "@thread/ui";
 
-import { Footer } from "~/components/layout/Footer";
+import { FooterNavigation } from "~/components/layout/FooterNavigation";
 import { Header } from "~/components/layout/Header";
-import { HeaderNavigation } from "~/components/layout/HeaderNavigation";
+import styles from "./styles.module.css";
 
 interface MainLayoutProps {
   children: React.ReactNode;
   before?: React.ReactNode;
   after?: React.ReactNode;
+}
+
+function Fallback() {
+  console.log("Loading...");
+  return <>Loading...</>;
 }
 
 export default async function MainLayout({
@@ -20,10 +26,10 @@ export default async function MainLayout({
   const session = await auth();
 
   return (
-    <div className="flex flex-col">
-      <Header>
-        <HeaderNavigation session={session} />
-      </Header>
+    <div>
+      <React.Suspense fallback={<Fallback />}>
+        <Header session={session} />
+      </React.Suspense>
       <main className="flex-1">
         <div className="container max-w-2xl px-4">
           {before}
@@ -31,7 +37,9 @@ export default async function MainLayout({
           {after}
         </div>
       </main>
-      <Footer />
+      <nav className={cn(styles.footer)} id="item-footer">
+        <FooterNavigation />
+      </nav>
     </div>
   );
 }

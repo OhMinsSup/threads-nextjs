@@ -1,0 +1,9 @@
+.root {
+  @apply relative flex items-center justify-center transition-transform;
+}
+
+@media (max-width: 699px) {
+  .root {
+    @apply h-full;
+  }
+}

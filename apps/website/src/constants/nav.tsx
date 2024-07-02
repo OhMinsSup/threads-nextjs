@@ -40,7 +40,6 @@ export const NAV_CONFIG = {
       type: "link",
       title: "Home",
       href: PAGE_ENDPOINTS.ROOT,
-      // icon: Icons.home,
       icon: "home",
     },
     {
@@ -48,22 +47,26 @@ export const NAV_CONFIG = {
       type: "link",
       title: "Search",
       href: PAGE_ENDPOINTS.SEARCH,
-      // icon: Icons.search,
       icon: "search",
+    },
+    {
+      id: "thread",
+      type: "link",
+      title: "Threads",
+      href: PAGE_ENDPOINTS.THREADS.ROOT,
+      icon: "pen",
     },
     {
       id: "like",
       type: "link",
       title: "Like",
       href: PAGE_ENDPOINTS.LIKED,
-      // icon: Icons.heart,
       icon: "heart",
     },
     {
       id: "myPage",
       type: "myPage",
       title: "My Page",
-      // icon: Icons.user,
       icon: "user",
     },
   ] as NavItem[],
@@ -141,10 +144,8 @@ export const mainNavbuttonVariants = ({
   isActive,
 }: MainNavbuttonVariantsParams) => {
   return cn(
-    type === "header"
-      ? "flex size-[60px] items-center justify-center px-3 text-lg font-medium transition-colors hover:rounded-md hover:bg-foreground/5"
-      : undefined,
+    // "relative mx-[2px] my-1 flex touch-manipulation select-none flex-row items-stretch justify-center bg-transparent px-8 py-5 transition-transform",
     isActive ? "text-foreground" : "text-foreground/60",
-    item.disabled && "cursor-not-allowed opacity-80",
+    item.disabled && "cursor-not-allowed opacity-90",
   );
 };

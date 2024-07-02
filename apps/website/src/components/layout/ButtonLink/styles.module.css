@@ -1,0 +1,52 @@
+.root {
+  pointer-events: all;
+  border-top-width: 0;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  transition-property: transform;
+  width: 100%;
+  @apply relative mx-[2px] my-1 box-border flex min-h-0 min-w-0 cursor-pointer touch-manipulation select-none flex-row items-stretch justify-center bg-transparent px-8 py-5;
+}
+
+.root_icon_container {
+  pointer-events: none;
+  transform: scale(1);
+  transition-duration: 0s;
+  transition-property: transform;
+}
+
+.overlay {
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 8px;
+  transition-duration: 0.1s;
+  transition-timing-function: ease-out;
+  transform: scale(0.8);
+  transition-property: opacity, transform;
+  background-color: rgba(255, 255, 255, 0.05);
+  @apply absolute top-0 size-full scale-75 opacity-0 hover:scale-100 hover:opacity-100;
+}
+
+.root_icon_container > svg {
+  --height: 26px;
+  --width: 26px;
+
+  height: var(--height, revert);
+  width: var(--width, revert);
+
+  @apply relative block flex-shrink-0 text-foreground/40;
+}
+
+@media (max-width: 699px) {
+  .root {
+    @apply m-auto h-full items-center p-0;
+  }
+
+  .overlay {
+    width: calc(100% - 8px);
+    @apply m-1 h-[60px];
+  }
+}

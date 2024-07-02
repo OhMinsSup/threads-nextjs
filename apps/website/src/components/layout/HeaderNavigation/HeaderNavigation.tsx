@@ -1,32 +1,15 @@
 import React from "react";
-import Link from "next/link";
 
-import type { Session } from "@thread/auth";
 import { cn } from "@thread/ui";
-import { buttonVariants } from "@thread/ui/button";
 
-import { Icons } from "~/components/icons";
 import { ButtonGroup } from "~/components/layout/ButtonGroup";
-import { UserMenu } from "~/components/layout/UserMenu";
-import { PAGE_ENDPOINTS } from "~/constants/constants";
 import { NAV_CONFIG } from "~/constants/nav";
+import styles from "./styles.module.css";
 
-interface HeaderNavigationProps {
-  session: Session | null;
-}
-
-export default function HeaderNavigation({ session }: HeaderNavigationProps) {
+export default function HeaderNavigation() {
   return (
-    <>
-      <Link
-        href={PAGE_ENDPOINTS.ROOT}
-        className="flex w-full items-center justify-center hover:scale-110 sm:block sm:w-auto"
-      >
-        <Icons.threadsWhite className="hidden size-8 dark:block" />
-        <Icons.threads className="block size-8 dark:hidden" />
-      </Link>
-
-      <nav className="hidden gap-4 sm:flex lg:gap-6">
+    <div className={cn(styles.root)} id="item-navigation">
+      <nav className="mx-auto grid w-full grid-cols-[repeat(5,20%)] items-center">
         {NAV_CONFIG.mainNav.map((item, index) => (
           <ButtonGroup
             key={`main-nav-${index.toString()}`}
@@ -35,22 +18,6 @@ export default function HeaderNavigation({ session }: HeaderNavigationProps) {
           />
         ))}
       </nav>
-
-      {session ? (
-        <nav>
-          <UserMenu />
-        </nav>
-      ) : (
-        <div>
-          <Link
-            aria-label="로그인"
-            href={PAGE_ENDPOINTS.AUTH.SIGNIN}
-            className={cn(buttonVariants())}
-          >
-            로그인
-          </Link>
-        </div>
-      )}
-    </>
+    </div>
   );
 }

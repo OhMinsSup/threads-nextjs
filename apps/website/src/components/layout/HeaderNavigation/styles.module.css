@@ -1,0 +1,17 @@
+.root {
+  @apply relative;
+}
+
+@media (min-width: 768px) {
+  .root {
+    max-width: var(--app-large-screen-max-width);
+    @apply box-border w-screen px-[70px];
+  }
+}
+
+@media (min-width: 700px) and (max-width: 767px) {
+  .root {
+    max-width: var(--app-medium-screen-max-width);
+    @apply box-border w-screen px-[70px];
+  }
+}

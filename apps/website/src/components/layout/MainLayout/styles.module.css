@@ -1,0 +1,11 @@
+.footer {
+  height: var(--app-small-screen-nav-height);
+  padding-bottom: env(safe-area-inset-bottom);
+  @apply fixed bottom-0 left-0 right-0 m-auto grid grid-cols-[repeat(5,20%)] grid-rows-[1fr] items-center backdrop-blur-sm;
+}
+
+@media (min-width: 700px) {
+  .footer {
+    @apply hidden;
+  }
+}

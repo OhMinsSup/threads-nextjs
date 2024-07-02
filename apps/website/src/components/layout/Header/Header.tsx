@@ -1,17 +1,25 @@
 import React from "react";
+import { headers } from "next/headers";
+import { userAgent } from "next/server";
+
+import type { Session } from "@thread/auth";
+
+import Desktop from "./Desktop";
+import Mobile from "./Mobile";
+import Wrapper from "./Wrapper";
 
 interface HeaderProps {
-  children: React.ReactNode;
+  session: Session | null;
 }
 
-export default function Header({ children }: HeaderProps) {
+export default async function Header({ session }: HeaderProps) {
+  const { device } = await Promise.resolve(userAgent({ headers: headers() }));
+  const viewport = device.type === "mobile" ? "mobile" : "desktop";
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md">
-      <div className="container">
-        <div className="flex h-16 items-center justify-between sm:h-20 sm:py-6">
-          {children}
-        </div>
-      </div>
-    </header>
+    <Wrapper
+      serverFallback={viewport === "mobile"}
+      desktop={<Desktop session={session} />}
+      mobile={<Mobile session={session} />}
+    />
   );
 }
