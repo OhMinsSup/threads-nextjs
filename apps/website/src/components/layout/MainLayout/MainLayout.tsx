@@ -1,6 +1,5 @@
 import React from "react";
 
-import { auth } from "@thread/auth";
 import { cn } from "@thread/ui";
 
 import { FooterNavigation } from "~/components/layout/FooterNavigation";
@@ -18,17 +17,15 @@ function Fallback() {
   return <>Loading...</>;
 }
 
-export default async function MainLayout({
+export default function MainLayout({
   children,
   before,
   after,
 }: MainLayoutProps) {
-  const session = await auth();
-
   return (
     <div>
       <React.Suspense fallback={<Fallback />}>
-        <Header session={session} />
+        <Header />
       </React.Suspense>
       <main className="flex-1">
         <div className="container max-w-2xl px-4">

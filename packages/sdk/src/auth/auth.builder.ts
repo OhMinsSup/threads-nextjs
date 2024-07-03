@@ -2,9 +2,6 @@ import type { $Fetch } from "ofetch";
 import { FetchError } from "ofetch";
 import { joinURL } from "ufo";
 
-import { HttpStatus } from "@thread/enum/http-status";
-import { createError } from "@thread/error/http";
-
 import type { $FetchOptions, $Url } from "../core/types";
 import type {
   FormFieldRefreshTokenSchema,
@@ -18,6 +15,8 @@ import type {
   AuthBuilderReturnValue,
   FnNameKey,
 } from "./types";
+import { HttpStatus } from "../constants/http-status";
+import { createError } from "../error/http";
 import { schema } from "./auth.schema";
 
 export default class AuthBuilder<FnKey extends FnNameKey = FnNameKey> {

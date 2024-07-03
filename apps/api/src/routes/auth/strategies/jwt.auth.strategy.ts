@@ -4,7 +4,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
 import type { UserExternalPayload } from "@thread/db/selectors";
-import { HttpResultStatus } from "@thread/enum/result-status";
+import { HttpResultStatus } from "@thread/sdk/enum";
 
 import { EnvironmentService } from "../../../integrations/environment/environment.service";
 import { PrismaService } from "../../../integrations/prisma/prisma.service";

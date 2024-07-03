@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 
-import { HttpResultStatus } from "@thread/enum/result-status";
+import { HttpResultStatus } from "@thread/sdk/enum";
 
 import { LoggerService } from "../integrations/logger/logger.service";
 import { HttpError, isHttpError } from "../libs/error";

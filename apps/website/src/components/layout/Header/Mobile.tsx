@@ -8,7 +8,7 @@ import { HeaderMenu } from "~/components/layout/HeaderMenu";
 import styles from "./styles.module.css";
 
 interface MobileProps {
-  session: Session | null;
+  session?: Session | null;
 }
 
 export default function Mobile({ session }: MobileProps) {

@@ -3,7 +3,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { assertHttpError } from "src/libs/error";
 
-import { HttpResultStatus } from "@thread/enum/result-status";
+import { HttpResultStatus } from "@thread/sdk/enum";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard(["jwt"]) {

@@ -9,10 +9,10 @@ import { HeaderNavigation } from "~/components/layout/HeaderNavigation";
 import styles from "./styles.module.css";
 
 interface DesktopProps {
-  session: Session | null;
+  session?: Session | null;
 }
 
-export default function Desktop({ session, ...props }: DesktopProps) {
+export default function Desktop({ session }: DesktopProps) {
   return (
     <header className={cn(styles.header_desktop)} id="item-desktop-header">
       <HeaderLogo />

@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { subMilliseconds } from "date-fns";
 
-import { HttpResultStatus } from "@thread/enum/result-status";
-import { generatorName } from "@thread/shared/utils";
+import { HttpResultStatus } from "@thread/sdk/enum";
+import { generatorName } from "@thread/sdk/utils";
 
 import type { JwtPayload } from "../strategies/jwt.auth.strategy";
 import { EnvironmentService } from "../../../integrations/environment/environment.service";

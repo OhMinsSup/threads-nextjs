@@ -2,9 +2,6 @@ import type { $Fetch } from "ofetch";
 import { FetchError } from "ofetch";
 import { joinURL } from "ufo";
 
-import { HttpStatus } from "@thread/enum/http-status";
-import { createError } from "@thread/error/http";
-
 import type { $FetchOptions, $Url, CoreClientResponse } from "../core/types";
 import type {
   FnNameKey,
@@ -12,6 +9,8 @@ import type {
   UsersBuilderConstructorOptions,
   UsersBuilderInput,
 } from "./types";
+import { HttpStatus } from "../constants/http-status";
+import { createError } from "../error/http";
 
 export default class UsersBuilder<FnKey extends FnNameKey = FnNameKey> {
   private $fnKey: FnKey;

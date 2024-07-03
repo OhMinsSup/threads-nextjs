@@ -5,10 +5,9 @@ import { redirect } from "next/navigation";
 
 import type { CoreClientResponse } from "@thread/sdk";
 import type { FormFieldSignUpSchema } from "@thread/sdk/schema";
-import { HttpResultStatus } from "@thread/enum/result-status";
-import { isError as isValidateError } from "@thread/error";
-import { isError as isHttpError } from "@thread/error/http";
 import { createClient } from "@thread/sdk";
+import { HttpResultStatus } from "@thread/sdk/enum";
+import { isHttpError, isThreadError } from "@thread/sdk/error";
 
 import { PAGE_ENDPOINTS } from "~/constants/constants";
 import { env } from "~/env";
@@ -37,7 +36,7 @@ export async function serverAction(
     return true;
   } catch (error) {
     isRedirect = false;
-    if (isValidateError<ZodValidateError>(error) && error.data) {
+    if (isThreadError<ZodValidateError>(error) && error.data) {
       return error.data;
     }
 

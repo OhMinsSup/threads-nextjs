@@ -1,21 +1,20 @@
 "use client";
 
+import type { EditorState, LexicalEditor as ReactLexicalEditor } from "lexical";
+import type { FieldErrors, FieldPath } from "react-hook-form";
 import React, { useCallback, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { $generateHtmlFromNodes } from "@lexical/html";
-import {
-  type EditorState,
-  type LexicalEditor as ReactLexicalEditor,
-} from "lexical";
-import { FieldErrors, FieldPath, get, useForm } from "react-hook-form";
+import { get, useForm } from "react-hook-form";
 
-import type { FormFieldsCreateSchema } from "@thread/validators/thread";
+// import type { FormFieldsCreateSchema } from "@thread/validators/thread";
 import { useBeforeUnload } from "@thread/hooks/useBeforeUnload";
 import { cn } from "@thread/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@thread/ui/avatar";
 import { Button } from "@thread/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@thread/ui/form";
-import { schema } from "@thread/validators/thread";
+
+// import { schema } from "@thread/validators/thread";
 
 import type { LexicalEditorProps } from "~/components/editor/lexical-editor";
 import LexicalEditor from "~/components/editor/lexical-editor";
@@ -26,8 +25,8 @@ interface ThreadFormProps {
 }
 
 export default function ThreadForm({ editorState }: ThreadFormProps) {
-  const form = useForm<FormFieldsCreateSchema>({
-    resolver: zodResolver(schema.create),
+  const form = useForm<any>({
+    // resolver: zodResolver(schema.create),
     defaultValues: {
       text: "",
     },
@@ -37,7 +36,7 @@ export default function ThreadForm({ editorState }: ThreadFormProps) {
 
   const [, startTransition] = useTransition();
 
-  const onSubmit = (values: FormFieldsCreateSchema) => {};
+  const onSubmit = (values: any) => {};
 
   const {
     watch,
@@ -129,8 +128,8 @@ export default function ThreadForm({ editorState }: ThreadFormProps) {
 }
 
 interface EditorMessageProps {
-  errors: FieldErrors<FormFieldsCreateSchema>;
-  id: FieldPath<FormFieldsCreateSchema>;
+  errors: FieldErrors<any>;
+  id: FieldPath<any>;
   remoteError?: string | null;
 }
 

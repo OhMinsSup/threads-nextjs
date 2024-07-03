@@ -132,7 +132,7 @@ export const Icons = {
       />
     </svg>
   ),
-  threads_v2: ({ ...props }: LucideProps) => (
+  threadsSidebar: ({ ...props }: LucideProps) => (
     <svg
       {...props}
       aria-label="Threads"

@@ -1,4 +1,4 @@
-import { ErrorDisplayType } from "./enum";
+import { ErrorDisplayType } from "../constants/error-display";
 
 export class ThreadError<DataT = unknown> extends Error {
   static __thread_error__ = true;

@@ -9,35 +9,20 @@ import { ButtonGroup } from "~/components/layout/ButtonGroup";
 import { UserMenu } from "~/components/layout/UserMenu";
 import { PAGE_ENDPOINTS } from "~/constants/constants";
 import { NAV_CONFIG } from "~/constants/nav";
+import { HeaderLogo } from "../HeaderLogo";
+import styles from "./styles.module.css";
 
 export default function Sidebar() {
   return (
-    <div className="fixed left-0 top-0 z-[1] flex h-screen min-h-[480px] w-[76px] flex-col items-center overflow-visible backdrop-blur-lg">
-      <Sidebar.Top />
-      <Sidebar.Middle />
-      <Sidebar.Bottom />
+    <div className={styles.root} id="item-sidebar">
+      <div className="flex flex-row justify-center py-[15px]">
+        <HeaderLogo.Sidebar />
+      </div>
+      {/* <Sidebar.Middle />
+      <Sidebar.Bottom /> */}
     </div>
   );
 }
-
-Sidebar.Top = function Item() {
-  return (
-    <div className="flex justify-center overflow-hidden py-[15px]">
-      <Link
-        href={PAGE_ENDPOINTS.ROOT}
-        className={cn(
-          buttonVariants({
-            size: "icon",
-            variant: "ghost",
-            className: "hover:scale-110 hover:bg-inherit",
-          }),
-        )}
-      >
-        <Icons.threads_v2 className="size-auto fill-current" />
-      </Link>
-    </div>
-  );
-};
 
 Sidebar.Middle = function Item() {
   return (

@@ -1,19 +1,20 @@
 import type { JWT as NextAuthJWT } from "next-auth/jwt";
 
 import type { FormFieldSignInSchema } from "@thread/sdk/schema";
-import { HttpStatus } from "@thread/enum/http-status";
-import { HttpResultStatus } from "@thread/enum/result-status";
-import { createError, isError } from "@thread/error";
-import { isError as isHttpError } from "@thread/error/http";
+import { isAccessTokenExpireDate } from "@thread/date";
 import { createClient, FetchError } from "@thread/sdk";
+import { HttpResultStatus, HttpStatus } from "@thread/sdk/enum";
+import {
+  createThreadError,
+  isHttpError,
+  isThreadError,
+} from "@thread/sdk/error";
 
 import type { JWTParams, SessionParams, User } from "./types";
 import { env } from "../../env";
 
 class AuthService {
-  private _BUFFER_TIME = 5 * 60;
-
-  private _isDebug = false;
+  private _isDebug = true;
 
   private _client = createClient(env.NEXT_PUBLIC_SERVER_URL);
 
@@ -29,13 +30,13 @@ class AuthService {
     return date;
   };
 
-  // 로그인
+  // authorize 로그인
   authorize = async (credentials: unknown) => {
     const unsafeInput = credentials as FormFieldSignInSchema;
     const response = await this._client.auth.rpc("signIn").call(unsafeInput);
 
     if (response.resultCode !== HttpResultStatus.OK) {
-      throw createError({
+      throw createThreadError({
         message: "Failed to sign in",
         data: response.message,
       });
@@ -44,7 +45,7 @@ class AuthService {
     return response.result;
   };
 
-  // jwt
+  // jwt jwt 토큰 생성
   jwt = async ({ token, user, trigger, session }: JWTParams) => {
     if (this._isDebug) {
       console.log("[JWT] jwt - token", token);
@@ -96,7 +97,7 @@ class AuthService {
       token.accessToken &&
       token.accessTokenExpiresAt &&
       // Check if the access token is not expired
-      token.accessTokenExpiresAt - this._BUFFER_TIME * 1000 > Date.now()
+      !isAccessTokenExpireDate(token.accessTokenExpiresAt)
     ) {
       if (this._isDebug) {
         // The access token not expired
@@ -115,7 +116,7 @@ class AuthService {
         if (this._isDebug) {
           console.log("[JWT] token - missing refresh token", token);
         }
-        throw createError({
+        throw createThreadError({
           message: "MissingRefreshToken",
         });
       }
@@ -131,7 +132,7 @@ class AuthService {
       }
 
       if (response.error) {
-        throw createError({
+        throw createThreadError({
           message: "InvalidRefreshToken",
           data: response.error,
         });
@@ -158,7 +159,7 @@ class AuthService {
       if (this._isDebug) {
         console.log("[JWT] token - error", error);
         console.log("[JWT] token - error isHttpError", isHttpError(error));
-        console.log("[JWT] token - error isError", isError(error));
+        console.log("[JWT] token - error isError", isThreadError(error));
       }
       // console.error(error);
       if (isHttpError(error) || error instanceof FetchError) {
@@ -188,7 +189,7 @@ class AuthService {
         }
       }
 
-      if (isError(error)) {
+      if (isThreadError(error)) {
         return {
           ...token,
           error: error.message,

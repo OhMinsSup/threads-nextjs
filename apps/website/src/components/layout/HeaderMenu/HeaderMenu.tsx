@@ -9,7 +9,7 @@ import { UserMenu } from "~/components/layout/UserMenu";
 import { PAGE_ENDPOINTS } from "~/constants/constants";
 
 interface HeaderMenuProps {
-  session: Session | null;
+  session?: Session | null;
   isMobile?: boolean;
 }
 

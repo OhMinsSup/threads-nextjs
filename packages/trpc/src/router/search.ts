@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 
-import { schema } from "@thread/validators/search";
+// import { schema } from "@thread/validators/search";
 
 import { protectedProcedure } from "../trpc";
 
 export const searchRouter = {
   getSearch: protectedProcedure
-    .input(schema.default)
+    // .input(schema.default)
     .query(async ({ input, ctx }) => {
       // switch (input.searchType) {
       //   case "tags": {
@@ -21,7 +21,7 @@ export const searchRouter = {
       // }
     }),
   getSearchDialogUsers: protectedProcedure
-    .input(schema.keyword)
+    // .input(schema.keyword)
     .query(async ({ input, ctx }) => {
       // await searchService.getSearchDialogUsers(ctx.session.user.id, input)
     }),

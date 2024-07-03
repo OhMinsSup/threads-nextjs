@@ -18,10 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@thread/shared": "workspace:*",
-    "@thread/validators": "workspace:*",
-    "@thread/error": "workspace:*",
-    "@thread/enum": "workspace:*",
+    "@thread/date": "workspace:*",
     "@thread/sdk": "workspace:*",
     "@t3-oss/env-nextjs": "^0.10.1",
     "next": "^14.2.4",

@@ -1,6 +1,5 @@
-import { HttpStatus } from "@thread/enum/http-status";
-
-import { ErrorDisplayType } from "./enum";
+import { ErrorDisplayType } from "../constants/error-display";
+import { HttpStatus } from "../constants/http-status";
 
 export class HttpError<DataT = unknown> extends Error {
   static __thread_http_error__ = true;

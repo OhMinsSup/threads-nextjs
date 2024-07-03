@@ -24,6 +24,46 @@
         "types": "./dist/schema.d.cts",
         "default": "./dist/schema.cjs"
       }
+    },
+    "./enum": {
+      "import": {
+        "types": "./dist/enum.d.ts",
+        "default": "./dist/enum.js"
+      },
+      "require": {
+        "types": "./dist/enum.d.cts",
+        "default": "./dist/enum.cjs"
+      }
+    },
+    "./error": {
+      "import": {
+        "types": "./dist/error.d.ts",
+        "default": "./dist/error.js"
+      },
+      "require": {
+        "types": "./dist/error.d.cts",
+        "default": "./dist/error.cjs"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      },
+      "require": {
+        "types": "./dist/utils.d.cts",
+        "default": "./dist/utils.cjs"
+      }
+    },
+    "./assertion": {
+      "import": {
+        "types": "./dist/assertion.d.ts",
+        "default": "./dist/assertion.js"
+      },
+      "require": {
+        "types": "./dist/assertion.d.cts",
+        "default": "./dist/assertion.cjs"
+      }
     }
   },
   "license": "MIT",
@@ -36,9 +76,6 @@
     "postinstall": "tsup"
   },
   "dependencies": {
-    "@thread/enum": "workspace:*",
-    "@thread/error": "workspace:*",
-    "@thread/shared": "workspace:*",
     "ofetch": "^1.3.4",
     "ufo": "^1.5.3",
     "zod": "^3.23.8"

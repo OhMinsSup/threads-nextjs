@@ -9,7 +9,7 @@ import Mobile from "./Mobile";
 import Wrapper from "./Wrapper";
 
 interface HeaderProps {
-  session: Session | null;
+  session?: Session | null;
 }
 
 export default async function Header({ session }: HeaderProps) {

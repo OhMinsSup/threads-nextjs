@@ -3,10 +3,10 @@
 import React, { useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 
-import { HttpResultStatus } from "@thread/enum/result-status";
+import { isSessionExpireDate } from "@thread/date";
 import { useRafInterval } from "@thread/hooks/useRafInterval";
+import { HttpResultStatus } from "@thread/sdk/enum";
 
-import { isSessionExpireDate } from "~/utils/date";
 import { useApiClient } from "./api";
 
 interface TokenProviderProps {
@@ -69,7 +69,7 @@ export default function TokenProvider({ children }: TokenProviderProps) {
   useRafInterval(
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     () => updateSession(),
-    // 5분
+    // 1분
     1000 * 60 * 1,
   );
 

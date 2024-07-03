@@ -3,9 +3,10 @@ import {
   ExecutionContext,
   HttpStatus,
 } from "@nestjs/common";
-import { assertHttpError } from "src/libs/error";
 
-import { HttpResultStatus } from "@thread/enum/result-status";
+import { HttpResultStatus } from "@thread/sdk/enum";
+
+import { assertHttpError } from "../libs/error";
 
 interface DecoratorOptions {
   allowUndefined?: boolean;

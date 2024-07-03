@@ -23,11 +23,7 @@
     "@epic-web/remember": "^1.0.2",
     "@thread/auth": "workspace:*",
     "@thread/db": "workspace:*",
-    "@thread/enum": "workspace:*",
-    "@thread/error": "workspace:*",
     "@thread/sdk": "workspace:*",
-    "@thread/shared": "workspace:*",
-    "@thread/validators": "workspace:*",
     "@trpc/server": "11.0.0-rc.421",
     "superjson": "2.2.1",
     "zod": "^3.23.8"
