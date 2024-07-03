@@ -11,21 +11,25 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique // 이메일
+  id            String         @id @default(cuid())
+  email         String         @unique // 이메일
   emailVerified DateTime? // true: 이메일 인증 완료, false: 이메일 인증 대기
   name          String // 사용자 이름
   image         String? // 프로필 이미지 URL
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   deletedAt     DateTime? // 삭제 시간
   lastActiveAt  DateTime? // 마지막 활동 시간
-  isSuspended   Boolean       @default(false) // true: 정지, false: 활성 
+  isSuspended   Boolean        @default(false) // true: 정지, false: 활성 
   Password      Password?
   UserProfile   UserProfile?
   UserSettings  UserSettings?
   Account       Account[]
   Token         Token[]
+  Post          Post[]
+  PostLike      PostLike[]
+  PostBookmark  PostBookmark[]
+  PostMention   PostMention[]
 
   @@map(name: "users")
 }
@@ -86,4 +90,103 @@ model Token {
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("tokens")
+}
+
+model Post {
+  id           String         @id @default(cuid())
+  text         String
+  userId       String
+  meta         String? // 메타데이터
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime? // 삭제 시간
+  User         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  PostConfig   PostConfig?
+  PostStats    PostStats?
+  PostLike     PostLike[]
+  PostBookmark PostBookmark[]
+  PostTag      PostTag[]
+  PostMention  PostMention[]
+
+  @@index([userId, createdAt], name: "user_posts_index")
+  @@map("posts")
+}
+
+model PostConfig {
+  postId                         String   @unique
+  Post                           Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  whoCanLeaveComments            String?  @default("everyone") // everyone, followers, mentiones, nobody
+  hiddenNumberOfLikesAndComments Boolean? @default(false) // true: 숨김, false: 공개
+  pinned                         Boolean? @default(false) // true: 고정, false: 고정 해제
+
+  @@map("post_configs")
+}
+
+model PostStats {
+  id       String @id @default(cuid())
+  postId   String @unique
+  score    Float  @default(0)
+  likes    Int    @default(0)
+  reposts  Int    @default(0)
+  comments Int    @default(0)
+  Post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([score(sort: Desc), postId(sort: Desc)])
+  @@index([likes(sort: Desc), postId(sort: Desc)])
+  @@index([reposts(sort: Desc), postId(sort: Desc)])
+  @@index([comments(sort: Desc), postId(sort: Desc)])
+  @@map("post_stats")
+}
+
+model PostLike {
+  postId String
+  userId String
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId], name: "post_likes_post_id_user_id_unique")
+  @@index([userId], map: "post_likes_user_id")
+  @@map("post_likes")
+}
+
+model PostBookmark {
+  postId String
+  userId String
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId], name: "post_bookmarks_post_id_user_id_unique")
+  @@index([userId], map: "post_bookmarks_user_id")
+  @@map("post_bookmarks")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId], name: "post_tags_post_id_tag_id_unique")
+  @@map("post_tags")
+}
+
+model PostMention {
+  postId String
+  userId String
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId], name: "post_mentions_post_id_user_id_unique")
+  @@map("post_mentions")
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // 삭제 시간
+  PostTag   PostTag[]
+
+  @@map("tags")
 }
