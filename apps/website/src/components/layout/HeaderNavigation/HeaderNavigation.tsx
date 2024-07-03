@@ -21,3 +21,5 @@ export default function HeaderNavigation() {
     </div>
   );
 }
+
+HeaderNavigation.displayName = "HeaderNavigation";

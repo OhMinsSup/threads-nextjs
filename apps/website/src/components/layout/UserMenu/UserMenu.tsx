@@ -105,3 +105,5 @@ export default function UserMenu() {
     </DropdownMenu>
   );
 }
+
+UserMenu.displayName = "UserMenu";

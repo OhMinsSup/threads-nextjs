@@ -21,3 +21,5 @@ export default function Desktop({ session }: DesktopProps) {
     </header>
   );
 }
+
+Desktop.displayName = "Desktop";

@@ -40,6 +40,7 @@
     --app-large-screen-max-width: 620px;
     --app-small-screen-nav-height: 68px;
     --app-side-navigation-width: 76px;
+    --app-column-layout-max-width: 640px;
   }
 
   .dark {

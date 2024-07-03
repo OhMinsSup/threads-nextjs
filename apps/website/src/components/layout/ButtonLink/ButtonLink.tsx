@@ -11,16 +11,19 @@ import styles from "./styles.module.css";
 
 interface ButtonLinkProps {
   item: NavItem;
-  type: "footer" | "header";
+  type: "footer" | "header" | "sidebar";
 }
 
-export default function ButtonLink({ item }: ButtonLinkProps) {
+export default function ButtonLink({ item, type }: ButtonLinkProps) {
   const { isActive, href } = useMainLinkActive({ item });
 
   const Icon = Icons[item.icon];
 
   return (
-    <Link href={item.disabled ? "#" : href} className={cn(styles.root)}>
+    <Link
+      href={item.disabled ? "#" : href}
+      className={cn(type === "sidebar" ? styles.root_sidebar : styles.root)}
+    >
       <div className={styles.root_icon_container}>
         <Icon
           className={cn(isActive && "!text-foreground")}
@@ -32,3 +35,5 @@ export default function ButtonLink({ item }: ButtonLinkProps) {
     </Link>
   );
 }
+
+ButtonLink.displayName = "ButtonLink";

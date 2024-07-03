@@ -19,3 +19,5 @@ export default function Mobile({ session }: MobileProps) {
     </header>
   );
 }
+
+Mobile.displayName = "Mobile";

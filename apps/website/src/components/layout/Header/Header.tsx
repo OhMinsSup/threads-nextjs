@@ -23,3 +23,5 @@ export default async function Header({ session }: HeaderProps) {
     />
   );
 }
+
+Header.displayName = "Header";

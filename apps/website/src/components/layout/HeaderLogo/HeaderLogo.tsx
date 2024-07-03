@@ -23,3 +23,5 @@ HeaderLogo.Sidebar = function Item() {
     </Link>
   );
 };
+
+HeaderLogo.displayName = "HeaderLogo";

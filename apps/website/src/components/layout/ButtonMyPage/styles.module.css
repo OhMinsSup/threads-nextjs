@@ -10,6 +10,18 @@
   @apply relative mx-[2px] my-1 box-border flex min-h-0 min-w-0 cursor-pointer touch-manipulation select-none flex-row items-stretch justify-center bg-transparent px-8 py-5;
 }
 
+.root_sidebar {
+  pointer-events: all;
+  border-top-width: 0;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  transition-property: transform;
+  width: 60px;
+  @apply relative mx-[2px] my-1 box-border flex min-h-0 min-w-0 cursor-pointer touch-manipulation select-none flex-row items-stretch justify-center bg-transparent px-8 py-5;
+}
+
 .root_icon_container {
   pointer-events: none;
   transform: scale(1);

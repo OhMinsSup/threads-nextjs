@@ -12,10 +12,10 @@ import styles from "./styles.module.css";
 
 interface ButtonMyPageProps {
   item: NavItem;
-  type: "footer" | "header";
+  type: "footer" | "header" | "sidebar";
 }
 
-export default function ButtonMyPage({ item }: ButtonMyPageProps) {
+export default function ButtonMyPage({ item, type }: ButtonMyPageProps) {
   const segment = useSelectedLayoutSegment();
   const href = "#";
 
@@ -24,7 +24,10 @@ export default function ButtonMyPage({ item }: ButtonMyPageProps) {
   const Icon = Icons[item.icon];
 
   return (
-    <Link href={item.disabled ? "#" : href} className={cn(styles.root)}>
+    <Link
+      href={item.disabled ? "#" : href}
+      className={cn(type === "sidebar" ? styles.root_sidebar : styles.root)}
+    >
       <div className={styles.root_icon_container}>
         <Icon
           className={cn(isActive && "!text-foreground")}
@@ -36,3 +39,5 @@ export default function ButtonMyPage({ item }: ButtonMyPageProps) {
     </Link>
   );
 }
+
+ButtonMyPage.displayName = "ButtonMyPage";

@@ -4,7 +4,7 @@ import { ButtonMyPage } from "~/components/layout/ButtonMyPage";
 
 interface ButtonGroupProps {
   item: NavItem;
-  type: "footer" | "header";
+  type: "footer" | "header" | "sidebar";
 }
 
 export default function ButtonGroup({ item, type }: ButtonGroupProps) {
@@ -20,3 +20,5 @@ export default function ButtonGroup({ item, type }: ButtonGroupProps) {
     }
   }
 }
+
+ButtonGroup.displayName = "ButtonGroup";

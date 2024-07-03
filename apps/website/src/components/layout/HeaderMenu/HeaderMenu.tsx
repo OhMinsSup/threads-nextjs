@@ -36,3 +36,5 @@ export default function HeaderMenu({ session, isMobile }: HeaderMenuProps) {
     </div>
   );
 }
+
+HeaderMenu.displayName = "HeaderMenu";

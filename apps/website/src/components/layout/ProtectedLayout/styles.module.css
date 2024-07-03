@@ -1,0 +1,23 @@
+.root {
+  --header-height: 0;
+}
+
+.root .wrapper {
+  @apply relative top-[var(--header-height)] flex min-h-[calc(100vh-var(--header-height))] flex-col;
+}
+
+.root .wrapper .wrapper__inner {
+  min-height: inherit;
+  @apply relative flex flex-col;
+}
+
+.root .wrapper .wrapper__inner .content {
+  @apply flex w-full content-center justify-center px-5;
+}
+
+.root .wrapper .wrapper__inner .content .content__inner {
+  container-type: inline-size;
+  max-width: var(--app-column-layout-max-width);
+  width: var(--app-column-layout-max-width);
+  @apply flex flex-grow flex-col;
+}

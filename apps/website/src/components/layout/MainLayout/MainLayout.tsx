@@ -40,3 +40,5 @@ export default function MainLayout({
     </div>
   );
 }
+
+MainLayout.displayName = "MainLayout";

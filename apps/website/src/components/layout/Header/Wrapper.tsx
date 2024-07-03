@@ -14,3 +14,5 @@ export default function Wrapper(props: WrapperProps) {
   const isMobile = useMediaQuery("(max-width: 700px)", props.serverFallback);
   return isMobile ? props.mobile : props.desktop;
 }
+
+Wrapper.displayName = "HeaderWrapper";
