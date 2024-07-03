@@ -185,7 +185,6 @@ model Tag {
   name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // 삭제 시간
   PostTag   PostTag[]
 
   @@map("tags")
