@@ -2,22 +2,23 @@
   --header-height: 0;
 }
 
-.root .wrapper {
+.wrapper {
   @apply relative top-[var(--header-height)] flex min-h-[calc(100vh-var(--header-height))] flex-col;
 }
 
-.root .wrapper .wrapper__inner {
-  min-height: inherit;
-  @apply relative flex flex-col;
-}
-
-.root .wrapper .wrapper__inner .content {
-  @apply flex w-full content-center justify-center px-5;
-}
-
-.root .wrapper .wrapper__inner .content .content__inner {
+.content__container {
   container-type: inline-size;
   max-width: var(--app-column-layout-max-width);
   width: var(--app-column-layout-max-width);
   @apply flex flex-grow flex-col;
+}
+
+.content {
+  @apply flex min-h-screen;
+}
+
+@media (min-width: 700px) and (max-width: 800px) {
+  .content {
+    max-width: calc(100% - 1.5 * var(--app-side-navigation-width));
+  }
 }

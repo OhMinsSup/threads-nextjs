@@ -13,7 +13,7 @@ export default function FeedArea({ children }: FeedAreaProps) {
   return (
     <Card
       className={cn(
-        "relative z-0 flex min-h-0 flex-shrink flex-grow basis-full flex-col overflow-y-auto overflow-x-hidden overscroll-y-auto pt-2 shadow will-change-[transform,scroll]",
+        "relative z-0 flex min-h-0 w-full flex-shrink flex-grow basis-full flex-col overflow-y-auto overflow-x-hidden overscroll-y-auto pt-2 shadow will-change-[transform,scroll]",
         styles.root,
       )}
     >

@@ -12,10 +12,24 @@ export default function ContentLayout({ children }: ContentLayoutProps) {
       <div className="relative">
         <div className="relative flex flex-col">
           <div className={styles.wrapper}>
-            <div className={styles.wrapper__inner}>
-              <div className={styles.content}>
+            <div
+              className="relative flex flex-col"
+              style={{ minHeight: "inherit" }}
+            >
+              <div className="flex w-full content-center justify-center px-5">
                 <div className="flex min-h-screen">
-                  <div className={styles.content__inner}>{children}</div>
+                  <div
+                    className="relative flex flex-col"
+                    style={{ minHeight: "inherit" }}
+                  >
+                    <div className="flex w-full items-center justify-center px-5">
+                      <div className={styles.content}>
+                        <div className={styles.content__container}>
+                          {children}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -59,7 +59,10 @@ export default function TokenProvider({ children }: TokenProviderProps) {
       return;
     }
 
-    if (data.error === "RefreshAccessTokenError") {
+    if (
+      data.error === "RefreshAccessTokenError" ||
+      data.error === "MissingRefreshToken"
+    ) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       signOut();
       return;

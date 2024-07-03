@@ -11,7 +11,6 @@ export default function ProtectedLayout({ children }: MainLayoutProps) {
   return (
     <div>
       <div>
-        {/* Loading Jazzy bar */}
         <div>
           <Sidebar />
           <>{children}</>
