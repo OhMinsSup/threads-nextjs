@@ -11,7 +11,7 @@ import type {
   MethodType,
 } from "./types";
 import { HttpStatus } from "../enum";
-import { createError } from "../error/http";
+import { createHttpError } from "../error";
 import { schema } from "./schema";
 
 export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
@@ -32,6 +32,11 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
   protected body?: ApiInput<FnKey> | undefined;
 
   protected signal?: AbortSignal;
+
+  protected path?: Record<string, string>;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected searchParams?: Record<string, any>;
 
   protected endpoints: Endpoints = {
     signUp: {
@@ -54,6 +59,10 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
       pathname: "/users",
       schema: undefined,
     },
+    byUserId: {
+      pathname: (id: string) => `/users/${id}`,
+      schema: undefined,
+    },
   };
 
   constructor(builder: ConstructorOptions<FnKey>) {
@@ -65,11 +74,9 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
     this.url = builder.url;
     this.options = builder.options;
     this.headers = builder.headers;
-    this.body = builder.body;
     if (builder.shouldThrowOnError) {
       this.shouldThrowOnError = builder.shouldThrowOnError;
     }
-    this.signal = builder.signal;
   }
 
   /**
@@ -95,17 +102,16 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
       | undefined
       | null,
   ): PromiseLike<TResult1 | TResult2> {
-    const _fetch = this.fetchClient;
-    const _method = this.method;
-    const _headers = this.headers;
     const _endpoint = this.endpoints[this.fnKey];
+    const _path = this.path;
+
     let _body = this.body;
 
     // body validate
-    if (!["GET", "HEAD"].includes(_method) && _body && _endpoint.schema) {
+    if (!["GET", "HEAD"].includes(this.method) && _body && _endpoint.schema) {
       const input = _endpoint.schema.safeParse(_body);
       if (!input.success) {
-        throw createError({
+        throw createHttpError({
           message: "Invalid input",
           status: HttpStatus.BAD_REQUEST,
           statusMessage: "Bad Request",
@@ -119,16 +125,38 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
       _body = input.data as ApiInput<FnKey>;
     }
 
+    let pathname: string | null = null;
+    if (typeof _endpoint.pathname === "function" && _path) {
+      pathname = _endpoint.pathname(...Object.values(_path));
+    } else if (typeof _endpoint.pathname === "string" && _path) {
+      // ex) /users/:id -> /users/1, /users/:id/:name -> /users/1/john
+      pathname = Object.entries(_path).reduce(
+        (acc, [key, value]) => acc.replace(new RegExp(`:${key}`, "g"), value),
+        _endpoint.pathname,
+      );
+    } else if (typeof _endpoint.pathname === "string") {
+      pathname = _endpoint.pathname;
+    }
+
+    if (!pathname) {
+      throw createHttpError({
+        message: "Invalid pathname",
+        status: HttpStatus.NOT_FOUND,
+        statusMessage: "Not Found",
+      });
+    }
+
     const opts: FetchOptions<"json"> = {
       ...this.options,
-      method: _method,
-      headers: _headers,
-      body: _body,
+      method: this.method,
+      headers: this.headers,
       signal: this.signal,
+      params: this.searchParams,
+      body: _body,
     };
 
-    const response = _fetch<ApiBuilderReturnValue<FnKey>, "json">(
-      _endpoint.pathname,
+    const response = this.fetchClient<ApiBuilderReturnValue<FnKey>, "json">(
+      pathname,
       opts,
     );
 

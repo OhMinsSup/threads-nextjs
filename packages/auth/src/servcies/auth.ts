@@ -121,9 +121,7 @@ class AuthService {
         });
       }
 
-      const client = createClient(env.NEXT_PUBLIC_SERVER_URL);
-
-      const response = await client.rpc("refresh").patch({
+      const response = await this._client.rpc("refresh").patch({
         refreshToken: token.refreshToken,
       });
 
