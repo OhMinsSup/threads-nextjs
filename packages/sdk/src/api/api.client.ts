@@ -39,13 +39,12 @@ export class ApiClient {
     }
   }
 
-  rpc<FnKey extends FnNameKey>(fnKey: FnKey, options: RpcOptions<FnKey> = {}) {
+  rpc<FnKey extends FnNameKey>(fnKey: FnKey, options: RpcOptions = {}) {
     return new ApiFilterBuilder<FnKey>({
       fnKey,
       fetchClient: this.fetchClient,
       url: this.url,
       headers: options.headers,
-      body: options.body,
       method: options.method,
     });
   }

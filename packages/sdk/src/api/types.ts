@@ -13,7 +13,7 @@ import type {
 // common types -----------------------------------
 export type $OfetchOptions = Omit<
   FetchOptions<"json">,
-  "body" | "baseURL" | "headers" | "signal"
+  "body" | "baseURL" | "headers" | "signal" | "params"
 >;
 
 export type HeadersInit = FetchOptions<"json">["headers"];
@@ -27,7 +27,7 @@ export interface ClientResponse<Data = unknown> {
 }
 
 export interface Endpoint {
-  pathname: string;
+  pathname: string | ((...args: any[]) => string);
   schema:
     | Schema["signUp"]
     | Schema["signIn"]
@@ -42,6 +42,7 @@ export interface Endpoints {
   refresh: Endpoint;
   verify: Endpoint;
   me: Endpoint;
+  byUserId: Endpoint;
 }
 
 export type EndpointsKey = keyof Endpoints;
@@ -70,9 +71,8 @@ export interface Options {
 
 export type FnNameKey = EndpointsKey;
 
-export interface RpcOptions<FnKey extends FnNameKey> {
+export interface RpcOptions {
   headers?: HeadersInit;
-  body?: ApiInput<FnKey>;
   method?: MethodType;
 }
 
@@ -99,8 +99,6 @@ export interface ConstructorOptions<FnKey extends FnNameKey> {
   method?: MethodType;
   options?: $OfetchOptions;
   headers?: HeadersInit;
-  body?: ApiInput<FnKey>;
-  signal?: AbortSignal;
 }
 
 // response types -----------------------------------
