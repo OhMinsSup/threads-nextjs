@@ -1,0 +1,16 @@
+.header_desktop {
+  height: var(--app-mobile-header-height);
+  @apply fixed left-0 right-0 top-0 m-auto grid grid-cols-[1fr_50vw_1fr] grid-rows-[1fr] items-center backdrop-blur-sm;
+}
+
+.header_mobile {
+  height: var(--app-desktop-header-height);
+  @apply fixed left-0 top-0 flex w-full flex-col items-center justify-center backdrop-blur-sm;
+}
+
+@media (min-width: 700px) {
+  .header_desktop {
+    height: var(--app-desktop-header-height);
+    @apply grid-cols-[1fr_max-content_1fr];
+  }
+}

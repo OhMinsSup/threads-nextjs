@@ -1,0 +1,200 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id            String         @id @default(cuid())
+    email         String         @unique
+    emailVerified DateTime?
+    name          String
+    avatarUrl     String?
+    createdAt     DateTime       @default(now()) @db.Timestamptz(6)
+    updatedAt     DateTime       @updatedAt @db.Timestamptz(6)
+    deletedAt     DateTime? // 삭제 시간
+    lastActiveAt  DateTime? // 마지막 활동 시간
+    isSuspended   Boolean        @default(false) // true: 정지, false: 활성 
+    Password      Password?
+    UserProfile   UserProfile?
+    UserSettings  UserSettings?
+    Account       Account[]
+    Token         Token[]
+    Post          Post[]
+    PostLike      PostLike[]
+    PostBookmark  PostBookmark[]
+    PostMention   PostMention[]
+
+    @@map(name: "users")
+}
+
+model Password {
+    hash   String //  비밀번호 해시
+    salt   String // 비밀번호 솔트
+    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId String @unique
+
+    @@map(name: "passwords")
+}
+
+model UserProfile {
+    bio     String? // default: null, 자기소개
+    website String? // default: null, 웹사이트
+    User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId  String  @unique
+
+    @@map("user_profiles")
+}
+
+model UserSettings {
+    privacySettings Boolean @default(false) // true: private, false: public
+    User            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId          String  @unique
+
+    @@map("user_settings")
+}
+
+model Account {
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refreshToken      String?
+    accessToken       String?
+    expiresAt         Int?
+    tokenType         String?
+    scope             String?
+    idToken           String?
+    sessionState      String?
+    createdAt         DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt         DateTime @updatedAt @db.Timestamptz(6)
+    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@id([provider, providerAccountId])
+    @@map("accounts")
+}
+
+model Token {
+    id        String    @id @default(cuid())
+    type      TokenType
+    userId    String
+    expires   DateTime
+    createdAt DateTime  @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+    User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("tokens")
+}
+
+enum TokenType {
+    RefreshToken
+}
+
+model Post {
+    id           String         @id @default(cuid())
+    text         String
+    userId       String
+    meta         Json? // 메타데이터
+    createdAt    DateTime       @default(now()) @db.Timestamptz(6)
+    updatedAt    DateTime       @updatedAt @db.Timestamptz(6)
+    deletedAt    DateTime?      @db.Timestamptz(6) // 삭제 시간
+    User         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    PostConfig   PostConfig?
+    PostStats    PostStats?
+    PostLike     PostLike[]
+    PostBookmark PostBookmark[]
+    PostTag      PostTag[]
+    PostMention  PostMention[]
+
+    @@map("posts")
+}
+
+model PostConfig {
+    postId                         String                        @unique
+    Post                           Post                          @relation(fields: [postId], references: [id], onDelete: Cascade)
+    whoCanLeaveComments            PostConfigWhoCanLeaveComments @default(Everyone)
+    hiddenNumberOfLikesAndComments Boolean?                      @default(false) // true: 숨김, false: 공개
+    pinned                         Boolean?                      @default(false) // true: 고정, false: 고정 해제
+
+    @@map("post_configs")
+}
+
+enum PostConfigWhoCanLeaveComments {
+    Everyone
+    Followers
+    Mentiones
+    Nobody
+}
+
+model PostStats {
+    postId    String   @unique
+    Post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+    score     Float    @default(0)
+    likes     Int      @default(0)
+    reposts   Int      @default(0)
+    comments  Int      @default(0)
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    @@index([score(sort: Desc), postId(sort: Desc)])
+    @@index([likes(sort: Desc), postId(sort: Desc)])
+    @@index([reposts(sort: Desc), postId(sort: Desc)])
+    @@index([comments(sort: Desc), postId(sort: Desc)])
+    @@map("post_stats")
+}
+
+model PostLike {
+    postId String
+    userId String
+    Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([postId, userId], name: "post_likes_post_id_user_id_unique")
+    @@map("post_likes")
+}
+
+model PostBookmark {
+    postId String
+    userId String
+    Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([postId, userId], name: "post_bookmarks_post_id_user_id_unique")
+    @@map("post_bookmarks")
+}
+
+model PostTag {
+    postId String
+    tag    String
+    Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+    Tag    Tag    @relation(fields: [tag], references: [name], onDelete: Cascade)
+
+    @@unique([postId, tag], name: "post_tags_post_id_tag_unique")
+    @@map("post_tags")
+}
+
+model PostMention {
+    postId String
+    userId String
+    Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([postId, userId], name: "post_mentions_post_id_user_id_unique")
+    @@map("post_mentions")
+}
+
+model Tag {
+    id        String    @id @default(cuid())
+    name      String    @unique
+    createdAt DateTime  @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+    PostTag   PostTag[]
+
+    @@map("tags")
+}

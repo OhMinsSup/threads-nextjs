@@ -1,0 +1,4 @@
+.root {
+  width: var(--app-side-navigation-width);
+  @apply fixed left-0 top-0 z-10 flex h-full min-h-[480px] flex-col items-center overflow-visible backdrop-blur-sm;
+}

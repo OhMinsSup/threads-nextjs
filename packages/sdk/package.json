@@ -1,0 +1,94 @@
+{
+  "name": "@thread/sdk",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./schema": {
+      "import": {
+        "types": "./dist/schema.d.ts",
+        "default": "./dist/schema.js"
+      },
+      "require": {
+        "types": "./dist/schema.d.cts",
+        "default": "./dist/schema.cjs"
+      }
+    },
+    "./enum": {
+      "import": {
+        "types": "./dist/enum.d.ts",
+        "default": "./dist/enum.js"
+      },
+      "require": {
+        "types": "./dist/enum.d.cts",
+        "default": "./dist/enum.cjs"
+      }
+    },
+    "./error": {
+      "import": {
+        "types": "./dist/error.d.ts",
+        "default": "./dist/error.js"
+      },
+      "require": {
+        "types": "./dist/error.d.cts",
+        "default": "./dist/error.cjs"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      },
+      "require": {
+        "types": "./dist/utils.d.cts",
+        "default": "./dist/utils.cjs"
+      }
+    },
+    "./assertion": {
+      "import": {
+        "types": "./dist/assertion.d.ts",
+        "default": "./dist/assertion.js"
+      },
+      "require": {
+        "types": "./dist/assertion.d.cts",
+        "default": "./dist/assertion.cjs"
+      }
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "postinstall": "tsup"
+  },
+  "dependencies": {
+    "ofetch": "^1.3.4",
+    "ufo": "^1.5.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@thread/db": "workspace:*",
+    "@thread/eslint-config": "workspace:*",
+    "@thread/prettier-config": "workspace:*",
+    "@thread/tsconfig": "workspace:*",
+    "eslint": "^9.6.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.3",
+    "tsup": "^8.1.0"
+  },
+  "prettier": "@thread/prettier-config"
+}
