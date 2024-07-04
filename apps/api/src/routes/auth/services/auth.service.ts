@@ -3,7 +3,6 @@ import { JwtService } from "@nestjs/jwt";
 import { subMilliseconds } from "date-fns";
 
 import { HttpResultStatus } from "@thread/sdk/enum";
-import { generatorName } from "@thread/sdk/utils";
 
 import type { JwtPayload } from "../strategies/jwt.auth.strategy";
 import { EnvironmentService } from "../../../integrations/environment/environment.service";
@@ -18,6 +17,22 @@ import { SignupDTO } from "../dto/signup.dto";
 import { VerifyTokenDTO } from "../dto/verify-token.dto";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
+
+const generatorName = (seed: string) => {
+  const makeRandomString = (length: number) => {
+    let text = "";
+    const possible =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (let i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+
+    return text;
+  };
+
+  return `${seed}_${makeRandomString(10)}`;
+};
 
 @Injectable()
 export class AuthService {

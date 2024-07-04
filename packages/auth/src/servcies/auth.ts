@@ -1,7 +1,6 @@
 import type { JWT as NextAuthJWT } from "next-auth/jwt";
 
 import type { FormFieldSignInSchema } from "@thread/sdk/schema";
-import { isAccessTokenExpireDate } from "@thread/date";
 import { createClient, FetchError } from "@thread/sdk";
 import { HttpResultStatus, HttpStatus } from "@thread/sdk/enum";
 import {
@@ -9,6 +8,7 @@ import {
   isHttpError,
   isThreadError,
 } from "@thread/sdk/error";
+import { isAccessTokenExpireDate } from "@thread/utils/date";
 
 import type { JWTParams, SessionParams, User } from "./types";
 import { env } from "../../env";

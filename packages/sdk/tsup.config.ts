@@ -38,22 +38,4 @@ export default defineConfig((options: Options) => [
     clean: true,
     ...options,
   },
-  {
-    entry: ["src/assertion.ts"],
-    format: ["esm", "cjs"],
-    dts: true,
-    minify: !options.watch,
-    minifyWhitespace: true,
-    clean: true,
-    ...options,
-  },
-  {
-    entry: ["src/utils.ts"],
-    format: ["esm", "cjs"],
-    dts: true,
-    minify: !options.watch,
-    minifyWhitespace: true,
-    clean: true,
-    ...options,
-  },
 ]);

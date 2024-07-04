@@ -17,6 +17,10 @@
         ".vercel/output/**"
       ]
     },
+    "build:lib": {
+      "dependsOn": ["^build:lib"],
+      "outputs": ["dist/**"]
+    },
     "dev": {
       "persistent": true,
       "cache": false

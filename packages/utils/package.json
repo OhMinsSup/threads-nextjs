@@ -1,0 +1,54 @@
+{
+  "name": "@thread/utils",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    "./date": {
+      "import": {
+        "types": "./dist/date.d.ts",
+        "default": "./dist/date.js"
+      },
+      "require": {
+        "types": "./dist/date.d.cts",
+        "default": "./dist/date.cjs"
+      }
+    },
+    "./assertion": {
+      "import": {
+        "types": "./dist/assertion.d.ts",
+        "default": "./dist/assertion.js"
+      },
+      "require": {
+        "types": "./dist/assertion.d.cts",
+        "default": "./dist/assertion.cjs"
+      }
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "build:lib": "tsup",
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "date-fns": "^3.6.0"
+  },
+  "devDependencies": {
+    "@thread/eslint-config": "workspace:*",
+    "@thread/prettier-config": "workspace:*",
+    "@thread/tsconfig": "workspace:*",
+    "eslint": "^9.6.0",
+    "prettier": "^3.3.2",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3"
+  },
+  "prettier": "@thread/prettier-config"
+}
