@@ -3,7 +3,7 @@
 import type { FieldErrors } from "react-hook-form";
 import { redirect } from "next/navigation";
 
-import type { CoreClientResponse } from "@thread/sdk";
+import type { ClientResponse } from "@thread/sdk";
 import type { FormFieldSignUpSchema } from "@thread/sdk/schema";
 import { createClient } from "@thread/sdk";
 import { HttpResultStatus } from "@thread/sdk/enum";
@@ -31,7 +31,7 @@ export async function serverAction(
   const client = createClient(env.NEXT_PUBLIC_SERVER_URL);
 
   try {
-    await client.auth.rpc("signUp").call(input);
+    await client.rpc("signUp").post(input);
     isRedirect = true;
     return true;
   } catch (error) {
@@ -40,10 +40,9 @@ export async function serverAction(
       return error.data;
     }
 
-    if (isHttpError<CoreClientResponse>(error) && error.data) {
+    if (isHttpError<ClientResponse>(error) && error.data) {
       switch (error.data.resultCode) {
         case HttpResultStatus.INVALID: {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return Array.isArray(error.data.message)
             ? error.data.message.at(0)
             : defaultErrorMessage;

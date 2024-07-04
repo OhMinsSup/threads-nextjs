@@ -1,19 +1,13 @@
 import { FetchError } from "ofetch";
 
-import type { ClientOptions } from "./core/types";
-import { CoreClient } from "./core/core.client";
+import type { Options } from "./api/types";
+import { ApiClient } from "./api/api.client.js";
 
-const createClient = (url: string, options?: ClientOptions) => {
-  return new CoreClient(url, options);
+const createClient = (url: string, options?: Options) => {
+  return new ApiClient(url, options);
 };
 
 export type Client = ReturnType<typeof createClient>;
 
-export { CoreClient, createClient, FetchError };
-export type { CoreClientResponse } from "./core/types";
-export type {
-  TokenResponse,
-  SigninResponse,
-  SignupResponse,
-} from "./auth/types";
-export type { GetMeResponse } from "./users/types";
+export { ApiClient, createClient, FetchError };
+export * from "./api/types";

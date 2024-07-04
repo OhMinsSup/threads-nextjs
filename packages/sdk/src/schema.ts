@@ -2,5 +2,6 @@ export type {
   FormFieldRefreshTokenSchema,
   FormFieldSignInSchema,
   FormFieldSignUpSchema,
-} from "./auth/auth.schema";
-export { schema as authSchema } from "./auth/auth.schema";
+  FormFieldVerifyTokenSchema,
+} from "./api/schema";
+export { schema as authSchema } from "./api/schema/auth.schema";

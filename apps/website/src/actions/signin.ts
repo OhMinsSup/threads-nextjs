@@ -3,7 +3,7 @@
 import type { FieldErrors } from "react-hook-form";
 import { redirect } from "next/navigation";
 
-import type { CoreClientResponse } from "@thread/sdk";
+import type { ClientResponse } from "@thread/sdk";
 import type { FormFieldSignInSchema } from "@thread/sdk/schema";
 import { signIn } from "@thread/auth";
 import { HttpResultStatus } from "@thread/sdk/enum";
@@ -48,10 +48,9 @@ export async function serverAction(
         return error.data;
       }
 
-      if (isHttpError<CoreClientResponse>(error) && error.data) {
+      if (isHttpError<ClientResponse>(error) && error.data) {
         switch (error.data.resultCode) {
           case HttpResultStatus.INVALID: {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return Array.isArray(error.data.message)
               ? error.data.message.at(0)
               : defaultErrorMessage;

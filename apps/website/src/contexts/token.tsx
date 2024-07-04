@@ -38,7 +38,7 @@ export default function TokenProvider({ children }: TokenProviderProps) {
 
     if (result.isUpdate) {
       try {
-        const response = await client.auth.rpc("refresh").call({
+        const response = await client.rpc("refresh").patch({
           refreshToken: data.user.refreshToken,
         });
         if (response.resultCode === HttpResultStatus.OK) {
