@@ -11,6 +11,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import type { Session } from "@thread/auth";
+import { createClient } from "@thread/sdk";
 
 /**
  * 1. CONTEXT
@@ -27,13 +28,17 @@ import type { Session } from "@thread/auth";
 export const createTRPCContext = (opts: {
   headers: Headers;
   session: Session | null;
+  url: string;
 }) => {
   const session = opts.session;
   const source = opts.headers.get("x-trpc-source") ?? "unknown";
 
+  const client = createClient(opts.url);
+
   console.log(">>> tRPC Request from", source, "by", session?.user);
 
   return {
+    client,
     session,
   };
 };
@@ -98,7 +103,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      // session: { ...ctx.session, user: ctx.session.user },
+      session: ctx.session,
     },
   });
 });

@@ -1,7 +1,7 @@
 import type { Account, Profile, Session } from "next-auth";
 import type { DefaultJWT, JWT as NextAuthJWT } from "next-auth/jwt";
 
-import type { SigninResponse } from "@thread/sdk";
+import type { AuthResponse } from "@thread/sdk";
 
 export interface Token {
   accessToken: string;
@@ -10,7 +10,7 @@ export interface Token {
   refreshTokenExpiresAt: number;
 }
 
-export type User = SigninResponse;
+export type User = AuthResponse;
 
 export type TokenErrorType =
   | "RefreshAccessTokenError"
