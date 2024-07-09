@@ -91,6 +91,23 @@ export class UsersService {
   }
 
   /**
+   * @description Get a user by username
+   * @param {string} username
+   */
+  async getUserByUsername(username: string) {
+    return await this.prisma.user.findFirst({
+      where: { name: username, deletedAt: null },
+      select: {
+        id: true,
+        email: true,
+        emailVerified: true,
+        name: true,
+        image: true,
+      },
+    });
+  }
+
+  /**
    * @description Get a user by id (external)
    * @param {string} id
    */

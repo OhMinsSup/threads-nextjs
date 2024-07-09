@@ -65,4 +65,34 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await app.close();
     });
   }
+
+  async getDatabaseType() {
+    if (await this.isSQLite()) {
+      return "sqlite";
+    }
+
+    if (await this.isPostgreSQL()) {
+      return "postgresql";
+    }
+
+    return "unknown";
+  }
+
+  async isSQLite() {
+    try {
+      await this.$queryRaw`SELECT sqlite_version()`;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async isPostgreSQL() {
+    try {
+      await this.$queryRaw`SELECT version()`;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }

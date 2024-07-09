@@ -7,10 +7,18 @@ import { HttpExceptionFilter } from "./filters/http-exception.filter";
 import { IntegrationsModule } from "./integrations/integrations.module";
 import { LoggerMiddleware } from "./middleware/logger.middleware";
 import { AuthModule } from "./routes/auth/auth.module";
+import { PostsModule } from "./routes/posts/posts.module";
+import { TagsModule } from "./routes/tags/tags.module";
 import { UsersModule } from "./routes/users/users.module";
 
 @Module({
-  imports: [IntegrationsModule, AuthModule, UsersModule],
+  imports: [
+    IntegrationsModule,
+    AuthModule,
+    UsersModule,
+    PostsModule,
+    TagsModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
