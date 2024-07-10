@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@thread/tsconfig": "workspace:*",
-    "rimraf": "^5.0.7",
+    "rimraf": "^6.0.0",
     "typescript": "^5.5.3"
   },
   "packageManager": "pnpm@9.0.5",
