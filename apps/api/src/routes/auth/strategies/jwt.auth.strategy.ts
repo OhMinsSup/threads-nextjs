@@ -23,6 +23,7 @@ const fromCookie = (cookieName: string) => {
     return token;
   };
 };
+
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy, "jwt") {
   constructor(

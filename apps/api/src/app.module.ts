@@ -10,6 +10,7 @@ import { AuthModule } from "./routes/auth/auth.module";
 import { PostsModule } from "./routes/posts/posts.module";
 import { TagsModule } from "./routes/tags/tags.module";
 import { UsersModule } from "./routes/users/users.module";
+import { SearchModule } from './routes/search/search.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersModule } from "./routes/users/users.module";
     UsersModule,
     PostsModule,
     TagsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [

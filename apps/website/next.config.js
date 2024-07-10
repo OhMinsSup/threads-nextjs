@@ -13,7 +13,6 @@ const config = {
     "@thread/hooks",
     "@thread/trpc",
     "@thread/auth",
-    "@thread/db",
     "@thread/ui",
   ],
 

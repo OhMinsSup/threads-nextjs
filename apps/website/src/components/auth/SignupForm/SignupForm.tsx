@@ -6,7 +6,6 @@ import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 
 import type { FormFieldSignUpSchema } from "@thread/sdk/schema";
-import { isBoolean, isUndefined } from "@thread/sdk/assertion";
 import { authSchema } from "@thread/sdk/schema";
 import { cn } from "@thread/ui";
 import { Button } from "@thread/ui/button";
@@ -19,6 +18,7 @@ import {
   FormMessage,
 } from "@thread/ui/form";
 import { Input } from "@thread/ui/input";
+import { isBoolean, isUndefined } from "@thread/utils/assertion";
 
 import type { PreviousState } from "~/actions/signup";
 import { serverAction } from "~/actions/signup";

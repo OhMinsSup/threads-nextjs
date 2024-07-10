@@ -41,7 +41,7 @@ export class PostsService {
           }),
         },
       }),
-      this.prisma.user.findMany({
+      this.prisma.post.findMany({
         where: {
           ...(user && {
             id: {

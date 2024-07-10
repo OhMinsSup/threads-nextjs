@@ -1,12 +1,15 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
-import { OptionalJwtAuthGuard } from "src/guards/optional-jwt.auth.guard";
 
 import type { UserExternalPayload } from "@thread/db/selectors";
 
-import { AuthUser } from "../../../decorators/auth-user.decorator";
-import { JwtAuthGuard } from "../../../guards/jwt.auth.guard";
+import {
+  AuthUser,
+  OptionalAuthUser,
+} from "../../../decorators/auth-user.decorator";
+import { JwtAuth } from "../../../guards/jwt.auth.guard";
+import { OptionalJwtAuth } from "../../../guards/optional-jwt.auth.guard";
 import { PostListQuery } from "../dto/post-list.dto";
 import { PublishDTO } from "../dto/publish.dto";
 import { PostsService } from "../services/posts.service";
@@ -23,10 +26,10 @@ export class PostsController {
     description: "게시글 목록 쿼리",
     type: PostListQuery,
   })
-  @UseGuards(OptionalJwtAuthGuard)
+  @OptionalJwtAuth()
   async list(
     @Query() query: PostListQuery,
-    @AuthUser() user: UserExternalPayload | null,
+    @OptionalAuthUser() user: UserExternalPayload | null,
   ) {
     return this.service.list(query, user);
   }
@@ -39,11 +42,8 @@ export class PostsController {
     description: "게시글 작성 API",
     type: PublishDTO,
   })
-  @UseGuards(JwtAuthGuard)
-  async publish(
-    @Body() body: PublishDTO,
-    @AuthUser() user: UserExternalPayload,
-  ) {
+  @JwtAuth()
+  publish(@Body() body: PublishDTO, @AuthUser() user: UserExternalPayload) {
     return this.service.publish(body, user);
   }
 }

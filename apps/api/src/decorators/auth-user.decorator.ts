@@ -1,3 +1,4 @@
+import type { Request as ExpressRequest } from "express";
 import {
   createParamDecorator,
   ExecutionContext,
@@ -6,15 +7,20 @@ import {
 
 import { HttpResultStatus } from "@thread/sdk/enum";
 
+import type { PassportUser } from "../routes/auth/strategies/jwt.auth.strategy";
 import { assertHttpError } from "../libs/error";
 
 interface DecoratorOptions {
   allowUndefined?: boolean;
 }
 
+export interface Request extends ExpressRequest {
+  user?: PassportUser;
+}
+
 export const AuthUser = createParamDecorator(
   (options: DecoratorOptions | undefined, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
+    const request = ctx.switchToHttp().getRequest<Request>();
 
     assertHttpError(
       !options?.allowUndefined && (!request.user || !request.user.user),
@@ -28,5 +34,12 @@ export const AuthUser = createParamDecorator(
     );
 
     return request.user ? request.user.user : undefined;
+  },
+);
+
+export const OptionalAuthUser = createParamDecorator(
+  (options: DecoratorOptions | undefined, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest<Request>();
+    return request.user ? request.user.user : null;
   },
 );

@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import {
+  applyDecorators,
+  HttpStatus,
+  Injectable,
+  UseGuards,
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { assertHttpError } from "src/libs/error";
@@ -46,4 +51,8 @@ export class JwtAuthGuard extends AuthGuard(["jwt"]) {
 
     return user;
   }
+}
+
+export function JwtAuth() {
+  return applyDecorators(UseGuards(JwtAuthGuard));
 }
