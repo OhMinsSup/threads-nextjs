@@ -14,7 +14,7 @@ import type { JWTParams, SessionParams, User } from "./types";
 import { env } from "../../env";
 
 class AuthService {
-  private _isDebug = true;
+  private _isDebug = false;
 
   private _client = createClient(env.NEXT_PUBLIC_SERVER_URL);
 

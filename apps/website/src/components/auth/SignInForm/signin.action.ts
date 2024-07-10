@@ -13,10 +13,7 @@ import { PAGE_ENDPOINTS } from "~/constants/constants";
 
 type ZodValidateError = FieldErrors<FormFieldSignInSchema>;
 
-export type PreviousState =
-  | FieldErrors<FormFieldSignInSchema>
-  | undefined
-  | boolean;
+export type State = FieldErrors<FormFieldSignInSchema> | undefined | boolean;
 
 const defaultErrorMessage = {
   email: {
@@ -24,10 +21,10 @@ const defaultErrorMessage = {
   },
 };
 
-export async function serverAction(
-  _: PreviousState,
+export async function submitAction(
+  _: State,
   input: FormFieldSignInSchema,
-) {
+): Promise<State> {
   let isRedirect = false;
   try {
     await signIn("credentials", {
@@ -51,16 +48,18 @@ export async function serverAction(
       if (isHttpError<ClientResponse>(error) && error.data) {
         switch (error.data.resultCode) {
           case HttpResultStatus.INVALID: {
-            return Array.isArray(error.data.message)
-              ? error.data.message.at(0)
-              : defaultErrorMessage;
+            return (
+              Array.isArray(error.data.message)
+                ? error.data.message.at(0)
+                : defaultErrorMessage
+            ) as State;
           }
           case HttpResultStatus.INCORRECT_PASSWORD:
           case HttpResultStatus.NOT_EXIST: {
-            return error.data.message;
+            return error.data.message as State;
           }
           default: {
-            return defaultErrorMessage;
+            return defaultErrorMessage as State;
           }
         }
       }

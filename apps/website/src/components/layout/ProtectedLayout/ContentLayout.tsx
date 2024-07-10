@@ -3,6 +3,7 @@ import React from "react";
 import styles from "./styles.module.css";
 
 interface ContentLayoutProps {
+  deviceType?: string;
   children: React.ReactNode;
 }
 

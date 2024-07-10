@@ -17,7 +17,7 @@ export default function FeedHeader() {
   const pathname = usePathname();
   return (
     <div className="sticky top-0 z-[1] flex min-h-[60px] w-full items-center">
-      <div className="absolute left-[-12px] right-[-12px] z-0 grid grid-cols-[1fr_minmax(auto,65%)_1fr] items-center justify-center gap-x-4 px-4">
+      <div className="absolute left-[-12px] right-[-12px] top-0 z-0 grid h-[60px] grid-cols-[1fr_minmax(auto,65%)_1fr] content-center justify-center gap-x-4 px-4">
         <div className="flex items-center justify-start pl-2">
           PageSelectBox
         </div>

@@ -1,6 +1,7 @@
 import React from "react";
 
 interface ContentLayoutProps {
+  deviceType?: string;
   children: React.ReactNode;
 }
 

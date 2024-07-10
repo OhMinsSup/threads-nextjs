@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useTransition } from "react";
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 
-import type { FormFieldSignUpSchema } from "@thread/sdk/schema";
+import type { FormFieldSignInSchema } from "@thread/sdk/schema";
 import { authSchema } from "@thread/sdk/schema";
 import { cn } from "@thread/ui";
 import { Button } from "@thread/ui/button";
@@ -20,20 +20,20 @@ import {
 import { Input } from "@thread/ui/input";
 import { isBoolean, isUndefined } from "@thread/utils/assertion";
 
-import type { PreviousState } from "~/actions/signup";
-import { serverAction } from "~/actions/signin";
+import type { State } from "./signin.action";
 import { Icons } from "~/components/icons";
 import { InputPassword } from "~/components/shared/InputPassword";
+import { submitAction } from "./signin.action";
+
+type FormField = FormFieldSignInSchema;
 
 export default function SignInForm() {
-  const [isPending, startTransition] = useTransition();
+  const [state, formAction, isPending] = useFormState<State, FormField>(
+    submitAction,
+    undefined,
+  );
 
-  const [state, formAction] = useFormState<
-    PreviousState,
-    FormFieldSignUpSchema
-  >(serverAction, undefined);
-
-  const form = useForm<FormFieldSignUpSchema>({
+  const form = useForm<FormField>({
     progressive: true,
     resolver: zodResolver(authSchema.signIn),
     defaultValues: {
@@ -47,14 +47,7 @@ export default function SignInForm() {
   return (
     <div className="grid gap-6">
       <Form {...form}>
-        <form
-          id="signin-form"
-          onSubmit={form.handleSubmit((input) => {
-            startTransition(() => {
-              formAction(input);
-            });
-          })}
-        >
+        <form id="signin-form" onSubmit={form.handleSubmit(formAction)}>
           <div className="grid gap-5">
             <FormField
               control={form.control}

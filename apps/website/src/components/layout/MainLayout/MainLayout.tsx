@@ -7,6 +7,7 @@ import { Header } from "~/components/layout/Header";
 import styles from "./styles.module.css";
 
 interface MainLayoutProps {
+  deviceType?: string;
   children: React.ReactNode;
   before?: React.ReactNode;
   after?: React.ReactNode;

@@ -14,7 +14,7 @@ import { env } from "~/env";
 
 type ZodValidateError = FieldErrors<FormFieldSignUpSchema>;
 
-export type PreviousState = ZodValidateError | undefined | boolean;
+export type State = ZodValidateError | undefined | boolean;
 
 const defaultErrorMessage = {
   email: {
@@ -22,10 +22,10 @@ const defaultErrorMessage = {
   },
 };
 
-export async function serverAction(
-  _: PreviousState,
+export async function submitAction(
+  _: State,
   input: FormFieldSignUpSchema,
-) {
+): Promise<State> {
   let isRedirect = false;
 
   const client = createClient(env.NEXT_PUBLIC_SERVER_URL);
@@ -43,15 +43,17 @@ export async function serverAction(
     if (isHttpError<ClientResponse>(error) && error.data) {
       switch (error.data.resultCode) {
         case HttpResultStatus.INVALID: {
-          return Array.isArray(error.data.message)
-            ? error.data.message.at(0)
-            : defaultErrorMessage;
+          return (
+            Array.isArray(error.data.message)
+              ? error.data.message.at(0)
+              : defaultErrorMessage
+          ) as State;
         }
         case HttpResultStatus.NOT_EXIST: {
-          return error.data.message;
+          return error.data.message as State;
         }
         default: {
-          return defaultErrorMessage;
+          return defaultErrorMessage as State;
         }
       }
     }

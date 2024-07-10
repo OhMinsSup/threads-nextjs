@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useTransition } from "react";
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
@@ -20,20 +20,19 @@ import {
 import { Input } from "@thread/ui/input";
 import { isBoolean, isUndefined } from "@thread/utils/assertion";
 
-import type { PreviousState } from "~/actions/signup";
-import { serverAction } from "~/actions/signup";
+import type { State } from "./signup.action";
 import { Icons } from "~/components/icons";
 import { InputPassword } from "~/components/shared/InputPassword";
+import { submitAction } from "./signup.action";
+
+type FormField = FormFieldSignUpSchema;
 
 export default function SignupForm() {
-  const [isPending, startTransition] = useTransition();
-
-  const [state, formAction] = useFormState<
-    PreviousState,
-    FormFieldSignUpSchema
-  >(serverAction, undefined);
-
-  const form = useForm<FormFieldSignUpSchema>({
+  const [state, formAction, isPending] = useFormState<State, FormField>(
+    submitAction,
+    undefined,
+  );
+  const form = useForm<FormField>({
     resolver: zodResolver(authSchema.signUp),
     defaultValues: {
       email: "",
@@ -50,11 +49,7 @@ export default function SignupForm() {
         <form
           id="signup-form"
           data-testid="signup-form"
-          onSubmit={form.handleSubmit((input) => {
-            startTransition(() => {
-              formAction(input);
-            });
-          })}
+          onSubmit={form.handleSubmit(formAction)}
         >
           <div className="grid gap-5">
             <FormField
