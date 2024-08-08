@@ -7,7 +7,7 @@ import { useRafInterval } from "@thread/hooks/useRafInterval";
 import { HttpResultStatus } from "@thread/sdk/enum";
 import { isSessionExpireDate } from "@thread/utils/date";
 
-import { useApiClient } from "./api";
+import { useApiClient } from "~/store/api";
 
 interface TokenProviderProps {
   children: React.ReactNode;

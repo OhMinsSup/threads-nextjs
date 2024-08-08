@@ -10,6 +10,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import type { Client } from "@thread/sdk";
 import { createClient } from "@thread/sdk";
 
 /**
@@ -27,17 +28,15 @@ import { createClient } from "@thread/sdk";
 export const createTRPCContext = (opts: {
   headers: Headers;
   session: any | null;
-  url: string;
+  client: Client;
 }) => {
   const session = opts.session;
   const source = opts.headers.get("x-trpc-source") ?? "unknown";
 
-  const client = createClient(opts.url);
-
   console.log(">>> tRPC Request from", source, "by", session?.user);
 
   return {
-    client,
+    client: opts.client,
     session,
   };
 };

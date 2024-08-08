@@ -15,7 +15,7 @@ import { buttonVariants } from "@thread/ui/button";
 
 import { $createHashTagNode } from "~/components/editor/nodes/hashtag-node";
 import { Icons } from "~/components/icons";
-import { api } from "~/trpc/react";
+import { api } from "~/store/trpc/react";
 
 const PUNCTUATION =
   "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%'\"~=<>_:;";

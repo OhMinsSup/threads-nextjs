@@ -1,10 +1,10 @@
 import { cache } from "react";
 import { headers } from "next/headers";
 
-import { auth } from "@thread/auth";
-import { createCaller, createTRPCContext } from "@thread/trpc";
+import { createCaller, createTRPCContext } from "@thread/trpc/nextjs";
 
-import { env } from "~/env";
+import { auth } from "~/auth";
+import { getApiClient } from "../api";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -17,7 +17,7 @@ const createContext = cache(async () => {
   return createTRPCContext({
     session: await auth(),
     headers: heads,
-    url: env.NEXT_PUBLIC_SERVER_URL,
+    client: getApiClient(),
   });
 });
 

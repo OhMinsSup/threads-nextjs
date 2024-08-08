@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@thread/ui/avatar";
 
 import { $createMentionNode } from "~/components/editor/nodes/mention-node";
 import { Icons } from "~/components/icons";
-import { api } from "~/trpc/react";
+import { api } from "~/store/trpc/react";
 
 const PUNCTUATION =
   "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%'\"~=<>_:;";

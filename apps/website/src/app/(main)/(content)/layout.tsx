@@ -1,8 +1,7 @@
 import { headers } from "next/headers";
 import { userAgent } from "next/server";
 
-import { auth } from "@thread/auth";
-
+import { auth } from "~/auth";
 import { ContentLayout as MCL } from "~/components/layout/MainLayout";
 import { ContentLayout as PCL } from "~/components/layout/ProtectedLayout";
 

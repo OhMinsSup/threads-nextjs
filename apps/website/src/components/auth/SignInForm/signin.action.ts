@@ -5,10 +5,10 @@ import { redirect } from "next/navigation";
 
 import type { ClientResponse } from "@thread/sdk";
 import type { FormFieldSignInSchema } from "@thread/sdk/schema";
-import { signIn } from "@thread/auth";
 import { HttpResultStatus } from "@thread/sdk/enum";
-import { isHttpError, isThreadError } from "@thread/sdk/error";
+import { isAppError, isHttpError } from "@thread/sdk/error";
 
+import { signIn } from "~/auth";
 import { PAGE_ENDPOINTS } from "~/constants/constants";
 
 type ZodValidateError = FieldErrors<FormFieldSignInSchema>;
@@ -41,7 +41,7 @@ export async function submitAction(
       // @ts-expect-error - The error object has a cause property
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const error = e.cause?.err;
-      if (isThreadError<ZodValidateError>(error) && error.data) {
+      if (isAppError<ZodValidateError>(error) && error.data) {
         return error.data;
       }
 

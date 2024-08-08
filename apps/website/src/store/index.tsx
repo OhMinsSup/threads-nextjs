@@ -1,25 +1,25 @@
 import React from "react";
 import { SessionProvider } from "next-auth/react";
 
-import { auth } from "@thread/auth";
 import { ThemeProvider } from "@thread/ui/theme";
 
-import { TRPCReactProvider } from "~/trpc/react";
-import AppProvider from "./app";
+import { auth } from "~/auth";
+import { TRPCReactProvider } from "~/store/trpc/react";
+import { TokenProvider } from "./token";
 
 interface ProviderProps {
   children: React.ReactNode;
 }
 
-export default async function RootProvider({ children }: ProviderProps) {
+export async function Provider({ children }: ProviderProps) {
   const session = await auth();
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SessionProvider session={session}>
-        <AppProvider>
+        <TokenProvider>
           <TRPCReactProvider>{children}</TRPCReactProvider>
-        </AppProvider>
+        </TokenProvider>
       </SessionProvider>
     </ThemeProvider>
   );

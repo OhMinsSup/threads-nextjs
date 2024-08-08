@@ -4,14 +4,14 @@ import { GeistSans } from "geist/font/sans";
 
 import { cn } from "@thread/ui";
 import { Toaster } from "@thread/ui/toaster";
+import { getRequestInfo } from "@thread/utils/request";
 
 import "~/app/globals.css";
 
 import { headers } from "next/headers";
 
 import { SITE_CONFIG } from "~/constants/constants";
-import RootProvider from "~/contexts/root";
-import { getRequestInfo } from "~/utils/request";
+import { Provider } from "~/store";
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function generateMetadata(): Promise<Metadata> {
@@ -78,10 +78,10 @@ export default function Layout(props: LayoutProps) {
           GeistMono.variable,
         )}
       >
-        <RootProvider>
+        <Provider>
           {props.children}
           <Toaster />
-        </RootProvider>
+        </Provider>
       </body>
     </html>
   );
