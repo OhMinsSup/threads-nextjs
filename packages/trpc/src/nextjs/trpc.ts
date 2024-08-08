@@ -10,7 +10,6 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import type { Session } from "@thread/auth";
 import { createClient } from "@thread/sdk";
 
 /**
@@ -27,7 +26,7 @@ import { createClient } from "@thread/sdk";
  */
 export const createTRPCContext = (opts: {
   headers: Headers;
-  session: Session | null;
+  session: any | null;
   url: string;
 }) => {
   const session = opts.session;

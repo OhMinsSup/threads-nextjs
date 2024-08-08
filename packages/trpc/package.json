@@ -2,39 +2,45 @@
   "name": "@thread/trpc",
   "version": "0.0.1",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
-    },
-    "./services/*": "./src/services/*.ts"
+    "./package.json": "./package.json",
+    "./nextjs": {
+      "import": {
+        "types": "./dist/nextjs.d.ts",
+        "default": "./dist/nextjs.js"
+      },
+      "require": {
+        "types": "./dist/nextjs.d.cts",
+        "default": "./dist/nextjs.cjs"
+      }
+    }
   },
-  "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup",
+    "build:pkg": "tsup",
     "clean": "rm -rf .turbo node_modules",
+    "dev": "tsup --watch",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "prettier": "@thread/prettier-config",
   "dependencies": {
     "@epic-web/remember": "^1.1.0",
-    "@thread/auth": "workspace:*",
     "@thread/db": "workspace:*",
     "@thread/sdk": "workspace:*",
-    "@trpc/server": "11.0.0-rc.421",
-    "superjson": "2.2.1",
-    "zod": "^3.23.8"
+    "@trpc/server": "catalog:",
+    "superjson": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@thread/eslint-config": "workspace:*",
     "@thread/prettier-config": "workspace:*",
     "@thread/tsconfig": "workspace:*",
-    "eslint": "^9.6.0",
-    "prettier": "^3.3.2",
-    "typescript": "^5.5.3"
-  },
-  "prettier": "@thread/prettier-config"
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  }
 }

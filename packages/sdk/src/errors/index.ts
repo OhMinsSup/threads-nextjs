@@ -1,7 +1,7 @@
 import { ErrorDisplayType } from "../constants/error-display";
 
-export class ThreadError<DataT = unknown> extends Error {
-  static __thread_error__ = true;
+export class AppError<DataT = unknown> extends Error {
+  static __app_error__ = true;
   fatal = false;
   unhandled = false;
   displayType = ErrorDisplayType.NONE;
@@ -19,7 +19,7 @@ export class ThreadError<DataT = unknown> extends Error {
   }
 
   toJSON() {
-    const obj: Pick<ThreadError<DataT>, "message" | "data"> = {
+    const obj: Pick<AppError<DataT>, "message" | "data"> = {
       message: this.message,
     };
 
@@ -32,17 +32,17 @@ export class ThreadError<DataT = unknown> extends Error {
 }
 
 export function createError<DataT = unknown>(
-  input: string | Partial<ThreadError<DataT>>,
+  input: string | Partial<AppError<DataT>>,
 ) {
   if (typeof input === "string") {
-    return new ThreadError<DataT>(input);
+    return new AppError<DataT>(input);
   }
 
   if (isError<DataT>(input)) {
     return input;
   }
 
-  const err = new ThreadError<DataT>(input.message ?? "", {
+  const err = new AppError<DataT>(input.message ?? "", {
     cause: input.cause || input,
   });
 
@@ -81,8 +81,6 @@ export function createError<DataT = unknown>(
   return err;
 }
 
-export function isError<DataT = unknown>(
-  input: any,
-): input is ThreadError<DataT> {
-  return input?.constructor?.__thread_error__ === true;
+export function isError<DataT = unknown>(input: any): input is AppError<DataT> {
+  return input?.constructor?.__app_error__ === true;
 }

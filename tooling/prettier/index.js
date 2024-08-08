@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const config = {
   plugins: [
     "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-packagejson",
     "prettier-plugin-tailwindcss",
   ],
   tailwindConfig: fileURLToPath(
@@ -18,6 +19,7 @@ const config = {
     "<TYPES>",
     "^(react/(.*)$)|^(react$)|^(react-native(.*)$)",
     "^(next/(.*)$)|^(next$)",
+    "^(@remix-run/(.*)$)|^(@remix-run$)|^(remix(.*)$)|^(remix$)",
     "^(expo(.*)$)|^(expo$)",
     "<THIRD_PARTY_MODULES>",
     "",
@@ -31,6 +33,20 @@ const config = {
   ],
   importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"],
   importOrderTypeScriptVersion: "4.4.0",
+  overrides: [
+    {
+      files: "*.json.hbs",
+      options: {
+        parser: "json",
+      },
+    },
+    {
+      files: "*.js.hbs",
+      options: {
+        parser: "babel",
+      },
+    },
+  ],
 };
 
 export default config;

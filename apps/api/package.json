@@ -1,24 +1,42 @@
 {
   "name": "@thread/api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
   "private": true,
+  "description": "",
   "license": "UNLICENSED",
+  "author": "",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "pnpm with-env nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "start": "nest start",
+    "start:debug": "nest start --debug --watch",
+    "start:dev": "pnpm with-env nest start --watch",
+    "start:prod": "node dist/main",
     "test": "jest",
-    "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:watch": "jest --watch",
     "with-env": "dotenv -e ../../.env --"
+  },
+  "prettier": "@thread/prettier-config",
+  "jest": {
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testEnvironment": "node",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    }
   },
   "dependencies": {
     "@nestjs/common": "^10.3.10",
@@ -34,7 +52,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
-    "date-fns": "^3.6.0",
+    "date-fns": "catalog:",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "nestjs-cls": "^4.3.0",
@@ -42,7 +60,6 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
-  "prettier": "@thread/prettier-config",
   "devDependencies": {
     "@nestjs/cli": "^10.4.2",
     "@nestjs/schematics": "^10.1.2",
@@ -60,32 +77,15 @@
     "@types/node": "^20.14.10",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
-    "eslint": "^9.6.0",
+    "eslint": "catalog:",
     "jest": "^29.7.0",
-    "prettier": "^3.3.2",
+    "prettier": "catalog:",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.1",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.5.3"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "typescript": "catalog:"
   }
 }

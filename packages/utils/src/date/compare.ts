@@ -10,6 +10,7 @@ interface CompareSessionExpireDateReturnType {
   message: string;
 }
 
+// auth.js가 만료되었는지 확인하고 안되었으면 토큰값이 만료되었는지 확인
 export const isSessionExpireDate = (
   nextAuthExpireValue: Date | number | string,
   remoteBackendExpireValue: Date | number | string,
@@ -64,6 +65,7 @@ export const isSessionExpireDate = (
   };
 };
 
+// accessTokenExpireDate 값이 만료되었는지 확인
 export const isAccessTokenExpireDate = (
   accessTokenExpireDate: Date | number | string,
 ): boolean => {

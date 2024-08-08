@@ -24,8 +24,9 @@ export function isEmptyArray(value: any) {
   return isArray(value) && value.length === 0;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function isFunction<T extends Function = Function>(
+type AnyFunction = (...args: any[]) => any;
+
+export function isFunction<T extends AnyFunction = AnyFunction>(
   value: any,
 ): value is T {
   return typeof value === "function";

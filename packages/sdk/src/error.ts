@@ -1,10 +1,15 @@
+import { FetchError } from "ofetch";
+
 export {
-  ThreadError,
-  isError as isThreadError,
-  createError as createThreadError,
-} from "./error/base";
+  AppError,
+  isError as isAppError,
+  createError as createAppError,
+} from "./errors";
 export {
   HttpError,
   isError as isHttpError,
   createError as createHttpError,
-} from "./error/http";
+} from "./errors/http";
+export { FetchError };
+export const isFetchError = <T = any>(input: unknown): input is FetchError<T> =>
+  input instanceof FetchError;

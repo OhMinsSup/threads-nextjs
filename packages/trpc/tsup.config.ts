@@ -3,9 +3,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig((options: Options) => ({
   entry: {
-    assertion: "src/assertion/index.ts",
-    date: "src/date/index.ts",
-    request: "src/request/index.ts",
+    nextjs: "src/nextjs/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

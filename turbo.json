@@ -1,25 +1,17 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "ui": "tui",
-  "globalDependencies": ["**/.env"],
   "tasks": {
     "topo": {
       "dependsOn": ["^topo"]
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "next-env.d.ts",
-        ".expo/**",
-        ".output/**",
-        ".vercel/output/**"
-      ]
+      "outputs": ["node_modules/.cache/tsbuildinfo.json", "dist/**"]
     },
-    "build:lib": {
-      "dependsOn": ["^build:lib"],
-      "outputs": ["dist/**"]
+    "build:pkg": {
+      "dependsOn": ["^build:pkg"],
+      "outputs": ["node_modules/.cache/tsbuildinfo.json", "dist/**"]
     },
     "dev": {
       "persistent": true,

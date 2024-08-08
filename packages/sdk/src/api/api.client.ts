@@ -1,9 +1,9 @@
-import type { $Fetch } from "ofetch";
+import type { $Fetch, FetchOptions } from "ofetch";
 import { ofetch } from "ofetch";
 import { withBase, withoutTrailingSlash } from "ufo";
 
 import type { FnNameKey, Options, RpcOptions } from "./types";
-import { ApiFilterBuilder } from "./api.filter.builder";
+import { ApiTransformBuilder } from "./api.transform.builder";
 
 export class ApiClient {
   protected url: string;
@@ -40,16 +40,32 @@ export class ApiClient {
   }
 
   rpc<FnKey extends FnNameKey>(fnKey: FnKey, options: RpcOptions = {}) {
-    return new ApiFilterBuilder<FnKey>({
+    return new ApiTransformBuilder<FnKey>({
       fnKey,
       fetchClient: this.fetchClient,
       url: this.url,
+      options: options.options,
       headers: options.headers,
-      method: options.method,
+      signal: options.signal,
+      path: options.path,
     });
   }
 
-  get fetch() {
-    return this.fetchClient;
+  fetchNative(input: string | URL | globalThis.Request, init?: RequestInit) {
+    return this.fetchClient.native(input, init);
+  }
+
+  fetchRaw<
+    T = any,
+    R extends "json" | "text" | "blob" | "arrayBuffer" | "stream" = "json",
+  >(request: string | Request, options?: FetchOptions<R> | undefined) {
+    return this.fetchClient.raw<T, R>(request, options);
+  }
+
+  fetch<
+    T = any,
+    R extends "json" | "text" | "blob" | "arrayBuffer" | "stream" = "json",
+  >(request: string | Request, options?: FetchOptions<R> | undefined) {
+    return this.fetchClient<T, R>(request, options);
   }
 }

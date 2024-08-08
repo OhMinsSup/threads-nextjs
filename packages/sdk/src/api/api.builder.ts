@@ -4,7 +4,7 @@ import type {
   $OfetchOptions,
   ApiBuilderReturnValue,
   ApiInput,
-  ConstructorOptions,
+  BuilderConstructorOptions,
   Endpoints,
   FnNameKey,
   HeadersInit,
@@ -14,7 +14,10 @@ import { HttpStatus } from "../enum";
 import { createHttpError } from "../error";
 import { schema } from "./schema";
 
-export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
+export default class ApiBuilder<
+  FnKey extends FnNameKey = FnNameKey,
+  MethodKey extends MethodType = MethodType,
+> {
   protected fnKey: FnKey;
 
   protected url: string;
@@ -23,13 +26,13 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
 
   protected shouldThrowOnError = false;
 
-  protected method: MethodType = "GET";
+  protected method: MethodKey;
 
   protected options?: $OfetchOptions;
 
   protected headers: HeadersInit;
 
-  protected body?: ApiInput<FnKey> | undefined;
+  protected body?: ApiInput<FnKey, MethodKey> | undefined;
 
   protected signal?: AbortSignal;
 
@@ -65,35 +68,26 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
     },
   };
 
-  constructor(builder: ConstructorOptions<FnKey>) {
+  constructor(builder: BuilderConstructorOptions<FnKey, MethodKey>) {
     this.fnKey = builder.fnKey;
-    if (builder.method) {
-      this.method = builder.method;
-    }
-    this.fetchClient = builder.fetchClient;
     this.url = builder.url;
-    this.options = builder.options;
+    this.fetchClient = builder.fetchClient;
     this.headers = builder.headers;
+    this.method = builder.method;
+    this.options = builder.options;
+    this.body = builder.body;
+    this.signal = builder.signal;
+    this.searchParams = builder.searchParams;
+    this.path = builder.path;
     if (builder.shouldThrowOnError) {
       this.shouldThrowOnError = builder.shouldThrowOnError;
     }
   }
 
-  /**
-   * If there's an error with the query, throwOnError will reject the promise by
-   * throwing the error instead of returning it as part of a successful response.
-   *
-   * {@link https://github.com/supabase/supabase-js/issues/92}
-   */
-  throwOnError(): this {
-    this.shouldThrowOnError = true;
-    return this;
-  }
-
-  then<TResult1 = ApiBuilderReturnValue<FnKey>, TResult2 = never>(
+  then<TResult1 = ApiBuilderReturnValue<FnKey, MethodKey>, TResult2 = never>(
     onfulfilled?:
       | ((
-          value: ApiBuilderReturnValue<FnKey>,
+          value: ApiBuilderReturnValue<FnKey, MethodKey>,
         ) => TResult1 | PromiseLike<TResult1>)
       | undefined
       | null,
@@ -122,7 +116,7 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
           },
         });
       }
-      _body = input.data as ApiInput<FnKey>;
+      _body = input.data as ApiInput<FnKey, MethodKey>;
     }
 
     let pathname: string | null = null;
@@ -155,11 +149,11 @@ export default class ApiBuilder<FnKey extends FnNameKey = FnNameKey> {
       body: _body,
     };
 
-    const response = this.fetchClient<ApiBuilderReturnValue<FnKey>, "json">(
-      pathname,
-      opts,
-    );
+    const response = this.fetchClient<
+      ApiBuilderReturnValue<FnKey, MethodKey>,
+      "json"
+    >(pathname, opts);
 
-    return response.then(onfulfilled, onrejected);
+    return response.then(onfulfilled, onrejected).catch(onrejected);
   }
 }

@@ -1,7 +1,11 @@
 /// <reference types="./types.d.ts" />
 
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+import { includeIgnoreFile } from "@eslint/compat";
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
+import turboPlugin from "eslint-plugin-turbo";
 import tseslint from "typescript-eslint";
 
 /**
@@ -31,15 +35,18 @@ export const restrictEnvAccess = tseslint.config({
   },
 });
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export default tseslint.config(
-  {
-    // Globally ignored files
-    ignores: ["**/*.config.*"],
-  },
+  // Ignore files not tracked by VCS and any config files
+  // includeIgnoreFile(path.join(import.meta.dirname, "../../.gitignore")),
+  includeIgnoreFile(path.join(__dirname, "../../.gitignore")),
+  { ignores: ["**/*.config.*"] },
   {
     files: ["**/*.js", "**/*.ts", "**/*.tsx"],
     plugins: {
       import: importPlugin,
+      turbo: turboPlugin,
     },
     extends: [
       eslint.configs.recommended,
@@ -48,6 +55,7 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
+      ...turboPlugin.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
@@ -72,6 +80,6 @@ export default tseslint.config(
   },
   {
     linterOptions: { reportUnusedDisableDirectives: true },
-    languageOptions: { parserOptions: { project: true } },
+    languageOptions: { parserOptions: { projectService: true } },
   },
 );
